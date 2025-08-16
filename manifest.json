@@ -1,0 +1,20 @@
+{
+  "name": "2025 Reading Challenge",
+  "short_name": "2025 Reading",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#247182",
+  "background_color": "#f4f4f4",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
