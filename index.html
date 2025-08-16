@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2026 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="apple-touch-icon" href="/ios-icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="menu.css" />
+  <meta name="theme-color" content="#f27c22" />
+  <style>
+    body {
+      font-family: 'Raleway', sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .site-header {
+      width: 100%;
+      display: block;
+      max-height: 370px;
+      object-fit: cover;
+    }
+    /* phones */
+    @media (max-width: 768px) {
+      .site-header { display: none; }
+    }
+
+    /* big desktops (optional) */
+    @media (min-width: 1200px) {
+      .site-header {
+        max-height: 420px;
+      }
+    }
+
+    .container {
+      padding: 1rem;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .bubble {
+      background: white;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      margin-bottom: 1.5rem;
+      transition: transform 0.2s ease;
+    }
+
+    .bubble:hover {
+      transform: scale(1.02);
+    }
+
+    h2 {
+      color: #f27c22;
+      font-size: 1.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .submission-card, .leaderboard-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .submission-card img {
+      height: 100px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .submission-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .reader-name {
+      font-weight: bold;
+      color: #f27c22;
+      align-self: flex-end;
+    }
+
+    .prompt-tag {
+      color: #f27c22;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .timestamp {
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 0.5rem;
+      align-self: flex-end;
+    }
+
+    .leaderboard-card {
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
+    .progress-bar-container {
+      background: #ddd;
+      border-radius: 6px;
+      width: 100%;
+      height: 18px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+
+    .progress-bar {
+      background: #f27c22;
+      height: 100%;
+    }
+
+    .quote-widget {
+      background: white !important;
+      background-color: white !important;
+      border: 3px solid #f27c22;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      max-width: 700px;
+      font-family: 'Raleway', sans-serif;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    #gr_quote_body {
+      font-size: 1rem;
+      font-style: italic;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .quote-author {
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f27c22;
+    }
+
+    .see-all-bubble {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .see-all-wrapper {
+      display: flex;
+      align-items: center;
+    }
+
+    .see-all-link {
+      font-weight: 600;
+      color: #f27c22;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .see-all-link:hover {
+      color: #c96012;
+    }
+
+    #homeNews {
+      margin-bottom: 2rem; /* increase or decrease as needed */
+    }
+    
+    .site-footer {
+      margin-top: 3rem;
+      padding: 2rem 1rem;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+    }
+
+    .footer-logo-container {
+      width: 350px;            /* control visible width */
+      height: 140px;           /* control visible height */
+      overflow: hidden;        /* crop extra white space */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer-logo {
+      width: 100%;             /* fill container horizontally */
+      height: auto;
+    }
+
+    /* Same max width as your quote widget (700px), centered */
+    #countdown.bubble {
+      max-width: 700px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+
+    /* Four equal columns */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      align-items: end;
+      justify-items: center;
+    }
+
+    /* Big orange numbers */
+    .cd-num {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #f27c22;
+      line-height: 1;
+    }
+
+    /* Smaller black labels underneath */
+    .cd-label {
+      font-size: 0.9rem;
+      color: #000;
+      margin-top: 0.25rem;
+    }
+
+    /* A little scale-down on smaller screens */
+    @media (max-width: 700px) {
+      .cd-num { font-size: 1.8rem; }
+    }
+
+    #countdown { text-align:center; }
+    #countdownTimer { font-weight: 700; font-size: 1.25rem; }
+    .center { text-align: center; }
+    #countdownText { font-weight: 700; }
+
+    /* Home newsfeed layout */
+    .home-post {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+    }
+    .home-post h3 {
+      margin: 0 0 .5rem 0;
+      color: #f27c22;
+      font-size: 1.15rem;
+    }
+    .home-post .post-body { line-height: 1.5; }
+    .home-post .post-actions {
+      display: flex;
+      align-items: start;
+      justify-content: end;
+      min-width: 160px;
+    }
+    .home-post .action-btn {
+      display: inline-block;
+      font-weight: 700;
+      text-decoration: none;
+      border: 2px solid #f27c22;
+      color: #f27c22;
+      padding: .45rem .85rem;
+      border-radius: 9999px;
+      transition: transform .2s, background .2s, color .2s;
+      white-space: nowrap;
+    }
+    .home-post .action-btn:hover {
+      transform: scale(1.03);
+      background: #f27c22;
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .home-post { grid-template-columns: 1fr; }
+      .home-post .post-actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" />
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button" aria-label="Menu">☰</button>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu"></div>
+  <img src="site-banner.png" alt="Header Banner" class="site-header" />
+
+  <div id="countdown" class="bubble countdown">
+    <h2>Challenge Start</h2>
+    <div class="countdown-grid">
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-days">0</div>
+        <div class="cd-label">days</div>
+      </div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-hours">0</div>
+        <div class="cd-label">hours</div>
+      </div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-mins">0</div>
+        <div class="cd-label">minutes</div>
+      </div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-secs">0</div>
+        <div class="cd-label">seconds</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div id="quote" class="bubble quote-widget">
+      <div id="gr_quote_body"></div>
+      <div class="quote-author"></div>
+      <script src="https://www.goodreads.com/quotes/widget/148321872-rusty?v=2"></script>
+      <script>
+        window.addEventListener("load", () => {
+          const body = document.getElementById("gr_quote_body");
+          const authorDiv = document.querySelector(".quote-author");
+
+          if (body && authorDiv) {
+            // Remove <br> tags inserted by Goodreads
+            body.innerHTML = body.innerHTML.replace(/<br\s*\/?>/g, "");
+
+            // Find and extract the final author link
+            const authorLink = body.querySelector("a:last-of-type");
+            if (authorLink) {
+              // Start with the raw author text
+              let name = authorLink.textContent.trim();
+
+              // Normalize known Goodreads variants:
+              // 1) "The Walt Disney Company" -> "Walt Disney"
+              if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
+                name = "Walt Disney";
+              } else {
+                // 2) Strip trailing " Company" if present (e.g., "Walt Disney Company")
+                name = name.replace(/\s+Company$/i, "");
+              }
+
+              // Set cleaned author name
+              authorDiv.textContent = name;
+
+              // Remove the em dash + author link from the quote body (e.g., "— Author")
+              const html = body.innerHTML;
+              const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
+              body.innerHTML = html.replace(dashAndAuthor, "");
+
+              // Ensure the author link is gone
+              authorLink.remove();
+            }
+          }
+        });
+      </script>
+    </div>
+
+    <!-- Newsfeed section -->
+    <section id="homeNews" class="bubble-section">
+      <div class="bubble" style="text-align:center;"><h2>News</h2></div>
+      <div id="newsfeed"></div>
+
+      <div class="see-all-bubble">
+        <div class="see-all-wrapper">
+          <a href="newsfeed.html" class="see-all-link">See All News →</a>
+        </div>
+      </div>
+    </section>
+    
+    <div class="bubble" style="text-align: center;">
+      <h2>Latest Submissions</h2>
+    </div>
+
+    <div id="submissions"></div>
+
+    <div class="bubble see-all-bubble">
+      <div class="see-all-wrapper">
+        <a href="submissions.html" class="see-all-link">See All Submissions →</a>
+      </div>
+    </div>
+
+    <div class="bubble">
+      <h2>Prompt Progress Leaderboard</h2>
+      <div id="leaderboard"></div>
+    </div>
+  </div>
+  
+  <footer class="site-footer">
+    <div class="footer-logo-container">
+      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+    </div>
+  </footer>
+
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+  <script src="newsfeed.js"></script>
+  <script>
+    // ----- Home Newsfeed helpers -----
+    const HOME_NEWS_LIMIT = 2; // <-- change this number anytime
+
+    function isInternalLink(href) {
+      try {
+        // Treat relative as internal
+        const u = new URL(href, location.href);
+        return (
+          u.hostname.endsWith('readingchallenge.online') ||
+          u.hostname === location.hostname
+        );
+      } catch {
+        return false;
+      }
+    }
+
+    function sortNews(posts) {
+      return (posts || [])
+        .map(p => ({
+          ...p,
+          _ts: p.date
+            ? Date.parse(String(p.date).includes('T') ? p.date
+                : String(p.date).replace(' ', 'T'))
+            : 0
+        }))
+        .sort((a, b) => b._ts - a._ts);
+    }
+
+    function renderHomeNews() {
+      const mount = document.getElementById('homeNews');
+      if (!mount) return;
+
+      const items = Array.isArray(window.NEWS_POSTS) ? sortNews(window.NEWS_POSTS) : [];
+      const slice = items.slice(0, HOME_NEWS_LIMIT);
+
+      if (!slice.length) {
+        mount.innerHTML = `<div class="bubble">No news yet.</div>`;
+        return;
+      }
+
+      mount.innerHTML = slice.map(p => {
+        const title = p.title ? `<h3>${escapeHTML(p.title)}</h3>` : '';
+        const body  = p.body  ? `<div class="post-body">${escapeHTML(p.body)}</div>` : '';
+        const showBtn = p.button && p.link;
+        const sameTab = showBtn && isInternalLink(p.link);
+        const btn = showBtn
+          ? `<a class="action-btn" href="${escapeAttr(p.link)}"${sameTab ? '' : ' target="_blank" rel="noopener"'}>${escapeHTML(p.button)}</a>`
+          : '';
+
+        return `
+          <article class="bubble home-post">
+            <div class="post-content">
+              ${title}
+              ${body}
+            </div>
+            <div class="post-actions">
+              ${btn}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // simple HTML escapers to keep things safe
+    function escapeHTML(str) {
+      return (str || '').replace(/[&<>"']/g, s => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[s]));
+    }
+    const escapeAttr = escapeHTML;
+
+    /* ========= COUNTDOWN (CDT target) ========= */
+    function startCountdown() {
+      // Midnight Central on Jan 1, 2026 (CST at that date => UTC-06:00)
+      const target = new Date('2026-01-01T00:00:00-06:00');
+
+      const elDays  = document.getElementById('cd-days');
+      const elHours = document.getElementById('cd-hours');
+      const elMins  = document.getElementById('cd-mins');
+      const elSecs  = document.getElementById('cd-secs');
+      if (!elDays || !elHours || !elMins || !elSecs) return;
+
+      function tick() {
+        const now = new Date();
+        let diff = target - now;
+        if (diff <= 0) {
+          elDays.textContent = '0';
+          elHours.textContent = '0';
+          elMins.textContent = '0';
+          elSecs.textContent = '0';
+          clearInterval(timer);
+          return;
+        }
+        const totalSec = Math.floor(diff / 1000);
+        const days  = Math.floor(totalSec / 86400);
+        const hours = Math.floor((totalSec % 86400) / 3600);
+        const mins  = Math.floor((totalSec % 3600) / 60);
+        const secs  = totalSec % 60;
+
+        elDays.textContent  = days;
+        elHours.textContent = hours;
+        elMins.textContent  = mins;
+        elSecs.textContent  = secs;
+      }
+
+      tick();
+      const timer = setInterval(tick, 1000);
+    }
+
+    /* ========= CSV parsing & Central Time formatting ========= */
+    function parseCSV(text) {
+      const [header, ...rows] = text.trim().split('\n').map(r => r.split(','));
+      return rows.map(row => Object.fromEntries(header.map((h, i) => [h.trim(), row[i]?.trim()])));
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      // Treat sheet stamp as UTC
+      const iso = (dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')) + 'Z';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const date = d.toLocaleDateString('en-US', {
+        timeZone: 'America/Chicago',
+        month: 'long',
+        day: 'numeric'
+      });
+      const time = d.toLocaleTimeString('en-US', {
+        timeZone: 'America/Chicago',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      return `${date} at ${time}`;
+    }
+
+    /* ========= Boot (no menu code here) ========= */
+    window.addEventListener("DOMContentLoaded", async () => {
+      // Start countdown if the four spans exist
+      startCountdown();
+
+      // Render the home newsfeed (requires newsfeed.js to be loaded earlier)
+      renderHomeNews();
+
+      // Latest submissions + leaderboard
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv';
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+        const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
+
+        // Latest 10
+        const latest = data.slice(-10).reverse();
+        const submissions = document.getElementById('submissions');
+        if (submissions) {
+          submissions.innerHTML = "";
+          latest.forEach(row => {
+            const card = document.createElement('div');
+            card.className = 'submission-card bubble';
+            card.innerHTML = `
+              <img src="${row['Cover']}" alt="Cover">
+              <div class="submission-info">
+                <div class="prompt-tag">Prompt #${row['Prompt']}</div>
+                <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
+                <div>${row['Rating']} Star${row['Rating'] === '1' ? '' : 's'}</div>
+                <div class="timestamp">${formatDate(row['Submitted at'])}</div>
+              </div>
+              <div class="reader-name">${row['Reader']}</div>
+            `;
+            submissions.appendChild(card);
+          });
+        }
+
+        // Leaderboard
+        const counts = {};
+        data.forEach(row => {
+          const reader = row['Reader'];
+          if (reader) counts[reader] = (counts[reader] || 0) + 1;
+        });
+        const leaderboard = document.getElementById('leaderboard');
+        if (leaderboard) {
+          leaderboard.innerHTML = "";
+          Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([reader, count]) => {
+              const card = document.createElement('div');
+              card.className = 'leaderboard-card bubble';
+              card.innerHTML = `
+                <div><strong>${reader}</strong></div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" style="width:${(count / 90) * 100}%"></div>
+                </div>
+                <div>${count}/90 prompts</div>
+              `;
+              leaderboard.appendChild(card);
+            });
+        }
+      } catch (err) {
+        console.error('Error loading sheet:', err);
+      } 
+    });
+  </script>
+</body>
+</html>
