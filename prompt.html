@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prompt Page - 2026 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <meta name="theme-color" content="#f27c22" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="menu.css" />
+ <style>
+  body {
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    background: #f4f4f4;
+    color: #333;
+  }
+
+  .bubble {
+    background: white;
+    padding: 1.75rem;
+    margin: 1.5rem auto;
+    max-width: 700px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bubble:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+
+  h2 {
+    text-align: center;
+    color: #f27c22;
+    margin: 2rem auto 0.75rem;
+    font-size: 1.4rem;
+  }
+
+  .form-heading {
+    text-align: center;
+    color: #f27c22;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-top: 3rem;
+  }
+
+  .center {
+    text-align: center;
+  }
+
+  .form-wrapper {
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  .form-wrapper iframe {
+    height: 1000px;
+    border: none;
+    width: 100%;
+  }
+
+  #back-link {
+    display: inline-block;
+    margin: 7rem auto 0 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    color: #f27c22;
+  }
+
+  #promptInfo {
+    text-align: center;
+  }
+
+  #promptInfo strong {
+    display: block;
+    font-size: 1.6rem;
+    color: #f27c22;
+    margin-bottom: 0.5rem;
+  }
+
+  #promptInfo div {
+    font-weight: 700;
+    color: #000;
+  }
+
+  #promptNotes {
+    text-align: center;
+  }
+
+  .submission-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .submission-entry img {
+    height: 120px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .submission-content {
+    flex-grow: 1;
+  }
+
+  .submission-content .title {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+  }
+
+  .submission-content .author {
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  .submission-content .rating {
+    font-weight: bold;
+  }
+
+  .reader-name {
+    font-weight: bold;
+    color: #f27c22;
+    font-size: 1.2rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  .submission-time {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 1rem;
+    font-size: 0.85rem;
+    color: gray;
+  }
+
+  @media (max-width: 768px) {
+    .submission-entry {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .reader-name {
+      position: static;
+      transform: none;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .submission-time {
+      position: static;
+      text-align: left;
+      margin-top: 0.5rem;
+      align-self: flex-start;
+    }
+
+    .submission-entry img {
+      height: auto;
+      width: 120px;
+    }
+
+    .submission-content {
+      text-align: center;
+    }
+  }
+   .site-footer {
+  margin-top: 3rem;
+  padding: 2rem 1rem;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-logo-container {
+  width: 350px;            /* control visible width */
+  height: 140px;            /* control visible height */
+  overflow: hidden;        /* crop extra white space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-logo {
+  width: 100%;             /* fill container horizontally */
+  height: auto;
+}
+</style>
+</head>
+<body>
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" style="height: 28px; margin-right: 8px;">
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button">&#9776;</button>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu"></div>
+
+  <a id="back-link" href="prompts.html">← Back to Prompts</a>
+
+  <div id="promptInfo" class="bubble center">Loading prompt info...</div>
+  <div id="promptNotes" class="bubble center" style="display: none;"></div>
+
+  <h2>Submissions</h2>
+  <div id="submissionsContainer">
+    <div class="bubble center" id="loadingMessage">Loading submissions…</div>
+  </div>
+
+  <div class="form-heading">Submit Book</div>
+  <div class="bubble form-wrapper">
+    <iframe id="formIframe" allowtransparency="true" title="Submit Book" loading="lazy"></iframe>
+  </div>
+
+  <footer class="site-footer">
+  <div class="footer-logo-container">
+    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+  </div>
+</footer>
+
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+  <script src="prompts.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const promptNum = parseInt(params.get("number"));
+    const prompt = allPrompts.find(p => p.number === promptNum);
+
+    const info = document.getElementById("promptInfo");
+    const notes = document.getElementById("promptNotes");
+
+    if (prompt) {
+      info.innerHTML = `<strong>Prompt #${prompt.number}</strong>${prompt.title ? `<div>${prompt.title}</div>` : ''}${prompt.creator ? `<div>Created by ${prompt.creator}</div>` : ''}`;
+      if (prompt.description) {
+        notes.style.display = "block";
+        notes.innerHTML = `<strong>Prompt Notes</strong><br>${prompt.description}`;
+      }
+    } else {
+      info.innerHTML = "Prompt not found.";
+    }
+
+    const loadingMessage = document.getElementById("loadingMessage");
+    setTimeout(() => {
+      loadingMessage.textContent = "There are no submissions for this prompt yet.";
+    }, 1500);
+
+    if (!isNaN(promptNum)) {
+      document.getElementById("formIframe").src = `https://tally.so/r/3E75Dl?transparentBackground=1&hideTitle=1&Prompt=${promptNum}`;
+    }
+
+    // In-app Safari fix
+    document.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', e => {
+        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+        const isExternal = link.target === "_blank" || link.hasAttribute("download") || link.href.startsWith("mailto:");
+        if (isStandalone && !isExternal) {
+          e.preventDefault();
+          window.location.href = link.href;
+        }
+      });
+    });
+
+    function toCentralTime(dateStr) {
+      if (!dateStr) return '';
+      const iso = dateStr.replace(' ', 'T') + 'Z';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      return d.toLocaleString('en-US', {
+        timeZone: 'America/Chicago',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).replace(',', ' at');
+    }
+
+    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv";
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(text => {
+        function splitCSVLine(line) {
+          const out = [];
+          let cur = "";
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const ch = line[i];
+            if (ch === '"') {
+              if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+              else inQuotes = !inQuotes;
+            } else if (ch === ',' && !inQuotes) {
+              out.push(cur);
+              cur = "";
+            } else {
+              cur += ch;
+            }
+          }
+          out.push(cur);
+          return out.map(s => s.trim().replace(/^"|"$/g, ''));
+        }
+
+        const lines = text.trim().split('\n');
+        if (lines.length < 2) throw new Error("No rows in sheet");
+
+        const headerCells = splitCSVLine(lines[0]);
+        const colIndex = (name) => {
+          const idx = headerCells.findIndex(h => h.toLowerCase() === name.toLowerCase());
+          if (idx === -1) console.warn(`Missing column: ${name}`);
+          return idx;
+        };
+
+        const idxSubmitted = colIndex('Submitted at');
+        const idxReader    = colIndex('Reader');
+        const idxPrompt    = colIndex('Prompt');
+        const idxTitle     = colIndex('Title');
+        const idxAuthor    = colIndex('Author');
+        const idxRating    = colIndex('Rating');
+        const idxCover     = colIndex('Cover');
+
+        function formatDateCentral(dateStr) {
+          if (!dateStr) return '';
+          const iso = dateStr.replace(' ', 'T') + 'Z';
+          const d = new Date(iso);
+          if (isNaN(d)) return '';
+          return d.toLocaleString('en-US', {
+            timeZone: 'America/Chicago',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+        }
+
+        const rows = lines.slice(1).map(splitCSVLine);
+        const submissions = rows.map(cols => ({
+          submittedAt: cols[idxSubmitted],
+          reader:      cols[idxReader],
+          prompt:      parseInt(cols[idxPrompt]),
+          title:       cols[idxTitle],
+          author:      cols[idxAuthor],
+          rating:      cols[idxRating],
+          cover:       cols[idxCover]
+        })).filter(entry => entry.prompt === promptNum);
+
+        const container = document.getElementById("submissionsContainer");
+        container.innerHTML = "";
+
+        if (submissions.length === 0) {
+          container.innerHTML = `<div class="bubble center">There are no submissions for this prompt yet.</div>`;
+          return;
+        }
+
+        submissions.forEach(entry => {
+          const time = formatDateCentral(entry.submittedAt);
+          const stars = Number(entry.rating) === 1 ? "Star" : "Stars";
+
+          const card = document.createElement("div");
+          card.className = "bubble";
+          card.innerHTML = `
+            <div class="submission-entry">
+              <div class="reader-name">${entry.reader || ''}</div>
+              <img src="${entry.cover || ''}" alt="Cover">
+              <div class="submission-content">
+                <div><strong>${entry.title || ''}</strong></div>
+                <div>by ${entry.author || ''}</div>
+                <div>${entry.rating || ''} ${stars}</div>
+                <div class="submission-time">${time}</div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching spreadsheet:", err);
+        document.getElementById("submissionsContainer").innerHTML =
+          `<div class="bubble center">Failed to load submissions.</div>`;
+      });
+</script>
+</body>
+</html>
