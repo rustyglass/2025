@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Newsfeed - 2026 Reading Challenge</title>
+
+  <!-- Favicon / PWA bits -->
+  <link rel="icon" href="favicon.png" />
+  <link rel="apple-touch-icon" href="/ios-icon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#f27c22" />
+
+  <!-- Shared menu styles -->
+  <link rel="stylesheet" href="menu.css" />
+
+  <!-- Page styles -->
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Raleway', sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 6rem auto 3rem; /* room for fixed header */
+      padding: 0 1rem;
+    }
+
+    .bubble {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      margin-bottom: 1.25rem;
+      transition: transform 0.2s ease;
+    }
+    .bubble:hover { transform: scale(1.02); }
+
+    h1 {
+      font-size: 2rem;
+      color: #f27c22;
+      font-weight: 800;
+      text-align: center;
+      margin: 0 0 1rem 0;
+    }
+
+    /* Post layout: content + actions (button) */
+    .post {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+    }
+    .post h2 {
+      margin: 0 0 .5rem 0;
+      color: #f27c22;
+      font-size: 1.25rem;
+    }
+    .post-body { line-height: 1.5; }
+
+    .post-actions {
+      display: flex;
+      align-items: start;
+      justify-content: end;
+      min-width: 180px;
+    }
+
+    .action-btn {
+      display: inline-block;
+      font-weight: 700;
+      text-decoration: none;
+      border: 2px solid #f27c22;
+      color: #f27c22;
+      padding: .5rem .9rem;
+      border-radius: 9999px;
+      transition: transform .2s, background .2s, color .2s;
+      white-space: nowrap;
+    }
+    .action-btn:hover {
+      transform: scale(1.03);
+      background: #f27c22;
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .post {
+        grid-template-columns: 1fr;
+      }
+      .post-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header (shared structure across pages) -->
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" />
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button">&#9776;</button>
+  </header>
+  <div class="mobile-menu" id="mobileMenu"></div>
+
+  <div class="container">
+    <div class="bubble" style="text-align:center;"><h1>Newsfeed</h1></div>
+    <div id="feed"></div>
+  </div>
+
+  <!-- Menus -->
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+
+  <!-- Config-only posts (defines window.NEWS_POSTS). Keep filename in sync! -->
+  <script src="newsfeed.js"></script>
+
+  <!-- Inline renderer (runs after everything is loaded) -->
+  <script>
+/* -------- Newsfeed safe loader + renderer -------- */
+(function () {
+  const FEED_ID = 'feed';
+  const CONFIG_SRC = './newsfeed.js';  // keep relative
+  const MAX_TRIES = 3;
+  const DELAY_MS = 800;
+
+  function escapeHTML(str) {
+    return (str || '').replace(/[&<>"']/g, s => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[s]));
+  }
+  const escapeAttr = escapeHTML;
+
+  // Internal if same-origin OR any *.readingchallenge.online
+  function isInternalLink(href) {
+    try {
+      const u = new URL(href, location.href);
+      return (
+        u.origin === location.origin ||
+        u.hostname.endsWith('readingchallenge.online')
+      );
+    } catch {
+      // treat malformed/relative as internal
+      return true;
+    }
+  }
+
+  function postHTML(p) {
+    const showBtn = p.button && p.link;
+    let btnHTML = '';
+    if (showBtn) {
+      const internal = isInternalLink(p.link);
+      const targetRel = internal ? '' : ' target="_blank" rel="noopener"';
+      btnHTML = `<a class="action-btn" href="${escapeAttr(p.link)}"${targetRel}>${escapeHTML(p.button)}</a>`;
+    }
+
+    return `
+      <article class="bubble post">
+        <div class="post-content">
+          ${p.title ? `<h2>${escapeHTML(p.title)}</h2>` : ''}
+          ${p.body  ? `<div class="post-body">${escapeHTML(p.body)}</div>` : ''}
+        </div>
+        <div class="post-actions">
+          ${btnHTML}
+        </div>
+      </article>
+    `;
+  }
+
+  function sortPosts(posts) {
+    return posts
+      .map(p => ({
+        ...p,
+        _ts: p.date ? Date.parse(String(p.date).includes('T') ? p.date
+                   : String(p.date).replace(' ', 'T')) : 0
+      }))
+      .sort((a, b) => b._ts - a._ts);
+  }
+
+  function render(posts) {
+    const feed = document.getElementById(FEED_ID);
+    if (!feed) return;
+
+    if (!posts || !posts.length) {
+      feed.innerHTML = `<article class="bubble post"><div class="post-content">No news yet.</div></article>`;
+      return;
+    }
+    feed.innerHTML = posts.map(postHTML).join('');
+  }
+
+  function renderError(message) {
+    const feed = document.getElementById(FEED_ID);
+    if (!feed) return;
+    feed.innerHTML = `
+      <article class="bubble post">
+        <div class="post-content">
+          <strong>Newsfeed</strong><br>${escapeHTML(message)}
+        </div>
+      </article>`;
+  }
+
+  function loadConfigOnceWithBuster(tryNum) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = `${CONFIG_SRC}?v=${Date.now()}-${tryNum}`; // cache-buster
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('config failed to load'));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function ensureNewsConfig() {
+    if (Array.isArray(window.NEWS_POSTS)) return true;
+
+    for (let i = 1; i <= MAX_TRIES; i++) {
+      try {
+        await loadConfigOnceWithBuster(i);
+        if (Array.isArray(window.NEWS_POSTS)) return true;
+      } catch (_) { /* ignore */ }
+      await new Promise(r => setTimeout(r, DELAY_MS));
+    }
+    return false;
+  }
+
+  async function boot() {
+    const ok = await ensureNewsConfig();
+    if (!ok) {
+      console.warn('[newsfeed] config not found after retries');
+      renderError('We’re still working on this page (couldn’t load newsfeed.js).');
+      return;
+    }
+    const items = sortPosts(window.NEWS_POSTS || []);
+    render(items);
+  }
+
+  // Run after full load to avoid race with newsfeed.js tag
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot);
+})();
+</script>
+</body>
+</html>
