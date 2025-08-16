@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>All Submissions - 2026 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" />
+  <link rel="apple-touch-icon" href="/ios-icon.png">
+  <meta name="theme-color" content="#f27c22" />
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="menu.css" />
+
+  <style>
+    /* Page layout */
+    body { margin:0; font-family:'Raleway',sans-serif; background:#f4f4f4; color:#333; }
+    .container { max-width: 900px; margin: 6rem auto 3rem; padding: 0 1rem; }
+
+    /* Bubbles */
+    .bubble {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      margin-bottom: 1rem;
+      transition: transform .2s ease;
+    }
+    .bubble:hover { transform: scale(1.02); }
+
+    h1 {
+      font-size: 2rem;
+      color: #f27c22;
+      font-weight: 800;
+      text-align: center;
+      margin: 0 0 1rem;
+    }
+
+    /* Submission cards (match index.html look) */
+    .submission-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .submission-card img {
+      height: 110px;
+      width: 74px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+    .submission-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .prompt-tag {
+      color: #f27c22;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .reader-name {
+      font-weight: 800;
+      color: #f27c22;
+      align-self: flex-end;
+      white-space: nowrap;
+    }
+    .timestamp {
+      font-size: 0.9rem;
+      color: #777;
+      margin-top: 0.5rem;
+      align-self: flex-end;
+    }
+
+    /* Simple toolbar */
+    .toolbar {
+      display: flex;
+      gap: .5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .toolbar input[type="text"]{
+      width: 100%;
+      max-width: 420px;
+      padding: .6rem .8rem;
+      border: 2px solid #f27c22;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #fff;
+    }
+
+    /* Footer logo (same pattern you used) */
+    .site-footer {
+      margin-top: 3rem; padding: 2rem 1rem; background: transparent; display:flex; justify-content:center;
+    }
+    .footer-logo-container { width: 350px; height: 140px; overflow: hidden; display:flex; justify-content:center; align-items:center; }
+    .footer-logo { width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <!-- Header (menu.js styles/behavior) -->
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" />
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button">&#9776;</button>
+  </header>
+  <div class="mobile-menu" id="mobileMenu"></div>
+
+  <div class="container">
+    <h1>All Submissions</h1>
+
+    <div class="bubble toolbar">
+      <input id="searchInput" type="text" placeholder="Search by title, author, reader, or prompt…" aria-label="Search submissions">
+    </div>
+
+    <div id="list"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-logo-container">
+      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+    </div>
+  </footer>
+
+  <!-- Menu data + builder -->
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+
+  <script>
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv';
+
+    // Robust CSV splitter (handles quoted commas)
+    function splitCSVLine(line) {
+      const out = [];
+      let cur = "", inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          out.push(cur); cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      out.push(cur);
+      return out.map(s => s.trim().replace(/^"|"$/g, ''));
+    }
+
+    // Central Time formatter (treat sheet timestamps as UTC, e.g. "2025-07-25 20:32:46")
+    function formatDateCentral(dateStr) {
+      if (!dateStr) return '';
+      const iso = (dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')) + 'Z';
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+      const date = d.toLocaleDateString('en-US', { timeZone: 'America/Chicago', month: 'long', day: 'numeric' });
+      const time = d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true });
+      return `${date} at ${time}`;
+    }
+
+    // Build one card
+    function cardHTML(row) {
+      const starsWord = Number(row.Rating) === 1 ? 'Star' : 'Stars';
+      return `
+        <div class="submission-card bubble">
+          <img src="${row.Cover || ''}" alt="Cover">
+          <div class="submission-info">
+            <div class="prompt-tag">Prompt #${row.Prompt || ''}</div>
+            <div><strong>${row.Title || ''}</strong><br>by ${row.Author || ''}</div>
+            <div>${row.Rating || ''} ${starsWord}</div>
+            <div class="timestamp">${formatDateCentral(row['Submitted at'])}</div>
+          </div>
+          <div class="reader-name">${row.Reader || ''}</div>
+        </div>
+      `;
+    }
+
+    async function loadAndRender() {
+      const list = document.getElementById('list');
+      list.innerHTML = '<div class="bubble">Loading…</div>';
+
+      const res = await fetch(SHEET_URL);
+      const text = await res.text();
+
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) {
+        list.innerHTML = '<div class="bubble">No submissions yet.</div>';
+        return;
+      }
+
+      const header = splitCSVLine(lines[0]);
+      const rows = lines.slice(1).map(splitCSVLine).map(cols =>
+        Object.fromEntries(header.map((h, i) => [h.trim(), cols[i] ? cols[i].trim() : ""]))
+      );
+
+      // Keep only complete rows; then sort DESC by Submitted at
+      const cleaned = rows.filter(r => r.Prompt && r.Title).sort((a,b) => {
+        const da = new Date((a['Submitted at']||'').replace(' ','T') + 'Z').getTime();
+        const db = new Date((b['Submitted at']||'').replace(' ','T') + 'Z').getTime();
+        return db - da; // most recent first
+      });
+
+      // Initial render (no filter)
+      renderList(cleaned);
+
+      // Wire up search
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        const filtered = cleaned.filter(r => {
+          return (
+            (r.Title||'').toLowerCase().includes(q) ||
+            (r.Author||'').toLowerCase().includes(q) ||
+            (r.Reader||'').toLowerCase().includes(q) ||
+            String(r.Prompt||'').toLowerCase().includes(q)
+          );
+        });
+        renderList(filtered);
+      });
+    }
+
+    function renderList(arr) {
+      const list = document.getElementById('list');
+      if (arr.length === 0) {
+        list.innerHTML = '<div class="bubble">No matching submissions.</div>';
+        return;
+      }
+      list.innerHTML = arr.map(cardHTML).join('');
+    }
+
+    // Go!
+    document.addEventListener('DOMContentLoaded', loadAndRender);
+  </script>
+</body>
+</html>
