@@ -185,6 +185,8 @@ nav.menu a.active::after {
   .menu-toggle { display: block; }
 }
 /* When header is scrolled */
+header.scrolled .site-name,
+header.scrolled .site-name span,
 header.scrolled nav.menu a {
   color: #fff;
 }
