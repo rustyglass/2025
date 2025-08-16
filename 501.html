@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Error 501 (Not Implemented Yet) - 2026 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/ios-icon.png">
+  <meta name="theme-color" content="#f27c22" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#f27c22">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="menu.css">
+ <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Raleway', sans-serif;
+    background: #f4f4f4;
+    color: #333;
+  }
+
+  .content {
+    margin-top: 7rem;
+    padding: 2rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 0.6s ease-in-out;
+    transition: transform 0.2s ease;
+  }
+
+  .content:hover {
+    transform: scale(1.02);
+  }
+
+  .content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .content p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .content a {
+    text-decoration: none;
+    color: white;
+    background: #f27c22;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    display: inline-block;
+  }
+   .site-footer {
+  margin-top: 3rem;
+  padding: 2rem 1rem;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-logo-container {
+  width: 350px;            /* wider */
+  height: 140px;           /* taller to fit more of the logo */
+  overflow: hidden;        /* crop extra white space if needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-logo {
+  width: 100%;             /* fill the container width */
+  height: auto;            /* keep aspect ratio */
+}
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" />
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button">&#9776;</button>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu"></div>
+
+  <div class="content">
+    <h1>501 – Not Implemented Yet</h1>
+    <p>Oops! We're still working on that page.</p>
+    <a href="index.html">Return to Homepage</a>
+  </div>
+
+  <footer class="site-footer">
+  <div class="footer-logo-container">
+    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+  </div>
+</footer>
+
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+  </body>
+</html>
