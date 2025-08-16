@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Prompts - 2026 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/ios-icon.png">
+  <meta name="theme-color" content="#f27c22" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#f27c22">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="menu.css">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+   * {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  background: #f4f4f4;
+  color: #333;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 6rem auto 3rem;
+  padding: 0 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #f27c22;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+  background: white;
+  color: #f27c22;
+  border: 2px solid #f27c22;
+  border-radius: 30px;
+  padding: 0.5rem 1rem;
+  font-family: 'Raleway', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #f27c22;
+  color: white;
+}
+
+input[type="text"] {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem;
+  border: 2px solid #f27c22;
+  border-radius: 8px;
+  margin: 0 auto 1rem;
+  display: block;
+  font-size: 1rem;
+  font-family: 'Raleway', sans-serif;
+}
+
+.prompt-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 700px) {
+  .prompt-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.prompt-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+}
+
+.prompt-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.prompt-card.grayed-out {
+  color: #cccccc;
+}
+
+.prompt-card h2 {
+  font-size: 1rem;
+  color: #f27c22;
+  margin: 0 0 0.5rem;
+  font-style: normal;
+}
+
+.prompt-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem;
+  color: inherit;
+}
+
+.prompt-card p,
+.prompt-card .creator {
+  font-size: 0.9rem;
+  margin: 0;
+  color: inherit;
+}
+    .footer-logo-container {   
+      width: 350px;            /* control visible width */   
+      height: 140px;            /* control visible height */   
+      overflow: hidden;        /* crop extra white space */   
+      display: flex;   
+      justify-content: center;   
+      align-items: center; 
+    }  
+    
+    .footer-logo {   
+      width: 100%;             /* fill container horizontally */   
+      height: auto; 
+    }
+    .site-footer {
+  margin-top: 3rem;
+  padding: 2rem 1rem;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+    
+  </style>
+</head>
+<body>
+  <header id="main-header">
+    <div class="site-name">
+      <img src="favicon.png" alt="Icon" />
+      <span class="desktop-title">2026 Reading Challenge</span>
+    </div>
+    <nav class="menu"></nav>
+    <button class="menu-toggle" id="menu-button">&#9776;</button>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu"></div>
+
+  <div class="container">
+    <h1>Prompts</h1>
+    <input type="text" id="searchInput" placeholder="Search prompts..." />
+    <div id="filterButtons" class="filter-buttons-container"></div>
+    <div id="promptGrid" class="prompt-grid"></div>
+  </div>
+
+   <footer class="site-footer">
+  <div class="footer-logo-container">
+    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+  </div>
+</footer>
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+  <script src="prompts.js"></script>
+  <script>
+  window.prompts = allPrompts;
+  const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
+  let allSubmissions = [];
+  let activeParticipant = null;
+
+  function renderFilterButtons() {
+    const container = document.getElementById("filterButtons");
+    container.innerHTML = "";
+    PARTICIPANTS.forEach(name => {
+      const btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.textContent = name;
+      btn.onclick = () => {
+        activeParticipant = activeParticipant === name ? null : name;
+        renderFilterButtons();
+        renderPrompts(window.prompts);
+      };
+      if (activeParticipant === name) btn.classList.add("active");
+      container.appendChild(btn);
+    });
+
+    if (activeParticipant) {
+      const clear = document.createElement("button");
+      clear.className = "filter-btn";
+      clear.textContent = "Clear Filter";
+      clear.onclick = () => {
+        activeParticipant = null;
+        renderFilterButtons();
+        renderPrompts(window.prompts);
+      };
+      container.appendChild(clear);
+    }
+  }
+
+  function renderPrompts(prompts) {
+    const grid = document.getElementById("promptGrid");
+    const input = document.getElementById("searchInput");
+    const search = input.value.toLowerCase();
+
+    grid.innerHTML = "";
+    const filteredPrompts = prompts.filter(p =>
+      p.title.toLowerCase().includes(search) ||
+      (p.description && p.description.toLowerCase().includes(search))
+    );
+
+    if (filteredPrompts.length === 0) {
+      grid.innerHTML = "<p style='text-align:center; color: #999;'>No prompts found.</p>";
+      return;
+    }
+
+    filteredPrompts.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "prompt-card";
+      if (
+        activeParticipant &&
+        allSubmissions.some(s => s.Reader === activeParticipant && parseInt(s.Prompt) === p.number)
+      ) {
+        card.classList.add("grayed-out");
+      }
+
+      card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
+      card.innerHTML = `
+        <h2>Prompt #${p.number}</h2>
+        <h3>${p.title}</h3>
+        ${p.description ? `<p>${p.description}</p>` : ""}
+        <p class="creator">By ${p.creator}</p>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  async function fetchSubmissions() {
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv";
+    const res = await fetch(sheetUrl);
+    const csv = await res.text();
+
+    const parsed = Papa.parse(csv, { header: true });
+    allSubmissions = parsed.data
+      .map(row => ({
+        Reader: row.Reader?.trim(),
+        Prompt: parseInt(row.Prompt?.trim())
+      }))
+      .filter(row => row.Reader && !isNaN(row.Prompt));
+  }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    // (Menu + header behavior now handled by menu.js)
+
+    if (typeof prompts !== "undefined") window.prompts = prompts;
+
+    await fetchSubmissions();
+    renderFilterButtons();
+    renderPrompts(window.prompts);
+
+    document.getElementById("searchInput").addEventListener("input", () => {
+      renderPrompts(window.prompts);
+    });
+  });
+</script>
+</body>
+</html>
