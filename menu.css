@@ -25,6 +25,7 @@ header {
 
 header.scrolled {
   background: #247182;
+  
 }
 
 /* Left title/logo */
@@ -182,4 +183,21 @@ nav.menu a.active::after {
 @media (max-width: 768px) {
   nav.menu { display: none; }
   .menu-toggle { display: block; }
+}
+/* When header is scrolled */
+header.scrolled nav.menu a {
+  color: #fff;
+}
+
+header.scrolled nav.menu a.active::after {
+  background: #fff;
+}
+
+/* When mobile menu is open */
+.mobile-menu.active a {
+  color: #fff;
+}
+
+.mobile-menu.active a.active::after {
+  background: #fff;
 }
