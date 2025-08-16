@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>2026 Reading Challenge</title>
+  <title>2025 Reading Challenge</title>
   <link rel="icon" href="favicon.png" />
   <link rel="apple-touch-icon" href="/ios-icon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="menu.css" />
-  <meta name="theme-color" content="#f27c22" />
+  <meta name="theme-color" content="#247182" />
   <style>
     body {
-      font-family: 'Raleway', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background-color: #f5f5f5;
       margin: 0;
       padding: 0;
@@ -55,7 +55,7 @@
     }
 
     h2 {
-      color: #f27c22;
+      color: #247182;
       font-size: 1.4rem;
       margin-bottom: 0.75rem;
     }
@@ -82,12 +82,12 @@
 
     .reader-name {
       font-weight: bold;
-      color: #f27c22;
+      color: #247182;
       align-self: flex-end;
     }
 
     .prompt-tag {
-      color: #f27c22;
+      color: #247182;
       font-weight: bold;
       margin-bottom: 4px;
     }
@@ -114,19 +114,19 @@
     }
 
     .progress-bar {
-      background: #f27c22;
+      background: #247182;
       height: 100%;
     }
 
     .quote-widget {
       background: white !important;
       background-color: white !important;
-      border: 3px solid #f27c22;
+      border: 3px solid #247182;
       border-radius: 12px;
       padding: 1.5rem;
       margin: 2rem auto;
       max-width: 700px;
-      font-family: 'Raleway', sans-serif;
+      font-family: 'Poppins', sans-serif;
       box-shadow: 0 4px 8px rgba(0,0,0,0.08);
       text-align: center;
     }
@@ -142,7 +142,7 @@
       margin-top: 0.75rem;
       font-size: 0.95rem;
       font-weight: 600;
-      color: #f27c22;
+      color: #247182;
     }
 
     .see-all-bubble {
@@ -160,7 +160,7 @@
 
     .see-all-link {
       font-weight: 600;
-      color: #f27c22;
+      color: #247182;
       text-decoration: none;
       transition: color 0.2s;
     }
@@ -215,7 +215,7 @@
     .cd-num {
       font-size: 2.2rem;
       font-weight: 800;
-      color: #f27c22;
+      color: #247182;
       line-height: 1;
     }
 
@@ -245,7 +245,7 @@
     }
     .home-post h3 {
       margin: 0 0 .5rem 0;
-      color: #f27c22;
+      color: #247182;
       font-size: 1.15rem;
     }
     .home-post .post-body { line-height: 1.5; }
@@ -259,8 +259,8 @@
       display: inline-block;
       font-weight: 700;
       text-decoration: none;
-      border: 2px solid #f27c22;
-      color: #f27c22;
+      border: 2px solid #247182;
+      color: #247182;
       padding: .45rem .85rem;
       border-radius: 9999px;
       transition: transform .2s, background .2s, color .2s;
@@ -268,7 +268,7 @@
     }
     .home-post .action-btn:hover {
       transform: scale(1.03);
-      background: #f27c22;
+      background: #247182;
       color: #fff;
     }
 
@@ -282,7 +282,7 @@
   <header id="main-header">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" />
-      <span class="desktop-title">2026 Reading Challenge</span>
+      <span class="desktop-title">2025 Reading Challenge</span>
     </div>
     <nav class="menu"></nav>
     <button class="menu-toggle" id="menu-button" aria-label="Menu">☰</button>
@@ -290,28 +290,6 @@
 
   <div class="mobile-menu" id="mobileMenu"></div>
   <img src="site-banner.png" alt="Header Banner" class="site-header" />
-
-  <div id="countdown" class="bubble countdown">
-    <h2>Challenge Start</h2>
-    <div class="countdown-grid">
-      <div class="cd-unit">
-        <div class="cd-num" id="cd-days">0</div>
-        <div class="cd-label">days</div>
-      </div>
-      <div class="cd-unit">
-        <div class="cd-num" id="cd-hours">0</div>
-        <div class="cd-label">hours</div>
-      </div>
-      <div class="cd-unit">
-        <div class="cd-num" id="cd-mins">0</div>
-        <div class="cd-label">minutes</div>
-      </div>
-      <div class="cd-unit">
-        <div class="cd-num" id="cd-secs">0</div>
-        <div class="cd-label">seconds</div>
-      </div>
-    </div>
-  </div>
 
   <div class="container">
 
@@ -472,8 +450,8 @@
 
     /* ========= COUNTDOWN (CDT target) ========= */
     function startCountdown() {
-      // Midnight Central on Jan 1, 2026 (CST at that date => UTC-06:00)
-      const target = new Date('2026-01-01T00:00:00-06:00');
+      // 11:59 Central on Dec 31, 2025 (CST at that date => UTC-06:00)
+      const target = new Date('2025-12-31T23:59:59-06:00');
 
       const elDays  = document.getElementById('cd-days');
       const elHours = document.getElementById('cd-hours');
@@ -588,7 +566,7 @@
               card.innerHTML = `
                 <div><strong>${reader}</strong></div>
                 <div class="progress-bar-container">
-                  <div class="progress-bar" style="width:${(count / 90) * 100}%"></div>
+                  <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
                 </div>
                 <div>${count}/90 prompts</div>
               `;
