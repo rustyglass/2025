@@ -1,9 +1,75 @@
 const allPrompts = [
   {
     number: 1,
-    title: "But that’s Way Older than Grandma!",
-    description: "About someone born before 1600.",
+    title: "All for One & One for All!",
+    description: "Everyone reads the same book for this prompt, or no one completes it!",
     creator: "Noah",
+  },
+  {
+    number: 2,
+    title: "Written from Two or More Perspectives",
+    description: "",
+    creator: "Cindy",
+  },
+  {
+    number: 3,
+    title: "Main Character's First Name Ends in 'Y'",
+    description: "",
+    creator: "Zoey",
+  },
+  {
+    number: 4,
+    title: "Has a Design on the Spine",
+    description: "",
+    creator: "Winny",
+  },
+  {
+    number: 5,
+    title: "Takes Place on a Beach",
+    description: "",
+    creator: "Rusty",
+  },
+  {
+    number: 6,
+    title: "Currently on NYT Bestseller's List",
+    description: "",
+    creator: "Cassy",
+  },
+  {
+    number: 7,
+    title: "Don't I Get a Say in This?",
+    description: "Readers will select which books other readers must read to complete this prompt.",
+    creator: "Noah",
+  },
+  {
+    number: 8,
+    title: "Has Item of Clothing or Accessory on the Cover",
+    description: "",
+    creator: "Cindy",
+  },
+  {
+    number: 9,
+    title: "Title is also Title of a Song",
+    description: "",
+    creator: "Zoey",
+  },
+  {
+    number: 10,
+    title: "Author's First and Last Name Start with the Same Letter",
+    description: "",
+    creator: "Winny",
+  },
+  {
+    number: 11,
+    title: "At Least 500 Pages",
+    description: "",
+    creator: "Rusty",
+  },
+  {
+    number: 12,
+    title: "Has 'Glass' in the Title",
+    description: "",
+    creator: "Cassy",
   },
 ];
 window.prompts = allPrompts; // ✅ Fixes the error globally
