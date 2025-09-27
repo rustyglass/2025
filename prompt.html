@@ -175,7 +175,7 @@
   font-weight: 700;
   border-radius: 9999px;
   margin-top: 0.5rem;
-  background: #247182; /* orange */
+  background: #247182; /* teal */
   color: #fff;
   text-align: center;
   white-space: nowrap;
@@ -514,8 +514,8 @@ function configureFormsForPrompt(promptNum) {
   const genericIframe = $('formIframe');               // your existing generic form iframe
   const genericWrap   = genericIframe ? genericIframe.closest('.form-wrapper') : null;
 
-  const p87Block = $('p7-forms'); // optional special block (only if you added it)
-  const p89Block = $('p1-form');
+  const p7Block = $('p7-forms'); // optional special block (only if you added it)
+  const p1Block = $('p1-form');
 
   if (promptNum === 7) {
     if (genericWrap) genericWrap.style.display = 'none';
