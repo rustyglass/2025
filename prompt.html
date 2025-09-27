@@ -298,14 +298,18 @@ const SELECTIONS_SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2pCi
 /* ========= Utilities ========= */
 function toCentralTime(dateStr) {
   if (!dateStr) return '';
-  // Normalize "YYYY-MM-DD H:MM:SS" to "YYYY-MM-DD HH:MM:SS"
+
+  // Normalize "YYYY-MM-DD H:MM:SS" → "YYYY-MM-DD HH:MM:SS"
   const norm = dateStr.replace(
     /^(\d{4}-\d{2}-\d{2}) (\d{1}):/,
     (m, d, h) => `${d} 0${h}:`
   );
-  const iso = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T');
-  const d = new Date(iso + 'Z'); // treat sheet stamp as UTC
+
+  // Convert to ISO (treat as UTC)
+  const iso = norm.includes('T') ? norm : norm.replace(' ', 'T');
+  const d = new Date(iso + 'Z');
   if (isNaN(d)) return '';
+
   return d.toLocaleString('en-US', {
     timeZone: 'America/Chicago',
     month: 'long',
