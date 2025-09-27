@@ -25,7 +25,6 @@ header {
 
 header.scrolled {
   background: #247182;
-  
 }
 
 /* Left title/logo */
@@ -33,7 +32,7 @@ header.scrolled {
   display: flex;
   align-items: center;
   font-weight: 800;
-  color: #000;
+  color: #fff;
   font-size: 1.2rem;
 }
 
@@ -111,7 +110,7 @@ nav.menu a.active::after {
   width: 100%;
   height: 100%;
   background: #247182;
-  color: black;
+  color: white;
   display: flex;
   flex-direction: column;
   padding: 5rem 2rem 2rem; /* space for header, then content */
@@ -153,7 +152,7 @@ nav.menu a.active::after {
   border: none;
   font-size: 1.6rem;
   line-height: 1;
-  color: black;
+  color: white;
   cursor: pointer;
 }
 
@@ -183,23 +182,4 @@ nav.menu a.active::after {
 @media (max-width: 768px) {
   nav.menu { display: none; }
   .menu-toggle { display: block; }
-}
-/* When header is scrolled */
-header.scrolled .site-name,
-header.scrolled .site-name span,
-header.scrolled nav.menu a {
-  color: #fff;
-}
-
-header.scrolled nav.menu a.active::after {
-  background: #fff;
-}
-
-/* When mobile menu is open */
-.mobile-menu.active a {
-  color: #fff;
-}
-
-.mobile-menu.active a.active::after {
-  background: #fff;
 }
