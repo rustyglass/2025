@@ -450,8 +450,8 @@
 
     /* ========= COUNTDOWN (CDT target) ========= */
     function startCountdown() {
-      // 11:59 Central on Dec 31, 2025 (CST at that date => UTC-06:00)
-      const target = new Date('2025-12-31T23:59:59-06:00');
+      // Midnight Central on Jan 1, 2026 (CST at that date => UTC-05:00)
+      const target = new Date('2026-01-01T11:59:59-06:00');
 
       const elDays  = document.getElementById('cd-days');
       const elHours = document.getElementById('cd-hours');
@@ -521,7 +521,7 @@
       renderHomeNews();
 
       // Latest submissions + leaderboard
-      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv';
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv'; //CHANGE THIS TO CHANGE THE DATA SOURCE
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
@@ -536,7 +536,7 @@
             const card = document.createElement('div');
             card.className = 'submission-card bubble';
             card.innerHTML = `
-              <img src="${row['Cover']}" alt="Cover">
+             <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
               <div class="submission-info">
                 <div class="prompt-tag">Prompt #${row['Prompt']}</div>
                 <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
@@ -566,9 +566,9 @@
               card.innerHTML = `
                 <div><strong>${reader}</strong></div>
                 <div class="progress-bar-container">
-                  <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
+                  <div class="progress-bar" style="width:${(count / 90) * 100}%"></div>
                 </div>
-                <div>${count}/85 prompts</div>
+                <div>${count}/90 prompts</div>
               `;
               leaderboard.appendChild(card);
             });
