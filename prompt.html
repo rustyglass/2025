@@ -8,7 +8,8 @@
   <meta name="theme-color" content="#247182" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="menu.css" />
- <style>
+  <style>
+  /* Base */
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -16,28 +17,28 @@
     color: #333;
   }
 
+  /* Bubbles / cards */
   .bubble {
-    background: white;
-    padding: 1.75rem;
+    background: #fff;
+    padding: 0.8rem;
     margin: 1.5rem auto;
     max-width: 700px;
     border-radius: 20px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-
   .bubble:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   }
 
+  /* Headings */
   h2 {
     text-align: center;
     color: #247182;
     margin: 2rem auto 0.75rem;
     font-size: 1.4rem;
   }
-
   .form-heading {
     text-align: center;
     color: #247182;
@@ -46,21 +47,13 @@
     margin-top: 3rem;
   }
 
-  .center {
-    text-align: center;
-  }
+  .center { text-align: center; }
 
-  .form-wrapper {
-    width: 100%;
-    padding: 1rem 0;
-  }
+  /* Form wrapper */
+  .form-wrapper { width: 100%; padding: 1rem 0; }
+  .form-wrapper iframe { height: 1000px; border: none; width: 100%; }
 
-  .form-wrapper iframe {
-    height: 1000px;
-    border: none;
-    width: 100%;
-  }
-
+  /* Back link */
   #back-link {
     display: inline-block;
     margin: 7rem auto 0 1rem;
@@ -69,129 +62,134 @@
     color: #247182;
   }
 
-  #promptInfo {
-    text-align: center;
-  }
-
+  /* Prompt info / notes */
+  #promptInfo { text-align: center; }
   #promptInfo strong {
     display: block;
     font-size: 1.6rem;
     color: #247182;
     margin-bottom: 0.5rem;
   }
+  #promptInfo div { font-weight: 700; color: #000; }
+  #promptNotes { text-align: center; }
 
-  #promptInfo div {
-    font-weight: 700;
-    color: #000;
-  }
+/* --- Submission card layout --- */
+.submission-entry {
+  position: relative;               /* anchors absolute children */
+  display: flex;
+  align-items: flex-start;           /* top-align everything */
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 9.5rem 1rem 1rem;   /* right pad leaves room for name + time */
+}
 
-  #promptNotes {
-    text-align: center;
-  }
+/* Cover image */
+.submission-entry img,
+.cover-placeholder {
+  width: 82px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;                /* slightly less rounded */
+  flex-shrink: 0;
+}
 
+/* Text block to the right of the cover */
+.submission-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.submission-content .title {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+.submission-content .author {
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+.submission-content .rating {
+  font-weight: normal;   /* not bold */
+}
+
+/* Reader name (top-right of card) */
+.reader,
+.reader-name {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-weight: 700;         /* bold */
+  color: #247182;           /* orange */
+  font-size: 1rem;          /* slightly larger than before */
+}
+
+/* Timestamp (bottom-right of card) */
+.submission-time {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 0.85rem;
+  color: gray;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
   .submission-entry {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 1rem;
-    position: relative;
+    gap: 0.75rem;
+    padding-right: 8.5rem;
   }
-
   .submission-entry img {
-    height: 120px;
-    border-radius: 8px;
-    flex-shrink: 0;
+    width: 72px;
+    height: 106px;
+    border-radius: 5px;   /* also reduce rounding here */
   }
-
-  .submission-content {
-    flex-grow: 1;
+  .reader {
+    font-size: 1.05rem;   /* slightly bigger on smaller screens */
   }
+}
 
-  .submission-content .title {
-    font-weight: bold;
-    margin-bottom: 0.25rem;
+  /* Footer */
+  .site-footer {
+    margin-top: 3rem;
+    padding: 2rem 1rem;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
   }
-
-  .submission-content .author {
-    margin-bottom: 0.25rem;
-    font-size: 0.95rem;
+  .footer-logo-container {
+    width: 350px;
+    height: 140px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+  .footer-logo { width: 100%; height: auto; }
+    /* Complete tag (for prompts 7 & 1) */
+/* Small badge for status (Complete / Selected / Pending) */
+    /* Status tags (e.g. Complete, DNF, Partial) */
+.badge,
+.status-tag {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  margin-top: 0.5rem;
+  background: #247182; /* orange */
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+}
 
-  .submission-content .rating {
-    font-weight: bold;
-  }
 
-  .reader-name {
-    font-weight: bold;
+.submission-entry .status-tag {
+  position: static;
+  margin-top: 0.75rem;
+  align-self: flex-start;
+}
+  .see-all-link {
     color: #247182;
-    font-size: 1.2rem;
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: nowrap;
   }
-
-  .submission-time {
-    position: absolute;
-    bottom: 0.75rem;
-    right: 1rem;
-    font-size: 0.85rem;
-    color: gray;
-  }
-
-  @media (max-width: 768px) {
-    .submission-entry {
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .reader-name {
-      position: static;
-      transform: none;
-      text-align: center;
-      margin-bottom: 0.5rem;
-      font-size: 1.1rem;
-    }
-
-    .submission-time {
-      position: static;
-      text-align: left;
-      margin-top: 0.5rem;
-      align-self: flex-start;
-    }
-
-    .submission-entry img {
-      height: auto;
-      width: 120px;
-    }
-
-    .submission-content {
-      text-align: center;
-    }
-  }
-   .site-footer {
-  margin-top: 3rem;
-  padding: 2rem 1rem;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
-}
-
-.footer-logo-container {
-  width: 350px;            /* control visible width */
-  height: 140px;            /* control visible height */
-  overflow: hidden;        /* crop extra white space */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.footer-logo {
-  width: 100%;             /* fill container horizontally */
-  height: auto;
-}
 </style>
 </head>
 <body>
@@ -216,176 +214,364 @@
     <div class="bubble center" id="loadingMessage">Loading submissions…</div>
   </div>
 
+  <!-- Default form block (hidden on #1 and #7) -->
   <div class="form-heading">Submit Book</div>
-  <div class="bubble form-wrapper">
+  <div id="genericFormBlock" class="bubble form-wrapper">
     <iframe id="formIframe" allowtransparency="true" title="Submit Book" loading="lazy"></iframe>
   </div>
 
-  <footer class="site-footer">
-  <div class="footer-logo-container">
-    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+  <!-- Special UI for Prompt #7: Selection + Rating -->
+  <div id="p7-forms" class="bubble form-wrapper" style="display:none">
+    <!-- Replace with your Tally rating form -->
+    <iframe id="p7-rating-form" allowtransparency="true" title="Submit Rating" loading="lazy"
+      src="https://tally.so/r/nrV5BM?transparentBackground=1&hideTitle=1&Prompt=7"></iframe>
   </div>
-</footer>
+
+  <!-- Special UI for Prompt #1: Rating only -->
+  <div id="p1-form" class="bubble form-wrapper" style="display:none">
+    <h3 style="margin-top:0;"></h3>
+    <p class="muted"></p>
+    <!-- Replace with your Tally rating form -->
+    <iframe id="p1-rating-form" allowtransparency="true" title="Submit Rating" loading="lazy"
+      src="https://tally.so/r/nrV5BM?transparentBackground=1&hideTitle=1&Prompt=1"></iframe>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-logo-container">
+      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+    </div>
+  </footer>
 
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="prompts.js"></script>
   <script>
-    const params = new URLSearchParams(location.search);
-    const promptNum = parseInt(params.get("number"));
-    const prompt = allPrompts.find(p => p.number === promptNum);
+  // --- special prompt helpers ---
+  function isSpecialPrompt(num) {
+    return num === 7 || num === 1;
+  }
+  function isCompleteForSpecial(entry, promptNum) {
+    // For both 7 and 7, “Complete” if a rating is present (>= 1).
+    // (#7: title chosen first; reading later -> rating indicates read)
+    const r = parseFloat(entry.rating);
+    return !isNaN(r) && r > 0;
+  }
 
-    const info = document.getElementById("promptInfo");
-    const notes = document.getElementById("promptNotes");
+  // Hard-coded book showcase for Prompt #89 — edit to your liking
+  const PROMPT_1_BOOK = {
+    title: "Penny from Heaven",
+    author: "Jennifer L. Holm",
+    cover: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1681522655i/131901961.jpg",
+    blurb: "This is the required book for Prompt #1.",
+    link: "https://www.goodreads.com/book/show/131901961-penny-from-heaven"
+  };
 
-    if (prompt) {
-      info.innerHTML = `<strong>Prompt #${prompt.number}</strong>${prompt.title ? `<div>${prompt.title}</div>` : ''}${prompt.creator ? `<div>Created by ${prompt.creator}</div>` : ''}`;
-      if (prompt.description) {
-        notes.style.display = "block";
-        notes.innerHTML = `<strong>Prompt Notes</strong><br>${prompt.description}`;
-      }
+  function renderPrompt89Showcase() {
+    const container = document.createElement("div");
+    container.className = "bubble";
+    container.innerHTML = `
+      <h2>Required Book</h2>
+      <div style="display:flex; gap:1rem; align-items:flex-start;">
+        <img src="${PROMPT_1_BOOK.cover}" alt="Required Book Cover" style="width:120px; height:auto; border-radius:10px;" />
+        <div style="flex:1">
+          <div style="font-weight:800; font-size:1.1rem; color:#000;">${PROMPT_1_BOOK.title}</div>
+          <div style="margin:.25rem 0 .5rem 0;">by ${PROMPT_1_BOOK.author}</div>
+          <div style="line-height:1.5; margin-bottom:.5rem;">${PROMPT_1_BOOK.blurb}</div>
+          ${PROMPT_1_BOOK.link ? `<a href="${PROMPT_1_BOOK.link}" class="see-all-link">View Book on Goodreads →</a>` : ``}
+        </div>
+      </div>
+    `;
+    // Insert above the “Submissions” heading
+    const submissionsHeading = document.querySelector('h2'); // your first <h2> is “Submissions”
+    if (submissionsHeading && submissionsHeading.parentNode) {
+      submissionsHeading.parentNode.insertBefore(container, submissionsHeading);
+    }
+  }
+/* ========= CONFIG: sheets ========= */
+/** Existing submissions CSV (same one used on index) */
+const SUBMISSIONS_SHEET =
+  'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv';
+
+//Put your Selections Sheet CSV URL here (for Prompt #7) */
+const SELECTIONS_SHEET = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQC1mjD01P-njQW0EzOZ6SGFp9vtkHArWkdZ8SGDunVh2eSv2qjcd_TEic6sX8L19QuDv0SxTfVKTql/pub?output=csv';
+
+/* ========= Utilities ========= */
+function toCentralTime(dateStr) {
+  if (!dateStr) return '';
+  const iso = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T');
+  const d = new Date(iso + 'Z'); // treat sheet stamp as UTC
+  if (isNaN(d)) return '';
+  return d.toLocaleString('en-US', {
+    timeZone: 'America/Chicago',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).replace(',', ' at');
+}
+
+// CSV splitter that respects quotes/commas
+function splitCSVLine(line) {
+  const out = [];
+  let cur = "", inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQuotes = !inQuotes;
+    } else if (ch === ',' && !inQuotes) {
+      out.push(cur); cur = "";
     } else {
-      info.innerHTML = "Prompt not found.";
+      cur += ch;
     }
+  }
+  out.push(cur);
+  return out.map(s => s.trim().replace(/^"|"$/g, ''));
+}
 
-    const loadingMessage = document.getElementById("loadingMessage");
-    setTimeout(() => {
-      loadingMessage.textContent = "There are no submissions for this prompt yet.";
-    }, 1500);
+// Parse CSV -> array of objects (trimmed headers/values)
+async function loadCSV(url) {
+  const res = await fetch(url);
+  const text = await res.text();
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
 
-    if (!isNaN(promptNum)) {
-      document.getElementById("formIframe").src = `https://tally.so/r/nrV5BM?transparentBackground=1&hideTitle=1&Prompt=${promptNum}`;
+  const headers = splitCSVLine(lines[0]).map(h => h.trim());
+  const rows = lines.slice(1).map(splitCSVLine);
+  return rows.map(cols => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (cols[i] ?? '').trim());
+    return obj;
+  });
+}
+
+// lower-case key accessor: get(row, 'Submitted at') insensitive to header case
+function get(row, key) {
+  const lower = key.toLowerCase();
+  for (const k in row) if (k.toLowerCase() === lower) return row[k];
+  return '';
+}
+function num(val, fallback = 0) {
+  const n = parseInt(val, 10);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+/* ========= DOM helpers ========= */
+function $(id) { return document.getElementById(id); }
+function safeSet(el, html) { if (el) el.innerHTML = html; }
+
+/* ========= Prompt info header ========= */
+function renderPromptHeader(promptNum) {
+  const info = $('promptInfo');
+  const notes = $('promptNotes');
+
+  const list = (window.allPrompts || window.prompts || []);
+  const p = Array.isArray(list) ? list.find(x => x.number === promptNum) : null;
+
+  if (p) {
+    safeSet(info, `<strong>Prompt #${p.number}</strong>${p.title ? `<div>${p.title}</div>` : ''}${p.creator ? `<div>Created by ${p.creator}</div>` : ''}`);
+    if (p.description) {
+      if (notes) {
+        notes.style.display = 'block';
+        notes.innerHTML = `<strong>Prompt Notes</strong><br>${p.description}`;
+      }
     }
+  } else {
+    safeSet(info, 'Prompt not found.');
+    if (notes) notes.style.display = 'none';
+  }
+}
 
-    // In-app Safari fix
-    document.querySelectorAll('a[href]').forEach(link => {
-      link.addEventListener('click', e => {
-        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-        const isExternal = link.target === "_blank" || link.hasAttribute("download") || link.href.startsWith("mailto:");
-        if (isStandalone && !isExternal) {
-          e.preventDefault();
-          window.location.href = link.href;
-        }
-      });
+/* ========= Cards ========= */
+function cardHTML({cover, title, author, reader, selector, submittedAt, rating, status}) {
+  // Optional tag styling; keep if you use it elsewhere
+  const tag = status === 'complete'
+    ? `<span class="status-tag status-complete">Complete</span>`
+    : (status === 'pending' ? `<span class="status-tag status-pending">Pending</span>` : '');
+
+  return `
+    <div class="bubble">
+      <div class="submission-entry">
+        ${cover ? `<img src="${cover}" alt="Cover">` : ``}
+
+        <div class="submission-content">
+          ${tag}
+          ${title ? `<div class="title"><strong>${title}</strong></div>` : ``}
+          ${author ? `<div class="author">by ${author}</div>` : ``}
+          ${selector && reader ? `<div class="muted">Selected by <strong>${selector}</strong> for <strong>${reader}</strong></div>` : ``}
+          ${typeof rating !== 'undefined' && rating !== '' ? `<div class="rating">${rating} ${Number(rating) === 1 ? 'Star' : 'Stars'}</div>` : ``}
+        </div>
+
+        ${reader ? `<div class="reader-name">${reader}</div>` : ``}
+        ${submittedAt ? `<div class="submission-time">${toCentralTime(submittedAt)}</div>` : ``}
+      </div>
+    </div>
+  `;
+}
+/* ========= Render for special prompts ========= */
+async function renderPrompt7(container, promptNum) {
+  // Load both: selections + submissions
+  const [selections, submissions] = await Promise.all([
+    loadCSV(SELECTIONS_SHEET),
+    loadCSV(SUBMISSIONS_SHEET)
+  ]);
+
+  // Readers who have rated prompt 7 => complete
+  const completedReaders = new Set(
+    submissions
+      .filter(r => num(get(r, 'Prompt')) === 7 && get(r, 'Rating'))
+      .map(r => get(r, 'Reader'))
+      .filter(Boolean)
+  );
+
+  // If the selections sheet has a "Prompt" column, respect it; otherwise include all rows.
+  const selectionRows = selections.filter(s => {
+    const pr = num(get(s, 'Prompt'), 7);
+    return pr === 7;
+  });
+
+  if (!selectionRows.length) {
+    safeSet(container, `<div class="bubble center">No selections have been submitted yet.</div>`);
+    return;
+  }
+
+  const html = selectionRows.map(s => {
+    const forReader = get(s, 'For') || get(s, 'Assigned') || get(s, 'Reader'); // support common header variants
+    const selector  = get(s, 'Selector') || get(s, 'Selected by') || get(s, 'Picker');
+    const title     = get(s, 'Title');
+    const author    = get(s, 'Author');
+    const cover     = get(s, 'Cover');
+    const submitted = get(s, 'Submitted at');
+
+    const isComplete = forReader && completedReaders.has(forReader);
+    return cardHTML({
+      cover, title, author,
+      reader: forReader,
+      selector,
+      submittedAt: submitted,
+      rating: undefined,
+      status: isComplete ? 'complete' : 'pending'
     });
+  }).join('');
 
-    function toCentralTime(dateStr) {
-      if (!dateStr) return '';
-      const iso = dateStr.replace(' ', 'T') + 'Z';
-      const d = new Date(iso);
-      if (isNaN(d)) return '';
-      return d.toLocaleString('en-US', {
-        timeZone: 'America/Chicago',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      }).replace(',', ' at');
+  safeSet(container, html);
+}
+
+async function renderPrompt1(container, promptNum) {
+  const rows = await loadCSV(SUBMISSIONS_SHEET);
+  const here = rows.filter(r => num(get(r, 'Prompt')) === 1 && get(r, 'Reader'));
+
+  if (!here.length) {
+    safeSet(container, `<div class="bubble center">No ratings have been submitted yet.</div>`);
+    return;
+  }
+
+  const html = here.reverse().map(r => {
+    return cardHTML({
+      cover: '',
+      title: '',
+      author: '',
+      reader: get(r, 'Reader'),
+      selector: '',
+      submittedAt: get(r, 'Submitted at'),
+      rating: get(r, 'Rating'),
+      status: 'complete'
+    });
+  }).join('');
+
+  safeSet(container, html);
+}
+
+/* ========= Default renderer (all other prompts) ========= */
+async function renderDefaultPrompt(container, promptNum) {
+  const rows = await loadCSV(SUBMISSIONS_SHEET);
+  const here = rows.filter(r => num(get(r, 'Prompt')) === promptNum && get(r, 'Title'));
+
+  if (!here.length) {
+    safeSet(container, `<div class="bubble center">There are no submissions for this prompt yet.</div>`);
+    return;
+  }
+
+  const html = here.reverse().map(r => {
+    return cardHTML({
+      cover: get(r, 'Cover'),
+      title: get(r, 'Title'),
+      author: get(r, 'Author'),
+      reader: get(r, 'Reader'),
+      selector: '',
+      submittedAt: get(r, 'Submitted at'),
+      rating: get(r, 'Rating'),
+      status: '' // no special tag
+    });
+  }).join('');
+
+  safeSet(container, html);
+}
+
+/* ========= Show/hide forms per prompt ========= */
+function configureFormsForPrompt(promptNum) {
+  const genericIframe = $('formIframe');               // your existing generic form iframe
+  const genericWrap   = genericIframe ? genericIframe.closest('.form-wrapper') : null;
+
+  const p87Block = $('p7-forms'); // optional special block (only if you added it)
+  const p89Block = $('p1-form');
+
+  if (promptNum === 7) {
+    if (genericWrap) genericWrap.style.display = 'none';
+    if (p1Block) p1Block.style.display = 'none';
+    if (p7Block) p7Block.style.display = 'block';
+  } else if (promptNum === 1) {
+    if (genericWrap) genericWrap.style.display = 'none';
+    if (p7Block) p7Block.style.display = 'none';
+    if (p1Block) p1Block.style.display = 'block';
+  } else {
+    if (p7Block) p7Block.style.display = 'none';
+    if (p1Block) p1Block.style.display = 'none';
+    if (genericWrap && genericIframe) {
+      genericWrap.style.display = 'block';
+      genericIframe.src = `https://tally.so/r/nrV5BM?transparentBackground=1&hideTitle=1&Prompt=${promptNum}`;
     }
+  }
+}
 
-    const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS9Ss1tUQGp9THFhPyidL4SjHnyqZoiUg2fAKD3lgaNAl2fIZSWqcQYfj3e3MqoyCYFH3LV9oyd5-Wx/pub?output=csv";
-    fetch(sheetURL)
-      .then(res => res.text())
-      .then(text => {
-        function splitCSVLine(line) {
-          const out = [];
-          let cur = "";
-          let inQuotes = false;
-          for (let i = 0; i < line.length; i++) {
-            const ch = line[i];
-            if (ch === '"') {
-              if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
-              else inQuotes = !inQuotes;
-            } else if (ch === ',' && !inQuotes) {
-              out.push(cur);
-              cur = "";
-            } else {
-              cur += ch;
-            }
-          }
-          out.push(cur);
-          return out.map(s => s.trim().replace(/^"|"$/g, ''));
-        }
+/* ========= BOOT ========= */
+(async function bootPromptPage() {
+  const params = new URLSearchParams(location.search);
+  const promptNum = parseInt(params.get('number'), 10);
 
-        const lines = text.trim().split('\n');
-        if (lines.length < 2) throw new Error("No rows in sheet");
+  // 1) Prompt header/notes
+  renderPromptHeader(promptNum);
 
-        const headerCells = splitCSVLine(lines[0]);
-        const colIndex = (name) => {
-          const idx = headerCells.findIndex(h => h.toLowerCase() === name.toLowerCase());
-          if (idx === -1) console.warn(`Missing column: ${name}`);
-          return idx;
-        };
+  // 2) Optional: Prompt 1 showcase (now that promptNum exists)
+  if (promptNum === 1) {
+    renderPrompt1Showcase();
+  }
 
-        const idxSubmitted = colIndex('Submitted at');
-        const idxReader    = colIndex('Reader');
-        const idxPrompt    = colIndex('Prompt');
-        const idxTitle     = colIndex('Title');
-        const idxAuthor    = colIndex('Author');
-        const idxRating    = colIndex('Rating');
-        const idxCover     = colIndex('Cover');
+  // 3) Container guard (prevents "null innerHTML" errors)
+  const container = $('submissionsContainer');
+  if (!container) return;
 
-        function formatDateCentral(dateStr) {
-          if (!dateStr) return '';
-          const iso = dateStr.replace(' ', 'T') + 'Z';
-          const d = new Date(iso);
-          if (isNaN(d)) return '';
-          return d.toLocaleString('en-US', {
-            timeZone: 'America/Chicago',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-          });
-        }
+  // Loading state
+  safeSet(container, `<div class="bubble center" id="loadingMessage">Loading…</div>`);
 
-        const rows = lines.slice(1).map(splitCSVLine);
-        const submissions = rows.map(cols => ({
-          submittedAt: cols[idxSubmitted],
-          reader:      cols[idxReader],
-          prompt:      parseInt(cols[idxPrompt]),
-          title:       cols[idxTitle],
-          author:      cols[idxAuthor],
-          rating:      cols[idxRating],
-          cover:       cols[idxCover]
-        })).filter(entry => entry.prompt === promptNum);
+  // 4) Special form visibility
+  configureFormsForPrompt(promptNum);
 
-        const container = document.getElementById("submissionsContainer");
-        container.innerHTML = "";
-
-        if (submissions.length === 0) {
-          container.innerHTML = `<div class="bubble center">There are no submissions for this prompt yet.</div>`;
-          return;
-        }
-
-        submissions.forEach(entry => {
-          const time = formatDateCentral(entry.submittedAt);
-          const stars = Number(entry.rating) === 1 ? "Star" : "Stars";
-
-          const card = document.createElement("div");
-          card.className = "bubble";
-          card.innerHTML = `
-            <div class="submission-entry">
-              <div class="reader-name">${entry.reader || ''}</div>
-              <img src="${entry.cover || ''}" alt="Cover">
-              <div class="submission-content">
-                <div><strong>${entry.title || ''}</strong></div>
-                <div>by ${entry.author || ''}</div>
-                <div>${entry.rating || ''} ${stars}</div>
-                <div class="submission-time">${time}</div>
-              </div>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-      })
-      .catch(err => {
-        console.error("Error fetching spreadsheet:", err);
-        document.getElementById("submissionsContainer").innerHTML =
-          `<div class="bubble center">Failed to load submissions.</div>`;
-      });
+  // 5) Render by kind
+  try {
+    if (promptNum === 7) {
+      await renderPrompt7(container, promptNum);
+    } else if (promptNum === 1) {
+      await renderPrompt1(container, promptNum);
+    } else {
+      await renderDefaultPrompt(container, promptNum);
+    }
+  } catch (err) {
+    console.error('Prompt render failed:', err);
+    safeSet(container, `<div class="bubble center">Failed to load submissions.</div>`);
+  }
+})();
 </script>
 </body>
 </html>
