@@ -178,6 +178,42 @@ const allPrompts = [
     title: "Has a Bird on the Cover",
     description: "",
     creator: "Cassy",
+  },  
+  {
+    number: 31,
+    title: "Aren't You Supposed to Write the Book before the Movie?",
+    description: "Novelization of a Movie",
+    creator: "Noah",
+  },  
+  {
+    number: 32,
+    title: "Has Chapter Titles",
+    description: "",
+    creator: "Cindy",
+  },  
+  {
+    number: 33,
+    title: "Set in a State West of the Mississippi River",
+    description: "",
+    creator: "Zoey",
+  },  
+  {
+    number: 34,
+    title: "Main Character is at Least 14 Years Old",
+    description: "",
+    creator: "Winny",
+  },
+  {
+    number: 35,
+    title: "Fantasy",
+    description: "",
+    creator: "Rusty",
+  },
+  {
+    number: 36,
+    title: "Pink Cover",
+    description: "",
+    creator: "Cassy",
   },
 ];
 window.prompts = allPrompts; // ✅ Fixes the error globally
