@@ -215,6 +215,259 @@ const allPrompts = [
     description: "",
     creator: "Cassy",
   },
+  {
+  number: 37,
+  title: "Why does this Prompt have a Pre-Req?",
+  description: "A sequel to a book you've read",
+  creator: "Noah",
+},
+{
+  number: 38,
+  title: "Has a Character in the Medical Profession",
+  creator: "Cindy",
+},
+{
+  number: 39,
+  title: "About Survival",
+  creator: "Zoey",
+},
+{
+  number: 40,
+  title: "Blue Cover",
+  creator: "Winny",
+},
+{
+  number: 41,
+  title: "About World War II",
+  creator: "Rusty",
+},
+{
+  number: 42,
+  title: "Has a Character With the Same Name as Someone in the Challenge",
+  creator: "Cassy",
+},
+{
+  number: 43,
+  title: "But That’s Older than Grandma!",
+  description: "Written Before 1960",
+  creator: "Noah",
+},
+{
+  number: 44,
+  title: "Has a Cover You Don’t Like",
+  creator: "Cindy",
+},
+{
+  number: 45,
+  title: "Cover Has Someone Wearing Glasses on It",
+  creator: "Zoey",
+},
+{
+  number: 46,
+  title: "Main Character is a Boy",
+  creator: "Winny",
+},
+{
+  number: 47,
+  title: "Part of a Series",
+  creator: "Rusty",
+},
+{
+  number: 48,
+  title: "About Baseball",
+  creator: "Cassy",
+},
+{
+  number: 49,
+  title: "Deja Vu",
+  description: "A Book You Want to Re-read",
+  creator: "Noah",
+},
+{
+  number: 50,
+  title: "Set in a Small Town",
+  creator: "Cindy",
+},
+{
+  number: 51,
+  title: "Main Character has a Pet",
+  creator: "Zoey",
+},
+{
+  number: 52,
+  title: "Mystery Book",
+  creator: "Winny",
+},
+{
+  number: 53,
+  title: "About 9/11",
+  creator: "Rusty",
+},
+{
+  number: 54,
+  title: "About a Saint",
+  creator: "Cassy",
+},
+{
+  number: 55,
+  title: "Is That Allowed?",
+  description: "Title Has Something Doing Something it Can’t Do",
+  creator: "Noah",
+},
+{
+  number: 56,
+  title: "A Book You See Someone Else Reading",
+  creator: "Cindy",
+},
+{
+  number: 57,
+  title: "Has a King, Queen, Prince, or Princess as a Character",
+  creator: "Zoey",
+},
+{
+  number: 58,
+  title: "Fiction",
+  creator: "Winny",
+},
+{
+  number: 59,
+  title: "Has a Map",
+  creator: "Rusty",
+},
+{
+  number: 60,
+  title: "About Pirates",
+  creator: "Cassy",
+},
+{
+  number: 61,
+  title: "A Book that You or Someone Else Read in the Same Month the Year Before",
+  creator: "Spencer",
+},
+{
+  number: 62,
+  title: "Has a Car, Truck, or Motorcycle on the Cover",
+  creator: "Tom",
+},
+{
+  number: 63,
+  title: "Has a Known Historical Figure as a Character Living a Fictional Life",
+  creator: "Cody",
+},
+{
+  number: 64,
+  title: "Title Has a Word that Starts with ‘Z’",
+  creator: "RJ",
+},
+{
+  number: 65,
+  title: "About Halloween",
+  creator: "Milly",
+},
+{
+  number: 66,
+  title: "Also a TV Show or Movie",
+  creator: "Ricky",
+},
+{
+  number: 67,
+  title: "Set in the Distant Future",
+  description: "Must be more than 100 Years in the Future",
+  creator: "Spencer",
+},
+{
+  number: 68,
+  title: "Yellow or Green Cover",
+  creator: "Tom",
+},
+{
+  number: 69,
+  title: "Is a Retelling of a Classic Myth, Legend, or Fairytale in a Modern or Unique Way",
+  creator: "Cody",
+},
+{
+  number: 70,
+  title: "About the Amish or has Amish Characters",
+  creator: "RJ",
+},
+{
+  number: 71,
+  title: "Has a Dog on the Cover",
+  creator: "Milly",
+},
+{
+  number: 72,
+  title: "Has a Tree on the Cover",
+  creator: "Ricky",
+},
+{
+  number: 73,
+  title: "Outer-Most Layer is a Solid Color and Text Only",
+  creator: "Spencer",
+},
+{
+  number: 74,
+  title: "Has a Farm in It",
+  creator: "Tom",
+},
+{
+  number: 75,
+  title: "Features a Journey with a Twist, through Time, Dimensions, or a Magical Realm",
+  creator: "Cody",
+},
+{
+  number: 76,
+  title: "About/On a Cruise Ship",
+  creator: "RJ",
+},
+{
+  number: 77,
+  title: "Has Flowers on the Cover",
+  creator: "Milly",
+},
+{
+  number: 78,
+  title: "Has a Sun or Moon on the Cover",
+  creator: "Ricky",
+},
+{
+  number: 79,
+  title: "About a Weather Event",
+  creator: "Group",
+},
+{
+  number: 80,
+  title: "Written by a Celebrity",
+  creator: "Group",
+},
+{
+  number: 81,
+  title: "Published in 2025",
+  creator: "Group",
+},
+{
+  number: 82,
+  title: "Has ‘Town’ in the Title",
+  creator: "Group",
+},
+{
+  number: 83,
+  title: "Over the Threshold",
+  description: "About a Wedding",
+  creator: "Group",
+},
+{
+  number: 84,
+  title: "It’s Not Greek to Me",
+  description: "Translated into English",
+  creator: "Group",
+},
+{
+  number: 85,
+  title: "I Don’t Think I’m Hearing this Right",
+  description: "Listen to an Audiobook",
+  creator: "Group",
+},
 ];
 window.prompts = allPrompts; // ✅ Fixes the error globally
 
