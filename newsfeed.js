@@ -2,6 +2,13 @@
 // date can be "2025-08-01 10:30:00" or "2025-08-01T10:30:00"
 window.NEWS_POSTS = [
   {
+    title: "Submissions Page Issue Fixed",
+    body: "An issue with the Submissions page has been fixed: Some submissions are missing timestamps and being sorted incorrectly.",
+    button: "",
+    link: "",
+    date: "2025-10-04 13:14:00"
+  },
+  {
     title: "Welcome to the new 2025 Reading Challenge Website!",
     body: "We've redesigned the entire website to match the theme of the 2026 Site! Check it out!",
     button: "",
