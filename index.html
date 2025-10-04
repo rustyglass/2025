@@ -492,20 +492,30 @@
       return rows.map(row => Object.fromEntries(header.map((h, i) => [h.trim(), row[i]?.trim()])));
     }
 
-   function formatDateCentral(dateStr) {
+  function formatDate(dateStr) {
   if (!dateStr) return '';
 
-  // Normalize: ensure leading zeros in month, day, hour, minute, second
-  const parts = dateStr.match(
-    /^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/
-  );
-  if (parts) {
-    const [_, y, mo, d, h, mi, s] = parts;
-    dateStr = `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')} ${h.padStart(2, '0')}:${mi.padStart(2, '0')}:${(s || '00').padStart(2, '0')}`;
+  const s = String(dateStr).trim();
+
+  // If it's already ISO-like with a "T", just ensure a trailing Z
+  let iso;
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    iso = s.endsWith('Z') ? s : s + 'Z';
+  } else {
+    // Matches: YYYY-M-D HH:MM[:SS]
+    const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+    if (m) {
+      const pad2 = (n) => String(n).padStart(2, '0');
+      const [_, y, mo, d, h, mi, sec] = m;
+      iso = `${y}-${pad2(mo)}-${pad2(d)}T${pad2(h)}:${pad2(mi)}:${pad2(sec || '00')}Z`;
+    } else {
+      // Last resort: let Date try to parse it
+      const tryDate = new Date(s);
+      if (isNaN(tryDate)) return '';
+      iso = tryDate.toISOString();
+    }
   }
 
-  // Convert to ISO UTC format
-  const iso = dateStr.replace(' ', 'T') + 'Z';
   const d = new Date(iso);
   if (isNaN(d)) return '';
 
