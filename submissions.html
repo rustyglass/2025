@@ -154,14 +154,31 @@
 
     // Central Time formatter (treat sheet timestamps as UTC, e.g. "2025-07-25 20:32:46")
     function formatDateCentral(dateStr) {
-      if (!dateStr) return '';
-      const iso = (dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')) + 'Z';
-      const d = new Date(iso);
-      if (isNaN(d)) return '';
-      const date = d.toLocaleDateString('en-US', { timeZone: 'America/Chicago', month: 'long', day: 'numeric' });
-      const time = d.toLocaleTimeString('en-US', { timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true });
-      return `${date} at ${time}`;
-    }
+  if (!dateStr) return '';
+  const iso = (dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')) + 'Z';
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+
+  const date = d.toLocaleDateString('en-US', {
+    timeZone: 'America/Chicago',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  // Manually pad the hour if necessary
+  const options = {
+    timeZone: 'America/Chicago',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  };
+  let time = d.toLocaleTimeString('en-US', options);
+
+  // Extract the hour and add leading zero if needed (handles 1–9 AM/PM)
+  time = time.replace(/^(\d):/, '0$1:');
+
+  return `${date} at ${time}`;
+}
 
     // Build one card
     function cardHTML(row) {
