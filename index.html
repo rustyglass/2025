@@ -492,26 +492,32 @@
       return rows.map(row => Object.fromEntries(header.map((h, i) => [h.trim(), row[i]?.trim()])));
     }
 
-    function formatDate(dateStr) {
-      if (!dateStr) return '';
-      // Treat sheet stamp as UTC
-      const iso = (dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T')) + 'Z';
-      const d = new Date(iso);
-      if (isNaN(d)) return '';
-      const date = d.toLocaleDateString('en-US', {
-        timeZone: 'America/Chicago',
-        month: 'long',
-        day: 'numeric'
-      });
-      const time = d.toLocaleTimeString('en-US', {
-        timeZone: 'America/Chicago',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-      return `${date} at ${time}`;
-    }
+   function formatDateCentral(dateStr) {
+  if (!dateStr) return '';
 
+  // Normalize: ensure leading zeros in month, day, hour, minute, second
+  const parts = dateStr.match(
+    /^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/
+  );
+  if (parts) {
+    const [_, y, mo, d, h, mi, s] = parts;
+    dateStr = `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')} ${h.padStart(2, '0')}:${mi.padStart(2, '0')}:${(s || '00').padStart(2, '0')}`;
+  }
+
+  // Convert to ISO UTC format
+  const iso = dateStr.replace(' ', 'T') + 'Z';
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+
+  return d.toLocaleString('en-US', {
+    timeZone: 'America/Chicago',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).replace(',', ' at');
+}
     /* ========= Boot (no menu code here) ========= */
     window.addEventListener("DOMContentLoaded", async () => {
       // Start countdown if the four spans exist
