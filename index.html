@@ -426,7 +426,6 @@
     const log = (...args) => logEl.textContent += (logEl.textContent ? '\n' : '') + args.join(' ');
 
     try {
-      await OneSignal.init({ appId: "YOUR-ONESIGNAL-APP-ID" });
       log("✅ OneSignal SDK loaded and initialized.");
 
       async function runChecks() {
