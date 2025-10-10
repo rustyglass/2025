@@ -277,6 +277,15 @@
       .home-post .post-actions { justify-content: flex-start; }
     }
   </style>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
+    });
+  });
+</script>
 </head>
 <body>
   <header id="main-header">
