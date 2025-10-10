@@ -382,6 +382,37 @@
       <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
     </div>
   </footer>
+  <button id="enablePush">Enable Notifications</button>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "YOUR-ONESIGNAL-APP-ID"
+      // You can enable a bell if you want:
+      // , notifyButton: { enable: true }
+    });
+
+    // Optional: show/hide the button based on support/permission
+    const btn = document.getElementById('enablePush');
+    const supported = await OneSignal.Notifications.isPushSupported();
+    btn.style.display = supported ? 'inline-block' : 'none';
+
+    btn.addEventListener('click', async () => {
+      // iOS requires a user gesture; this click counts.
+      const perm = await OneSignal.Notifications.requestPermission();
+      if (perm === 'granted') {
+        // Tag this device so only you get “new book submitted” alerts
+        await OneSignal.User.addTag('role', 'admin');
+        btn.textContent = 'Notifications Enabled ✅';
+        btn.disabled = true;
+      } else {
+        alert('Notifications were not enabled. You can try again.');
+      }
+    });
+  });
+</script>
 
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
