@@ -413,6 +413,96 @@
     });
   });
 </script>
+  <!-- Drop anywhere in your page body -->
+<div id="pushDiag" style="font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width:680px; padding:16px; margin:12px auto; border:1px solid #ddd; border-radius:12px">
+  <h3 style="margin:0 0 8px">Push Diagnostics</h3>
+  <div id="diagLog" style="white-space:pre-wrap; background:#fafafa; padding:10px; border-radius:8px; min-height:80px">Running checks…</div>
+  <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
+    <button id="btnRequest">Request Permission</button>
+    <button id="btnEnable">Enable & Tag as Admin</button>
+    <button id="btnDisable">Disable Notifications</button>
+    <button id="btnRefresh">Re-run Checks</button>
+  </div>
+</div>
+
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    const logEl = document.getElementById('diagLog');
+    const log = (...args) => logEl.textContent += (logEl.textContent ? '\n' : '') + args.join(' ');
+
+    try {
+      await OneSignal.init({ appId: "YOUR-ONESIGNAL-APP-ID" });
+      log("✅ OneSignal SDK loaded and initialized.");
+
+      async function runChecks() {
+        logEl.textContent = "";
+        const supported = await OneSignal.Notifications.isPushSupported();
+        log("Push supported:", supported);
+
+        const perm = await OneSignal.Notifications.getPermission(); // 'default' | 'granted' | 'denied'
+        log("Permission:", perm);
+
+        // Try to read subscription/IDs
+        let subId = null, onesignalId = null;
+        try { subId = await OneSignal.User.PushSubscription.getId(); } catch {}
+        try { onesignalId = await OneSignal.User.getOnesignalId(); } catch {}
+        log("Push Subscription ID:", subId || "(none)");
+        log("OneSignal User ID:", onesignalId || "(none)");
+
+        // Check your admin tag
+        let tags = {};
+        try { tags = await OneSignal.User.getTags(); } catch {}
+        log("Tags:", JSON.stringify(tags));
+
+        // Quick platform hints
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        log("Launched from Home Screen:", isStandalone);
+
+        // Service worker sanity (best-effort)
+        try {
+          const regs = await navigator.serviceWorker?.getRegistrations?.();
+          const hasOSW = (regs || []).some(r => (r.active && /OneSignalSDK/.test(r.active.scriptURL)) || (r.installing && /OneSignalSDK/.test(r.installing.scriptURL)));
+          log("Service Worker registered:", regs && regs.length ? "yes" : "no",
+              hasOSW ? "(OneSignal found)" : "(OneSignal not detected)");
+        } catch(e){ log("SW check error:", e.message); }
+
+        if (!isStandalone) log("⚠️ iOS won’t prompt unless you Add to Home Screen and open from the icon.");
+        if (!supported) log("⚠️ This browser session doesn’t support Web Push (Private mode? Not A2HS? Older iOS?).");
+        if (perm === 'denied') log("⚠️ Permission is denied. Re-enable in iOS Settings ▸ Notifications ▸ Your Web App.");
+        if (!subId && perm === 'granted') log("⚠️ Granted but no subscription — usually a service worker/origin mismatch.");
+      }
+
+      document.getElementById('btnRequest').onclick = async () => {
+        const p = await OneSignal.Notifications.requestPermission();
+        log("requestPermission() returned:", p);
+      };
+
+      document.getElementById('btnEnable').onclick = async () => {
+        const p = await OneSignal.Notifications.requestPermission();
+        log("requestPermission() returned:", p);
+        if (p === 'granted') {
+          await OneSignal.User.addTag('role', 'admin');
+          log("Tagged this device: role=admin");
+          const id = await OneSignal.User.PushSubscription.getId();
+          log("Subscribed with ID:", id);
+        }
+      };
+
+      document.getElementById('btnDisable').onclick = async () => {
+        await OneSignal.Notifications.removeDevice();
+        log("Removed push subscription for this device.");
+      };
+
+      document.getElementById('btnRefresh').onclick = runChecks;
+      runChecks();
+
+    } catch (e) {
+      log("❌ OneSignal init failed:", e && e.message ? e.message : e);
+    }
+  });
+</script>
 
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
