@@ -386,13 +386,6 @@
 
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "YOUR-ONESIGNAL-APP-ID"
-      // You can enable a bell if you want:
-      // , notifyButton: { enable: true }
-    });
 
     // Optional: show/hide the button based on support/permission
     const btn = document.getElementById('enablePush');
