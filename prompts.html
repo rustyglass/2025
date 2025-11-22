@@ -13,140 +13,141 @@
   <link rel="stylesheet" href="menu.css">
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
-   * {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #f4f4f4;
-  color: #333;
-}
-
-.container {
-  max-width: 1100px;
-  margin: 6rem auto 3rem;
-  padding: 0 1rem;
-}
-
-h1 {
-  font-size: 2.5rem;
-  color: #247182;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-#filterButtons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.filter-btn {
-  background: white;
-  color: #247182;
-  border: 2px solid #247182;
-  border-radius: 30px;
-  padding: 0.5rem 1rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s ease;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-  background: #247182;
-  color: white;
-}
-
-input[type="text"] {
-  width: 100%;
-  max-width: 400px;
-  padding: 0.75rem;
-  border: 2px solid #247182;
-  border-radius: 8px;
-  margin: 0 auto 1rem;
-  display: block;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-.prompt-grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(1, 1fr);
-}
-
-@media (min-width: 700px) {
-  .prompt-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.prompt-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-}
-
-.prompt-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.prompt-card.grayed-out {
-  color: #cccccc;
-}
-
-.prompt-card h2 {
-  font-size: 1rem;
-  color: #247182;
-  margin: 0 0 0.5rem;
-  font-style: normal;
-}
-
-.prompt-card h3 {
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin: 0 0 0.5rem;
-  color: inherit;
-}
-
-.prompt-card p,
-.prompt-card .creator {
-  font-size: 0.9rem;
-  margin: 0;
-  color: inherit;
-}
-    .footer-logo-container {   
-      width: 350px;            /* control visible width */   
-      height: 140px;            /* control visible height */   
-      overflow: hidden;        /* crop extra white space */   
-      display: flex;   
-      justify-content: center;   
-      align-items: center; 
-    }  
-    
-    .footer-logo {   
-      width: 100%;             /* fill container horizontally */   
-      height: auto; 
+    * {
+      box-sizing: border-box;
     }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 6rem auto 3rem;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #247182;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    #filterButtons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-btn {
+      background: white;
+      color: #247182;
+      border: 2px solid #247182;
+      border-radius: 30px;
+      padding: 0.5rem 1rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: #247182;
+      color: white;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.75rem;
+      border: 2px solid #247182;
+      border-radius: 8px;
+      margin: 0 auto 1rem;
+      display: block;
+      font-size: 1rem;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .prompt-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(1, 1fr);
+    }
+
+    @media (min-width: 700px) {
+      .prompt-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .prompt-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    .prompt-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .prompt-card.grayed-out {
+      color: #cccccc;
+    }
+
+    .prompt-card h2 {
+      font-size: 1rem;
+      color: #247182;
+      margin: 0 0 0.5rem;
+      font-style: normal;
+    }
+
+    .prompt-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 0 0 0.5rem;
+      color: inherit;
+    }
+
+    .prompt-card p,
+    .prompt-card .creator {
+      font-size: 0.9rem;
+      margin: 0;
+      color: inherit;
+    }
+
+    .footer-logo-container {
+      width: 350px;
+      height: 140px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer-logo {
+      width: 100%;
+      height: auto;
+    }
+
     .site-footer {
-  margin-top: 3rem;
-  padding: 2rem 1rem;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
-}
-    
+      margin-top: 3rem;
+      padding: 2rem 1rem;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -168,152 +169,158 @@ input[type="text"] {
     <div id="promptGrid" class="prompt-grid"></div>
   </div>
 
-   <footer class="site-footer">
-  <div class="footer-logo-container">
-    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
-  </div>
-</footer>
+  <footer class="site-footer">
+    <div class="footer-logo-container">
+      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+    </div>
+  </footer>
+
+  <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="prompts.js"></script>
+
   <script>
-  window.prompts = allPrompts;
-  const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
-  let allSubmissions = [];
-  let activeParticipant = null;
+    window.prompts = allPrompts;
+    const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
+    let allSubmissions = [];
+    let activeParticipant = null;
 
-// Confetti helper for Cindy
-function launchConfetti() {
-  if (typeof confetti !== "function") return;
+    // Confetti helper for Cindy
+    function launchConfetti() {
+      if (typeof confetti !== "function") return;
 
-  const duration = 2000; // 2 seconds
-  const end = Date.now() + duration;
+      const duration = 2000; // 2 seconds
+      const end = Date.now() + duration;
 
-  (function frame() {
-    confetti({
-      particleCount: 10,
-      angle: 60,
-      spread: 100,
-      origin: { x: 0, y: 0.8 }
-    });
-    confetti({
-      particleCount: 10,
-      angle: 120,
-      spread: 100,
-      origin: { x: 1, y: 0.8 }
-    });
+      (function frame() {
+        confetti({
+          particleCount: 10,
+          angle: 60,
+          spread: 100,
+          origin: { x: 0, y: 0.8 }
+        });
+        confetti({
+          particleCount: 10,
+          angle: 120,
+          spread: 100,
+          origin: { x: 1, y: 0.8 }
+        });
 
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
     }
-  })();
-}
+
+    // Renders participant filter buttons (no more Clear Filter button)
     function renderFilterButtons() {
-  const container = document.getElementById("filterButtons");
-  container.innerHTML = "";
+      const container = document.getElementById("filterButtons");
+      container.innerHTML = "";
 
-  PARTICIPANTS.forEach(name => {
-    const btn = document.createElement("button");
-    btn.className = "filter-btn";
-    btn.textContent = name;
+      PARTICIPANTS.forEach(name => {
+        const btn = document.createElement("button");
+        btn.className = "filter-btn";
+        btn.textContent = name;
 
-    btn.onclick = () => {
-      const wasActive = activeParticipant === name;
-      activeParticipant = wasActive ? null : name;
+        btn.onclick = () => {
+          const wasActive = activeParticipant === name;
+          activeParticipant = wasActive ? null : name;
+          renderFilterButtons();
+          renderPrompts(window.prompts);
+
+          // 🎉 Confetti only when Cindy is newly selected
+          if (!wasActive && name === "Cindy") {
+            launchConfetti();
+          }
+        };
+
+        if (activeParticipant === name) {
+          btn.classList.add("active");
+        }
+
+        container.appendChild(btn);
+      });
+    }
+
+    function renderPrompts(prompts) {
+      const grid = document.getElementById("promptGrid");
+      const input = document.getElementById("searchInput");
+      const search = input.value.toLowerCase();
+
+      grid.innerHTML = "";
+      const filteredPrompts = prompts.filter(p =>
+        p.title.toLowerCase().includes(search) ||
+        (p.description && p.description.toLowerCase().includes(search))
+      );
+
+      if (filteredPrompts.length === 0) {
+        grid.innerHTML = "<p style='text-align:center; color: #999;'>No prompts found.</p>";
+        return;
+      }
+
+      filteredPrompts.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "prompt-card";
+
+        // Gray-out if this participant has already completed this prompt
+        if (
+          activeParticipant &&
+          allSubmissions.some(
+            s => s.Reader === activeParticipant && parseInt(s.Prompt) === p.number
+          )
+        ) {
+          card.classList.add("grayed-out");
+        }
+
+        card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
+        card.innerHTML = `
+          <h2>Prompt #${p.number}</h2>
+          <h3>${p.title}</h3>
+          ${p.description ? `<p>${p.description}</p>` : ""}
+          <p class="creator">By ${p.creator}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function fetchSubmissions() {
+      const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
+      const res = await fetch(sheetUrl);
+      const csv = await res.text();
+
+      const parsed = Papa.parse(csv, { header: true });
+      allSubmissions = parsed.data
+        .map(row => ({
+          Reader: row.Reader?.trim(),
+          Prompt: parseInt(row.Prompt?.trim())
+        }))
+        .filter(row => row.Reader && !isNaN(row.Prompt));
+    }
+
+    // Make buttons appear immediately; fetch submissions in the background
+    window.addEventListener("DOMContentLoaded", () => {
+      if (typeof prompts !== "undefined") window.prompts = prompts;
+
+      // Show UI right away
       renderFilterButtons();
       renderPrompts(window.prompts);
 
-      // 🎉 Confetti only when Cindy is newly selected
-      if (!wasActive && name === "Cindy") {
-        launchConfetti();
-      }
-    };
+      // Fetch submissions; once ready, re-render to apply gray-out logic
+      fetchSubmissions()
+        .then(() => {
+          renderPrompts(window.prompts);
+        })
+        .catch(err => {
+          console.error("Error fetching submissions:", err);
+        });
 
-    if (activeParticipant === name) {
-      btn.classList.add("active");
-    }
-
-    container.appendChild(btn);
-  });
-
-  if (activeParticipant) {
-    const clear = document.createElement("button");
-    clear.className = "filter-btn";
-    clear.textContent = "Clear Filter";
-    clear.onclick = () => {
-      activeParticipant = null;
-      renderFilterButtons();
-      renderPrompts(window.prompts);
-    };
-    container.appendChild(clear);
-  }
-}
-
-  function renderPrompts(prompts) {
-    const grid = document.getElementById("promptGrid");
-    const input = document.getElementById("searchInput");
-    const search = input.value.toLowerCase();
-
-    grid.innerHTML = "";
-    const filteredPrompts = prompts.filter(p =>
-      p.title.toLowerCase().includes(search) ||
-      (p.description && p.description.toLowerCase().includes(search))
-    );
-
-    if (filteredPrompts.length === 0) {
-      grid.innerHTML = "<p style='text-align:center; color: #999;'>No prompts found.</p>";
-      return;
-    }
-
-    filteredPrompts.forEach(p => {
-      const card = document.createElement("div");
-      card.className = "prompt-card";
-      if (
-        activeParticipant &&
-        allSubmissions.some(s => s.Reader === activeParticipant && parseInt(s.Prompt) === p.number)
-      ) {
-        card.classList.add("grayed-out");
-      }
-
-      card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
-      card.innerHTML = `
-        <h2>Prompt #${p.number}</h2>
-        <h3>${p.title}</h3>
-        ${p.description ? `<p>${p.description}</p>` : ""}
-        <p class="creator">By ${p.creator}</p>
-      `;
-      grid.appendChild(card);
+      document.getElementById("searchInput").addEventListener("input", () => {
+        renderPrompts(window.prompts);
+      });
     });
-  }
-
-  async function fetchSubmissions() {
-    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
-    const res = await fetch(sheetUrl);
-    const csv = await res.text();
-
-    const parsed = Papa.parse(csv, { header: true });
-    allSubmissions = parsed.data
-      .map(row => ({
-        Reader: row.Reader?.trim(),
-        Prompt: parseInt(row.Prompt?.trim())
-      }))
-      .filter(row => row.Reader && !isNaN(row.Prompt));
-  }
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    // (Menu + header behavior now handled by menu.js)
-
-    if (typeof prompts !== "undefined") window.prompts = prompts;
-
-    await fetchSubmissions();
-    renderFilterButtons();
-    renderPrompts(window.prompts);
-
-    document.getElementById("searchInput").addEventListener("input", () => {
-      renderPrompts(window.prompts);
-    });
-  });
-</script>
+  </script>
 </body>
 </html>
