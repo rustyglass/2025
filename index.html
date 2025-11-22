@@ -278,6 +278,76 @@
       .home-post { grid-template-columns: 1fr; }
       .home-post .post-actions { justify-content: flex-start; }
     }
+     /* === SNACKBAR (POP-UP ALERT) STYLES === */
+
+  /* Default colors (easy to tweak) */
+  :root {
+    --snackbar-bg: #333333;   /* DEFAULT BACKGROUND COLOR */
+    --snackbar-text: #ffffff; /* DEFAULT TEXT COLOR */
+  }
+
+  .rc-snackbar {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%) translateY(100%);
+    min-width: min(90vw, 420px);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+
+    /* MAIN COLORS (will be overridden by JS if you pass custom colors) */
+    background-color: var(--snackbar-bg);
+    color: var(--snackbar-text);
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    font-family: "Poppins", system-ui, sans-serif;
+    font-size: 0.95rem;
+
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  /* Visible state (slide up + fade in) */
+  .rc-snackbar--visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .rc-snackbar__message {
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  /* Optional action button (only shown when you set text + link) */
+  .rc-snackbar__action {
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .rc-snackbar__close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+  }
   </style>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -496,7 +566,97 @@
     }
   });
 </script>
+  <!-- Snackbar container (hidden by default) -->
+<div id="rc-snackbar" class="rc-snackbar" aria-live="polite" aria-atomic="true">
+  <div class="rc-snackbar__message"></div>
 
+  <!-- Action button: will be hidden when not used -->
+  <button class="rc-snackbar__action" type="button"></button>
+
+  <!-- Close (X) button -->
+  <button class="rc-snackbar__close" type="button" aria-label="Dismiss">&times;</button>
+</div>
+<script>
+  (function () {
+    const snackbar   = document.getElementById("rc-snackbar");
+    const messageEl  = snackbar.querySelector(".rc-snackbar__message");
+    const actionBtn  = snackbar.querySelector(".rc-snackbar__action");
+    const closeBtn   = snackbar.querySelector(".rc-snackbar__close");
+    showSnackbar({
+  message: "New submissions are available.",
+  bgColor: "#f27c22",
+  textColor: "#000000",
+  duration: 0,                 // 0 = stay until dismissed
+  actionText: "View",
+  actionLink: "/submissions.html"
+});
+
+    // DEFAULTS – these are the main dials for colors and time
+    const DEFAULT_BG   = "#333333"; // DEFAULT BACKGROUND COLOR
+    const DEFAULT_TEXT = "#ffffff"; // DEFAULT TEXT COLOR
+    const DEFAULT_MS   = 4000;      // DEFAULT DURATION (4 seconds)
+
+    let hideTimeout = null;
+
+    function hideSnackbar() {
+      snackbar.classList.remove("rc-snackbar--visible");
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+    }
+
+    closeBtn.addEventListener("click", hideSnackbar);
+
+    // GLOBAL FUNCTION YOU'LL USE:
+    // showSnackbar({ message, bgColor, textColor, duration, actionText, actionLink })
+    window.showSnackbar = function (options) {
+      if (!options || !options.message) return;
+
+      const {
+        message,
+        bgColor   = DEFAULT_BG,
+        textColor = DEFAULT_TEXT,
+        duration  = DEFAULT_MS,
+        actionText,
+        actionLink
+      } = options;
+
+      // Set message
+      messageEl.textContent = message;
+
+      // Apply colors
+      snackbar.style.backgroundColor = bgColor;
+      snackbar.style.color = textColor;
+
+      // Also apply color to button + X
+      actionBtn.style.color = textColor;
+      closeBtn.style.color = textColor;
+
+      // Configure action button
+      if (actionText && actionLink) {
+        actionBtn.textContent = actionText;
+        actionBtn.style.display = "inline-block";
+        actionBtn.onclick = function () {
+          window.location.href = actionLink;
+          hideSnackbar();
+        };
+      } else {
+        actionBtn.style.display = "none";
+        actionBtn.onclick = null;
+      }
+
+      // Show snackbar
+      snackbar.classList.add("rc-snackbar--visible");
+
+      // Handle auto-hide
+      if (hideTimeout) clearTimeout(hideTimeout);
+      if (duration && duration > 0) {
+        hideTimeout = setTimeout(hideSnackbar, duration);
+      }
+    };
+  })();
+</script>
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="newsfeed.js"></script>
