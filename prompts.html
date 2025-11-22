@@ -173,6 +173,7 @@ input[type="text"] {
     <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
   </div>
 </footer>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="prompts.js"></script>
@@ -182,7 +183,7 @@ input[type="text"] {
   let allSubmissions = [];
   let activeParticipant = null;
 
-  function renderFilterButtons() {
+   function renderFilterButtons() {
     const container = document.getElementById("filterButtons");
     container.innerHTML = "";
     PARTICIPANTS.forEach(name => {
@@ -190,13 +191,32 @@ input[type="text"] {
       btn.className = "filter-btn";
       btn.textContent = name;
       btn.onclick = () => {
-        activeParticipant = activeParticipant === name ? null : name;
+        const wasActive = activeParticipant === name;
+        activeParticipant = wasActive ? null : name;
         renderFilterButtons();
         renderPrompts(window.prompts);
+
+        // 🎉 Confetti only when Cindy is newly selected
+        if (!wasActive && name === "Cindy") {
+          launchConfetti();
+        }
       };
       if (activeParticipant === name) btn.classList.add("active");
       container.appendChild(btn);
     });
+
+    if (activeParticipant) {
+      const clear = document.createElement("button");
+      clear.className = "filter-btn";
+      clear.textContent = "Clear Filter";
+      clear.onclick = () => {
+        activeParticipant = null;
+        renderFilterButtons();
+        renderPrompts(window.prompts);
+      };
+      container.appendChild(clear);
+    }
+  }
 
     if (activeParticipant) {
       const clear = document.createElement("button");
