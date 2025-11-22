@@ -397,7 +397,7 @@
               authorDiv.textContent = name;
 
               const html = body.innerHTML;
-              const dashAndAuthor = /[\\u2014\\u2013\\-–]\\s*<a[^>]+>.*?<\\/a>/;
+              const dashAndAuthor = /[\\u2014\\u2013\\-–]\\s*<a[^>]+>.*?<\\/a/;
               body.innerHTML = html.replace(dashAndAuthor, "");
 
               authorLink.remove();
@@ -418,7 +418,7 @@
         <div id="notificationsSection" class="bubble center" style="display:none;">
           <h3 style="margin-top:0; color:#247182;">Enable Notifications</h3>
           <p class="notify-message">
-            Turn on notifications to get Reading Challenge updates on this device.
+            Turn on notifications to get Reading Challenge updates.
           </p>
           <button id="enablePushButton">Enable Notifications</button>
         </div>
