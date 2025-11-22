@@ -2,7 +2,7 @@
 // date can be "2025-08-01 10:30:00" or "2025-08-01T10:30:00"
 window.NEWS_POSTS = [
   {
-    title: "Cindy Wins 1st Place",
+    title: "Cindy gets 1st Place!",
     body: "Cindy is first to successfully complete all 85 prompts!",
     button: "",
     link: "",
