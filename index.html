@@ -70,6 +70,12 @@
       margin-bottom: 0.75rem;
     }
 
+    /* News titles inside bubbles */
+    .bubble h3 {
+      color: #247182;
+      font-size: 1.15rem;
+    }
+
     .submission-card, .leaderboard-card {
       display: flex;
       align-items: center;
@@ -159,13 +165,15 @@
       display: flex;
       justify-content: flex-end;
       padding: 1rem 1.25rem;
-      margin-top: 1rem;
-      margin-bottom: 2rem;
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem; /* tighter so gap to leaderboard is smaller */
     }
 
     .see-all-wrapper {
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: center; /* center the link in the bubble */
     }
 
     .see-all-link {
@@ -180,7 +188,7 @@
     }
 
     #homeNews {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
     
     .site-footer {
@@ -248,11 +256,6 @@
       grid-template-columns: 1fr auto;
       gap: 1rem;
       align-items: start;
-    }
-    .home-post h3 {
-      margin: 0 0 .5rem 0;
-      color: #247182;
-      font-size: 1.15rem;
     }
     .home-post .post-body { line-height: 1.5; }
     .home-post .post-actions {
@@ -382,22 +385,25 @@
           const authorDiv = document.querySelector(".quote-author");
 
           if (body && authorDiv) {
+            // Remove <br> tags inserted by Goodreads
             body.innerHTML = body.innerHTML.replace(/<br\s*\/?>/g, "");
 
             const authorLink = body.querySelector("a:last-of-type");
             if (authorLink) {
               let name = authorLink.textContent.trim();
 
-              if (/^The\\s+Walt\\s+Disney\\s+Company$/i.test(name)) {
+              // Normalize Goodreads variants
+              if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
                 name = "Walt Disney";
               } else {
-                name = name.replace(/\\s+Company$/i, "");
+                name = name.replace(/\s+Company$/i, "");
               }
 
               authorDiv.textContent = name;
 
+              // Remove em dash + author from quote body (e.g., "— Author")
               const html = body.innerHTML;
-              const dashAndAuthor = /[\\u2014\\u2013\\-–]\\s*<a[^>]+>.*?<\\/a/;
+              const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
               body.innerHTML = html.replace(dashAndAuthor, "");
 
               authorLink.remove();
@@ -416,7 +422,7 @@
 
         <!-- Notifications styled like a news post -->
         <div id="notificationsSection" class="bubble center" style="display:none;">
-          <h3 style="margin-top:0; color:#247182;">Enable Notifications</h3>
+          <h3 style="margin-top:0;">Enable Notifications</h3>
           <p class="notify-message">
             Turn on notifications to get Reading Challenge updates.
           </p>
@@ -425,7 +431,8 @@
 
         <div id="newsfeed"></div>
 
-        <div class="see-all-bubble">
+        <!-- See All News inside a bubble card -->
+        <div class="bubble see-all-bubble">
           <div class="see-all-wrapper">
             <a href="newsfeed.html" class="see-all-link">See All News →</a>
           </div>
@@ -629,14 +636,14 @@
       startCountdown();
       renderHomeNews();
 
-      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
         const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
 
-        // Latest 10
-        const latest = data.slice(-10).reverse();
+        // Latest 6 instead of 10
+        const latest = data.slice(-6).reverse();
         const submissions = document.getElementById('submissions');
         if (submissions) {
           submissions.innerHTML = "";
