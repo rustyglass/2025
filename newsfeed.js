@@ -2,13 +2,6 @@
 // date can be "2025-08-01 10:30:00" or "2025-08-01T10:30:00"
 window.NEWS_POSTS = [
   {
-    title: "Site Maintenance in Progress",
-    body: "We are currently working on the website. While this maintenance is not rigorous enough to require the website to be offline, you may notice temporary lag and/or errors.",
-    button: "",
-    link: "",
-    date: "2025-11-21 20:15:00"
-  },
-  {
     title: "Cindy gets 1st Place!",
     body: "Cindy is first to successfully complete all 85 prompts!",
     button: "",
