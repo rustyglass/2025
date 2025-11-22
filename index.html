@@ -12,13 +12,13 @@
   <meta name="theme-color" content="#247182" />
   <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
 
-  <!-- OneSignal SDK + init (only once) -->
+  <!-- OneSignal SDK + init -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
-        appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
+        appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d"
       });
     });
   </script>
@@ -37,21 +37,16 @@
       max-height: 370px;
       object-fit: cover;
     }
-    /* phones */
     @media (max-width: 768px) {
       .site-header { display: none; }
     }
-
-    /* big desktops (optional) */
     @media (min-width: 1200px) {
-      .site-header {
-        max-height: 420px;
-      }
+      .site-header { max-height: 420px; }
     }
 
     .container {
       padding: 1rem;
-      max-width: 900px;
+      max-width: 1200px; /* wider for 2-column desktop dashboard */
       margin: auto;
     }
 
@@ -210,7 +205,7 @@
       height: auto;
     }
 
-    /* Countdown bubble */
+    /* Countdown bubble (if used elsewhere) */
     #countdown.bubble {
       max-width: 700px;
       margin: 2rem auto;
@@ -247,7 +242,7 @@
     .center { text-align: center; }
     #countdownText { font-weight: 700; }
 
-    /* Home newsfeed layout */
+    /* Home newsfeed layout – only used when a post has a button */
     .home-post {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -339,17 +334,9 @@
         align-items: flex-start;
       }
 
-      #homeNews {
-        grid-area: news;
-      }
-
-      #submissionsSection {
-        grid-area: submissions;
-      }
-
-      #leaderboardBlock {
-        grid-area: leaderboard;
-      }
+      #homeNews { grid-area: news; }
+      #submissionsSection { grid-area: submissions; }
+      #leaderboardBlock { grid-area: leaderboard; }
     }
 
     /* Respect reduced motion */
@@ -401,16 +388,16 @@
             if (authorLink) {
               let name = authorLink.textContent.trim();
 
-              if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
+              if (/^The\\s+Walt\\s+Disney\\s+Company$/i.test(name)) {
                 name = "Walt Disney";
               } else {
-                name = name.replace(/\s+Company$/i, "");
+                name = name.replace(/\\s+Company$/i, "");
               }
 
               authorDiv.textContent = name;
 
               const html = body.innerHTML;
-              const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
+              const dashAndAuthor = /[\\u2014\\u2013\\-–]\\s*<a[^>]+>.*?<\\/a>/;
               body.innerHTML = html.replace(dashAndAuthor, "");
 
               authorLink.remove();
@@ -420,14 +407,14 @@
       </script>
     </div>
 
-    <!-- DASHBOARD GRID: Left = News + Leaderboard, Right = Latest Submissions -->
+    <!-- DASHBOARD GRID -->
     <div class="dashboard-grid">
 
-      <!-- LEFT COLUMN: News + Notifications "post" -->
+      <!-- LEFT COLUMN: News + Notifications post -->
       <section id="homeNews" class="bubble-section">
         <div class="bubble" style="text-align:center;"><h2>News</h2></div>
 
-        <!-- 🔔 Notifications styled like a news post -->
+        <!-- Notifications styled like a news post -->
         <div id="notificationsSection" class="bubble center" style="display:none;">
           <h3 style="margin-top:0; color:#247182;">Enable Notifications</h3>
           <p class="notify-message">
@@ -445,7 +432,7 @@
         </div>
       </section>
       
-      <!-- RIGHT COLUMN: Latest Submissions (header + list + See All) -->
+      <!-- RIGHT COLUMN: Latest Submissions -->
       <section id="submissionsSection">
         <div class="bubble" style="text-align: center;">
           <h2>Latest Submissions</h2>
@@ -509,9 +496,6 @@
     }
 
     function renderHomeNews() {
-      const mount = document.getElementById('homeNews');
-      if (!mount) return;
-
       const items = Array.isArray(window.NEWS_POSTS) ? sortNews(window.NEWS_POSTS) : [];
       const slice = items.slice(0, HOME_NEWS_LIMIT);
 
@@ -519,7 +503,7 @@
       if (!newsfeedEl) return;
 
       if (!slice.length) {
-        newsfeedEl.innerHTML = `<div class="bubble">No news yet.</div>`;
+        newsfeedEl.innerHTML = `<article class="bubble">No news yet.</article>`;
         return;
       }
 
@@ -528,19 +512,29 @@
         const body  = p.body  ? `<div class="post-body">${escapeHTML(p.body)}</div>` : '';
         const showBtn = p.button && p.link;
         const sameTab = showBtn && isInternalLink(p.link);
-        const btn = showBtn
-          ? `<a class="action-btn" href="${escapeAttr(p.link)}"${sameTab ? '' : ' target="_blank" rel="noopener"'}>${escapeHTML(p.button)}</a>`
-          : '';
 
+        if (showBtn) {
+          // WITH BUTTON → 2-column layout using .home-post
+          return `
+            <article class="bubble home-post">
+              <div class="post-content">
+                ${title}
+                ${body}
+              </div>
+              <div class="post-actions">
+                <a class="action-btn"
+                   href="${escapeAttr(p.link)}"${sameTab ? '' : ' target="_blank" rel="noopener"'}
+                >${escapeHTML(p.button)}</a>
+              </div>
+            </article>
+          `;
+        }
+
+        // NO BUTTON → simple full-width bubble, no grid
         return `
-          <article class="bubble home-post">
-            <div class="post-content">
-              ${title}
-              ${body}
-            </div>
-            <div class="post-actions">
-              ${btn}
-            </div>
+          <article class="bubble">
+            ${title}
+            ${body}
           </article>
         `;
       }).join('');
@@ -693,7 +687,7 @@
     });
   </script>
 
-  <!-- 🔔 OneSignal UI logic for the Notifications "post" -->
+  <!-- OneSignal UI logic for Notifications post -->
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
@@ -702,12 +696,10 @@
       const msg = section ? section.querySelector('.notify-message') : null;
       if (!section || !btn || !msg) return;
 
-      // start hidden; we decide later
       section.style.display = 'none';
 
       let isSupported = false;
       try {
-        // v16: isPushSupported() is a function (sync)
         isSupported = !!OneSignal.Notifications.isPushSupported();
       } catch (e) {
         console.warn('OneSignal support check failed', e);
@@ -718,14 +710,12 @@
         return;
       }
 
-      // If permission is already granted, hide section (nothing to do)
       const hasPermission = !!OneSignal.Notifications.permission;
       if (hasPermission) {
         section.style.display = 'none';
         return;
       }
 
-      // Show the section if we got here
       section.style.display = 'block';
 
       btn.addEventListener('click', async () => {
