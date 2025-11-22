@@ -353,9 +353,14 @@
         transform: none !important;
       }
 
-      .bubble:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-      }
+      /* Restore strong hover effect for all bubble-style cards */
+.bubble:hover,
+.home-post:hover,
+.submission-card:hover,
+.leaderboard-card:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
     }
   </style>
 </head>
