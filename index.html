@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="menu.css" />
   <meta name="theme-color" content="#247182" />
   <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -172,7 +173,7 @@
     }
 
     #homeNews {
-      margin-bottom: 2rem; /* increase or decrease as needed */
+      margin-bottom: 2rem;
     }
     
     .site-footer {
@@ -184,16 +185,16 @@
     }
 
     .footer-logo-container {
-      width: 350px;            /* control visible width */
-      height: 140px;           /* control visible height */
-      overflow: hidden;        /* crop extra white space */
+      width: 350px;
+      height: 140px;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
     .footer-logo {
-      width: 100%;             /* fill container horizontally */
+      width: 100%;
       height: auto;
     }
 
@@ -213,7 +214,6 @@
       justify-items: center;
     }
 
-    /* Big orange numbers */
     .cd-num {
       font-size: 2.2rem;
       font-weight: 800;
@@ -221,14 +221,12 @@
       line-height: 1;
     }
 
-    /* Smaller black labels underneath */
     .cd-label {
       font-size: 0.9rem;
       color: #000;
       margin-top: 0.25rem;
     }
 
-    /* A little scale-down on smaller screens */
     @media (max-width: 700px) {
       .cd-num { font-size: 1.8rem; }
     }
@@ -278,16 +276,46 @@
       .home-post { grid-template-columns: 1fr; }
       .home-post .post-actions { justify-content: flex-start; }
     }
+
+    /* --- Enable Notifications button --- */
+    #enablePush {
+      display: none; /* shown once OneSignal confirms support */
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      border: none;
+      background-color: #247182;
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    #enablePush:hover:not(:disabled) {
+      transform: scale(1.03);
+      background-color: #1b5864;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    }
+
+    #enablePush:disabled {
+      opacity: 0.75;
+      cursor: default;
+      box-shadow: none;
+    }
   </style>
+
+  <!-- OneSignal SDK + init -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
+      });
     });
-  });
-</script>
+  </script>
 </head>
 <body>
   <header id="main-header">
@@ -320,27 +348,20 @@
             // Find and extract the final author link
             const authorLink = body.querySelector("a:last-of-type");
             if (authorLink) {
-              // Start with the raw author text
               let name = authorLink.textContent.trim();
 
-              // Normalize known Goodreads variants:
-              // 1) "The Walt Disney Company" -> "Walt Disney"
               if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
                 name = "Walt Disney";
               } else {
-                // 2) Strip trailing " Company" if present (e.g., "Walt Disney Company")
                 name = name.replace(/\s+Company$/i, "");
               }
 
-              // Set cleaned author name
               authorDiv.textContent = name;
 
-              // Remove the em dash + author link from the quote body (e.g., "— Author")
               const html = body.innerHTML;
               const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
               body.innerHTML = html.replace(dashAndAuthor, "");
 
-              // Ensure the author link is gone
               authorLink.remove();
             }
           }
@@ -376,6 +397,16 @@
       <h2>Prompt Progress Leaderboard</h2>
       <div id="leaderboard"></div>
     </div>
+
+    <!-- Clean Notifications bubble -->
+    <div class="bubble" style="text-align:center; margin-top: 1rem;">
+      <h2>Notifications</h2>
+      <p style="margin-bottom: 0.75rem;">
+        Stay up to date with new submissions and news.
+      </p>
+      <button id="enablePush">Enable Notifications</button>
+    </div>
+
   </div>
   
   <footer class="site-footer">
@@ -383,119 +414,6 @@
       <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
     </div>
   </footer>
-  <button id="enablePush">Enable Notifications</button>
-
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-
-    // Optional: show/hide the button based on support/permission
-    const btn = document.getElementById('enablePush');
-    const supported = await OneSignal.Notifications.isPushSupported();
-    btn.style.display = supported ? 'inline-block' : 'none';
-
-    btn.addEventListener('click', async () => {
-      // iOS requires a user gesture; this click counts.
-      const perm = await OneSignal.Notifications.requestPermission();
-      if (perm === 'granted') {
-        // Tag this device so only you get “new book submitted” alerts
-        await OneSignal.User.addTag('role', 'admin');
-        btn.textContent = 'Notifications Enabled ✅';
-        btn.disabled = true;
-      } else {
-        alert('Notifications were not enabled. You can try again.');
-      }
-    });
-  });
-</script>
-  <!-- Drop anywhere in your page body -->
-<div id="pushDiag" style="font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width:680px; padding:16px; margin:12px auto; border:1px solid #ddd; border-radius:12px">
-  <h3 style="margin:0 0 8px">Push Diagnostics</h3>
-  <div id="diagLog" style="white-space:pre-wrap; background:#fafafa; padding:10px; border-radius:8px; min-height:80px">Running checks…</div>
-  <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap">
-    <button id="btnRequest">Request Permission</button>
-    <button id="btnEnable">Enable & Tag as Admin</button>
-    <button id="btnDisable">Disable Notifications</button>
-    <button id="btnRefresh">Re-run Checks</button>
-  </div>
-</div>
-
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    const logEl = document.getElementById('diagLog');
-    const log = (...args) => logEl.textContent += (logEl.textContent ? '\n' : '') + args.join(' ');
-
-    try {
-      log("✅ OneSignal SDK loaded and initialized.");
-
-      async function runChecks() {
-        logEl.textContent = "";
-        const supported = await OneSignal.Notifications.isPushSupported();
-        log("Push supported:", supported);
-
-        const perm = await OneSignal.Notifications.getPermission(); // 'default' | 'granted' | 'denied'
-        log("Permission:", perm);
-
-        // Try to read subscription/IDs
-        let subId = null, onesignalId = null;
-        try { subId = await OneSignal.User.PushSubscription.getId(); } catch {}
-        try { onesignalId = await OneSignal.User.getOnesignalId(); } catch {}
-        log("Push Subscription ID:", subId || "(none)");
-        log("OneSignal User ID:", onesignalId || "(none)");
-
-        // Check your admin tag
-        let tags = {};
-        try { tags = await OneSignal.User.getTags(); } catch {}
-        log("Tags:", JSON.stringify(tags));
-
-        // Quick platform hints
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        log("Launched from Home Screen:", isStandalone);
-
-        // Service worker sanity (best-effort)
-        try {
-          const regs = await navigator.serviceWorker?.getRegistrations?.();
-          const hasOSW = (regs || []).some(r => (r.active && /OneSignalSDK/.test(r.active.scriptURL)) || (r.installing && /OneSignalSDK/.test(r.installing.scriptURL)));
-          log("Service Worker registered:", regs && regs.length ? "yes" : "no",
-              hasOSW ? "(OneSignal found)" : "(OneSignal not detected)");
-        } catch(e){ log("SW check error:", e.message); }
-
-        if (!isStandalone) log("⚠️ iOS won’t prompt unless you Add to Home Screen and open from the icon.");
-        if (!supported) log("⚠️ This browser session doesn’t support Web Push (Private mode? Not A2HS? Older iOS?).");
-        if (perm === 'denied') log("⚠️ Permission is denied. Re-enable in iOS Settings ▸ Notifications ▸ Your Web App.");
-        if (!subId && perm === 'granted') log("⚠️ Granted but no subscription — usually a service worker/origin mismatch.");
-      }
-
-      document.getElementById('btnRequest').onclick = async () => {
-        const p = await OneSignal.Notifications.requestPermission();
-        log("requestPermission() returned:", p);
-      };
-
-      document.getElementById('btnEnable').onclick = async () => {
-        const p = await OneSignal.Notifications.requestPermission();
-        log("requestPermission() returned:", p);
-        if (p === 'granted') {
-          await OneSignal.User.addTag('role', 'admin');
-          log("Tagged this device: role=admin");
-          const id = await OneSignal.User.PushSubscription.getId();
-          log("Subscribed with ID:", id);
-        }
-      };
-
-      document.getElementById('btnDisable').onclick = async () => {
-        await OneSignal.Notifications.removeDevice();
-        log("Removed push subscription for this device.");
-      };
-
-      document.getElementById('btnRefresh').onclick = runChecks;
-      runChecks();
-
-    } catch (e) {
-      log("❌ OneSignal init failed:", e && e.message ? e.message : e);
-    }
-  });
-</script>
 
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
@@ -506,7 +424,6 @@
 
     function isInternalLink(href) {
       try {
-        // Treat relative as internal
         const u = new URL(href, location.href);
         return (
           u.hostname.endsWith('readingchallenge.online') ||
@@ -564,7 +481,6 @@
       }).join('');
     }
 
-    // simple HTML escapers to keep things safe
     function escapeHTML(str) {
       return (str || '').replace(/[&<>"']/g, s => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -574,7 +490,6 @@
 
     /* ========= COUNTDOWN (CDT target) ========= */
     function startCountdown() {
-      // Midnight Central on Jan 1, 2026 (CST at that date => UTC-05:00)
       const target = new Date('2026-01-01T11:59:59-06:00');
 
       const elDays  = document.getElementById('cd-days');
@@ -616,52 +531,47 @@
       return rows.map(row => Object.fromEntries(header.map((h, i) => [h.trim(), row[i]?.trim()])));
     }
 
-  function formatDate(dateStr) {
-  if (!dateStr) return '';
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
 
-  const s = String(dateStr).trim();
+      const s = String(dateStr).trim();
+      let iso;
 
-  // If it's already ISO-like with a "T", just ensure a trailing Z
-  let iso;
-  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
-    iso = s.endsWith('Z') ? s : s + 'Z';
-  } else {
-    // Matches: YYYY-M-D HH:MM[:SS]
-    const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
-    if (m) {
-      const pad2 = (n) => String(n).padStart(2, '0');
-      const [_, y, mo, d, h, mi, sec] = m;
-      iso = `${y}-${pad2(mo)}-${pad2(d)}T${pad2(h)}:${pad2(mi)}:${pad2(sec || '00')}Z`;
-    } else {
-      // Last resort: let Date try to parse it
-      const tryDate = new Date(s);
-      if (isNaN(tryDate)) return '';
-      iso = tryDate.toISOString();
+      if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+        iso = s.endsWith('Z') ? s : s + 'Z';
+      } else {
+        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/);
+        if (m) {
+          const pad2 = (n) => String(n).padStart(2, '0');
+          const [_, y, mo, d, h, mi, sec] = m;
+          iso = `${y}-${pad2(mo)}-${pad2(d)}T${pad2(h)}:${pad2(mi)}:${pad2(sec || '00')}Z`;
+        } else {
+          const tryDate = new Date(s);
+          if (isNaN(tryDate)) return '';
+          iso = tryDate.toISOString();
+        }
+      }
+
+      const d = new Date(iso);
+      if (isNaN(d)) return '';
+
+      return d.toLocaleString('en-US', {
+        timeZone: 'America/Chicago',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      }).replace(',', ' at');
     }
-  }
 
-  const d = new Date(iso);
-  if (isNaN(d)) return '';
-
-  return d.toLocaleString('en-US', {
-    timeZone: 'America/Chicago',
-    month: 'long',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }).replace(',', ' at');
-}
-    /* ========= Boot (no menu code here) ========= */
+    /* ========= Boot ========= */
     window.addEventListener("DOMContentLoaded", async () => {
-      // Start countdown if the four spans exist
       startCountdown();
-
-      // Render the home newsfeed (requires newsfeed.js to be loaded earlier)
       renderHomeNews();
 
-      // Latest submissions + leaderboard
-      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv'; //CHANGE THIS TO CHANGE THE DATA SOURCE
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
+
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
@@ -676,7 +586,7 @@
             const card = document.createElement('div');
             card.className = 'submission-card bubble';
             card.innerHTML = `
-             <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
+              <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
               <div class="submission-info">
                 <div class="prompt-tag">Prompt #${row['Prompt']}</div>
                 <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
@@ -716,6 +626,57 @@
       } catch (err) {
         console.error('Error loading sheet:', err);
       } 
+    });
+  </script>
+
+  <!-- OneSignal Notifications button logic -->
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      const btn = document.getElementById('enablePush');
+      if (!btn) return;
+
+      btn.style.display = 'none';
+
+      const supported = await OneSignal.Notifications.isPushSupported();
+      if (!supported) {
+        return; // leave hidden if not supported
+      }
+
+      const permission = await OneSignal.Notifications.getPermission();
+
+      if (permission === 'granted') {
+        btn.textContent = 'Notifications Enabled ✅';
+        btn.disabled = true;
+        btn.style.display = 'inline-block';
+        return;
+      }
+
+      if (permission === 'denied') {
+        btn.textContent = 'Notifications Blocked in Settings';
+        btn.disabled = true;
+        btn.style.display = 'inline-block';
+        return;
+      }
+
+      // permission === 'default'
+      btn.textContent = 'Enable Notifications';
+      btn.disabled = false;
+      btn.style.display = 'inline-block';
+
+      btn.addEventListener('click', async () => {
+        const result = await OneSignal.Notifications.requestPermission();
+
+        if (result === 'granted') {
+          btn.textContent = 'Notifications Enabled ✅';
+          btn.disabled = true;
+        } else {
+          btn.textContent = 'Notifications Not Enabled';
+          setTimeout(() => {
+            btn.textContent = 'Enable Notifications';
+          }, 3000);
+        }
+      });
     });
   </script>
 </body>
