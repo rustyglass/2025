@@ -183,53 +183,72 @@ input[type="text"] {
   let allSubmissions = [];
   let activeParticipant = null;
 
-   function renderFilterButtons() {
-    const container = document.getElementById("filterButtons");
-    container.innerHTML = "";
-    PARTICIPANTS.forEach(name => {
-      const btn = document.createElement("button");
-      btn.className = "filter-btn";
-      btn.textContent = name;
-      btn.onclick = () => {
-        const wasActive = activeParticipant === name;
-        activeParticipant = wasActive ? null : name;
-        renderFilterButtons();
-        renderPrompts(window.prompts);
+// Confetti helper for Cindy
+function launchConfetti() {
+  if (typeof confetti !== "function") return;
 
-        // 🎉 Confetti only when Cindy is newly selected
-        if (!wasActive && name === "Cindy") {
-          launchConfetti();
-        }
-      };
-      if (activeParticipant === name) btn.classList.add("active");
-      container.appendChild(btn);
+  const duration = 2000; // 2 seconds
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.8 }
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.8 }
     });
 
-    if (activeParticipant) {
-      const clear = document.createElement("button");
-      clear.className = "filter-btn";
-      clear.textContent = "Clear Filter";
-      clear.onclick = () => {
-        activeParticipant = null;
-        renderFilterButtons();
-        renderPrompts(window.prompts);
-      };
-      container.appendChild(clear);
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
     }
-  }
+  })();
+}
+    function renderFilterButtons() {
+  const container = document.getElementById("filterButtons");
+  container.innerHTML = "";
 
-    if (activeParticipant) {
-      const clear = document.createElement("button");
-      clear.className = "filter-btn";
-      clear.textContent = "Clear Filter";
-      clear.onclick = () => {
-        activeParticipant = null;
-        renderFilterButtons();
-        renderPrompts(window.prompts);
-      };
-      container.appendChild(clear);
+  PARTICIPANTS.forEach(name => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn";
+    btn.textContent = name;
+
+    btn.onclick = () => {
+      const wasActive = activeParticipant === name;
+      activeParticipant = wasActive ? null : name;
+      renderFilterButtons();
+      renderPrompts(window.prompts);
+
+      // 🎉 Confetti only when Cindy is newly selected
+      if (!wasActive && name === "Cindy") {
+        launchConfetti();
+      }
+    };
+
+    if (activeParticipant === name) {
+      btn.classList.add("active");
     }
+
+    container.appendChild(btn);
+  });
+
+  if (activeParticipant) {
+    const clear = document.createElement("button");
+    clear.className = "filter-btn";
+    clear.textContent = "Clear Filter";
+    clear.onclick = () => {
+      activeParticipant = null;
+      renderFilterButtons();
+      renderPrompts(window.prompts);
+    };
+    container.appendChild(clear);
   }
+}
 
   function renderPrompts(prompts) {
     const grid = document.getElementById("promptGrid");
