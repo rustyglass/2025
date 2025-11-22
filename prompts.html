@@ -259,11 +259,6 @@
           activeParticipant = wasActive ? null : name;
           renderFilterButtons();
           renderPrompts(window.prompts);
-
-          // 🎉 Confetti only when Cindy is newly selected
-          if (!wasActive && name === "Cindy") {
-            launchConfetti();
-          }
         };
 
         if (activeParticipant === name) {
@@ -271,6 +266,26 @@
         }
 
         container.appendChild(btn);
+      });
+    }
+
+    // Apply or remove gray-out based on allSubmissions + activeParticipant
+    function updateGrayOut() {
+      const cards = document.querySelectorAll(".prompt-card");
+
+      cards.forEach(card => {
+        const num = parseInt(card.dataset.promptNumber, 10);
+
+        if (
+          activeParticipant &&
+          allSubmissions.some(
+            s => s.Reader === activeParticipant && s.Prompt === num
+          )
+        ) {
+          card.classList.add("grayed-out");
+        } else {
+          card.classList.remove("grayed-out");
+        }
       });
     }
 
@@ -298,15 +313,8 @@
         const delayMs = index * 70; // tweak 50–100ms if you want faster/slower cascade
         card.style.setProperty("--delay", `${delayMs}ms`);
 
-        // Gray-out if this participant has already completed this prompt
-        if (
-          activeParticipant &&
-          allSubmissions.some(
-            s => s.Reader === activeParticipant && parseInt(s.Prompt) === p.number
-          )
-        ) {
-          card.classList.add("grayed-out");
-        }
+        // Store prompt number on the card for later gray-out updates
+        card.dataset.promptNumber = p.number;
 
         card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
         card.innerHTML = `
@@ -317,6 +325,11 @@
         `;
         grid.appendChild(card);
       });
+
+      // After drawing cards, apply gray-out if we already have submissions loaded
+      if (allSubmissions.length > 0) {
+        updateGrayOut();
+      }
     }
 
     async function fetchSubmissions() {
@@ -331,6 +344,9 @@
           Prompt: parseInt(row.Prompt?.trim())
         }))
         .filter(row => row.Reader && !isNaN(row.Prompt));
+
+      // Once we have data, update gray-out on existing cards
+      updateGrayOut();
     }
 
     // Make buttons & prompts appear immediately; fetch submissions in background
@@ -341,14 +357,10 @@
       renderFilterButtons();
       renderPrompts(window.prompts);
 
-      // Fetch submissions; once ready, re-render to apply gray-out logic
-      fetchSubmissions()
-        .then(() => {
-          renderPrompts(window.prompts);
-        })
-        .catch(err => {
-          console.error("Error fetching submissions:", err);
-        });
+      // Fetch submissions; once ready, update gray-out in place (no re-animation)
+      fetchSubmissions().catch(err => {
+        console.error("Error fetching submissions:", err);
+      });
 
       document.getElementById("searchInput").addEventListener("input", () => {
         renderPrompts(window.prompts);
