@@ -255,11 +255,17 @@
         btn.textContent = name;
 
         btn.onclick = () => {
-          const wasActive = activeParticipant === name;
-          activeParticipant = wasActive ? null : name;
-          renderFilterButtons();
-          renderPrompts(window.prompts);
-        };
+  const wasActive = activeParticipant === name;
+
+  // 🎉 Only fire confetti when Cindy is newly selected
+  if (!wasActive && name === "Cindy") {
+    launchConfetti();
+  }
+
+  activeParticipant = wasActive ? null : name;
+  renderFilterButtons();
+  renderPrompts(window.prompts);
+};
 
         if (activeParticipant === name) {
           btn.classList.add("active");
