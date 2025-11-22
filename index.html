@@ -12,6 +12,17 @@
   <meta name="theme-color" content="#247182" />
   <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
 
+  <!-- OneSignal SDK + init (only once) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
+      });
+    });
+  </script>
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -198,14 +209,13 @@
       height: auto;
     }
 
-    /* Same max width as your quote widget (700px), centered */
+    /* Countdown bubble */
     #countdown.bubble {
       max-width: 700px;
       margin: 2rem auto;
       text-align: center;
     }
 
-    /* Four equal columns */
     .countdown-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -277,45 +287,42 @@
       .home-post .post-actions { justify-content: flex-start; }
     }
 
-    /* --- Enable Notifications button --- */
-    #enablePush {
-      display: none; /* shown once OneSignal confirms support */
+    /* 🔔 Notifications section styles */
+    #notificationsSection {
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+
+    #enablePushButton {
+      margin-top: 0.75rem;
       padding: 0.6rem 1.4rem;
       border-radius: 999px;
-      border: none;
-      background-color: #247182;
-      color: #ffffff;
-      font-family: 'Poppins', sans-serif;
+      border: 2px solid #247182;
+      background: #247182;
+      color: #fff;
       font-weight: 700;
-      font-size: 0.95rem;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
     }
 
-    #enablePush:hover:not(:disabled) {
+    #enablePushButton:hover:not(:disabled) {
+      background: #1b5663;
       transform: scale(1.03);
-      background-color: #1b5864;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
     }
 
-    #enablePush:disabled {
-      opacity: 0.75;
+    #enablePushButton:disabled {
+      opacity: 0.7;
       cursor: default;
-      box-shadow: none;
+    }
+
+    .notify-message {
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+      color: #333;
     }
   </style>
-
-  <!-- OneSignal SDK + init -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "2a6427ba-d19a-48c3-ad4f-2a5318336b2d",
-      });
-    });
-  </script>
 </head>
 <body>
   <header id="main-header">
@@ -332,6 +339,7 @@
 
   <div class="container">
 
+    <!-- Goodreads Quote -->
     <div id="quote" class="bubble quote-widget">
       <div id="gr_quote_body"></div>
       <div class="quote-author"></div>
@@ -342,10 +350,8 @@
           const authorDiv = document.querySelector(".quote-author");
 
           if (body && authorDiv) {
-            // Remove <br> tags inserted by Goodreads
             body.innerHTML = body.innerHTML.replace(/<br\s*\/?>/g, "");
 
-            // Find and extract the final author link
             const authorLink = body.querySelector("a:last-of-type");
             if (authorLink) {
               let name = authorLink.textContent.trim();
@@ -368,6 +374,15 @@
         });
       </script>
     </div>
+
+    <!-- 🔔 Notifications soft prompt -->
+    <section id="notificationsSection" class="bubble center" style="display:none;">
+      <h2>Stay Updated</h2>
+      <p class="notify-message">
+        Turn on notifications to get Reading Challenge updates on this device.
+      </p>
+      <button id="enablePushButton">Enable Notifications</button>
+    </section>
 
     <!-- Newsfeed section -->
     <section id="homeNews" class="bubble-section">
@@ -397,16 +412,6 @@
       <h2>Prompt Progress Leaderboard</h2>
       <div id="leaderboard"></div>
     </div>
-
-    <!-- Clean Notifications bubble -->
-    <div class="bubble" style="text-align:center; margin-top: 1rem;">
-      <h2>Notifications</h2>
-      <p style="margin-bottom: 0.75rem;">
-        Stay up to date with new submissions and news.
-      </p>
-      <button id="enablePush">Enable Notifications</button>
-    </div>
-
   </div>
   
   <footer class="site-footer">
@@ -418,6 +423,7 @@
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="newsfeed.js"></script>
+
   <script>
     // ----- Home Newsfeed helpers -----
     const HOME_NEWS_LIMIT = 1; // <-- change this number anytime
@@ -571,7 +577,6 @@
       renderHomeNews();
 
       const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
-
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
@@ -586,7 +591,7 @@
             const card = document.createElement('div');
             card.className = 'submission-card bubble';
             card.innerHTML = `
-              <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
+             <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
               <div class="submission-info">
                 <div class="prompt-tag">Prompt #${row['Prompt']}</div>
                 <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
@@ -629,52 +634,58 @@
     });
   </script>
 
-  <!-- OneSignal Notifications button logic -->
+  <!-- 🔔 OneSignal UI logic for the Enable Notifications section -->
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      const btn = document.getElementById('enablePush');
-      if (!btn) return;
+      const section = document.getElementById('notificationsSection');
+      const btn = document.getElementById('enablePushButton');
+      const msg = section ? section.querySelector('.notify-message') : null;
+      if (!section || !btn || !msg) return;
 
-      btn.style.display = 'none';
-
-      const supported = await OneSignal.Notifications.isPushSupported();
-      if (!supported) {
-        return; // leave hidden if not supported
+      let isSupported = false;
+      try {
+        isSupported = OneSignal.Notifications.isPushSupported();
+      } catch (e) {
+        console.warn('OneSignal support check failed', e);
       }
 
-      const permission = await OneSignal.Notifications.getPermission();
-
-      if (permission === 'granted') {
-        btn.textContent = 'Notifications Enabled ✅';
-        btn.disabled = true;
-        btn.style.display = 'inline-block';
+      if (!isSupported) {
+        section.style.display = 'none';
         return;
       }
 
-      if (permission === 'denied') {
-        btn.textContent = 'Notifications Blocked in Settings';
-        btn.disabled = true;
-        btn.style.display = 'inline-block';
+      // Hide if permission already granted
+      const hasPermission = !!OneSignal.Notifications.permission;
+      if (hasPermission) {
+        section.style.display = 'none';
         return;
       }
 
-      // permission === 'default'
-      btn.textContent = 'Enable Notifications';
-      btn.disabled = false;
-      btn.style.display = 'inline-block';
+      // Show the section if we got here
+      section.style.display = 'block';
 
       btn.addEventListener('click', async () => {
-        const result = await OneSignal.Notifications.requestPermission();
-
-        if (result === 'granted') {
-          btn.textContent = 'Notifications Enabled ✅';
+        try {
           btn.disabled = true;
-        } else {
-          btn.textContent = 'Notifications Not Enabled';
-          setTimeout(() => {
-            btn.textContent = 'Enable Notifications';
-          }, 3000);
+          msg.textContent = 'One moment… asking for permission.';
+          await OneSignal.Notifications.requestPermission();
+
+          const grantedNow = !!OneSignal.Notifications.permission;
+          if (grantedNow) {
+            msg.textContent = 'Notifications are enabled for this device.';
+            btn.textContent = 'Notifications Enabled';
+            setTimeout(() => {
+              section.style.display = 'none';
+            }, 2000);
+          } else {
+            msg.textContent = 'Notifications are still disabled. You can enable them later in your browser settings.';
+            btn.disabled = false;
+          }
+        } catch (e) {
+          console.error('Error requesting permission', e);
+          msg.textContent = 'Something went wrong while requesting notifications.';
+          btn.disabled = false;
         }
       });
     });
