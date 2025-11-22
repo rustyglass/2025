@@ -89,27 +89,29 @@
     }
 
     /* 🎬 Animated prompt cards */
-    .prompt-card {
-      background: white;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      cursor: pointer;
+    /* 🎬 Animated prompt cards */
+.prompt-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  cursor: pointer;
 
-      /* Hover transition */
-      transition: transform 0.4s ease, box-shadow 0.3s ease;
+  /* Smooth hover transition */
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 
-      /* Entrance animation */
-      opacity: 0;
-      transform: translateY(10px);
-      animation: promptIn 0.35s ease forwards;
-      animation-delay: var(--delay, 0s);
-    }
+  /* Entrance animation */
+  opacity: 0;
+  transform: translateY(10px);
+  animation: promptIn 0.35s ease forwards;
+  animation-delay: var(--delay, 0s);
+}
 
-    .prompt-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+/* Hover “lift” + scale (overrides the animation’s final transform) */
+.prompt-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.14);
+}
 
     .prompt-card.grayed-out {
       color: #cccccc;
