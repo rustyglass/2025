@@ -88,13 +88,22 @@
       }
     }
 
+    /* 🎬 Animated prompt cards */
     .prompt-card {
       background: white;
       border-radius: 1rem;
       padding: 1.5rem;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       cursor: pointer;
+
+      /* Hover transition */
       transition: transform 0.4s ease, box-shadow 0.3s ease;
+
+      /* Entrance animation */
+      opacity: 0;
+      transform: translateY(10px);
+      animation: promptIn 0.35s ease forwards;
+      animation-delay: var(--delay, 0s);
     }
 
     .prompt-card:hover {
@@ -125,6 +134,26 @@
       font-size: 0.9rem;
       margin: 0;
       color: inherit;
+    }
+
+    @keyframes promptIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Respect reduced motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      .prompt-card {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+      }
     }
 
     .footer-logo-container {
@@ -215,7 +244,7 @@
       })();
     }
 
-    // Renders participant filter buttons (no more Clear Filter button)
+    // Renders participant filter buttons (no Clear Filter button)
     function renderFilterButtons() {
       const container = document.getElementById("filterButtons");
       container.innerHTML = "";
@@ -261,9 +290,13 @@
         return;
       }
 
-      filteredPrompts.forEach(p => {
+      filteredPrompts.forEach((p, index) => {
         const card = document.createElement("div");
         card.className = "prompt-card";
+
+        // Staggered animation delay per card
+        const delayMs = index * 70; // tweak 50–100ms if you want faster/slower cascade
+        card.style.setProperty("--delay", `${delayMs}ms`);
 
         // Gray-out if this participant has already completed this prompt
         if (
@@ -300,7 +333,7 @@
         .filter(row => row.Reader && !isNaN(row.Prompt));
     }
 
-    // Make buttons appear immediately; fetch submissions in the background
+    // Make buttons & prompts appear immediately; fetch submissions in background
     window.addEventListener("DOMContentLoaded", () => {
       if (typeof prompts !== "undefined") window.prompts = prompts;
 
