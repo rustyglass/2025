@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="menu.css" />
   <meta name="theme-color" content="#247182" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#247182" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
 
   <!-- OneSignal SDK + init (only once) -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -61,11 +61,12 @@
       padding: 1.2rem;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
       margin-bottom: 1.5rem;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .bubble:hover {
-      transform: scale(1.02);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
     }
 
     h2 {
@@ -287,10 +288,9 @@
       .home-post .post-actions { justify-content: flex-start; }
     }
 
-    /* 🔔 Notifications section styles */
+    /* 🔔 Notifications "news post" styles */
     #notificationsSection {
-      max-width: 700px;
-      margin: 0 auto 1.5rem;
+      margin-bottom: 1.5rem;
     }
 
     #enablePushButton {
@@ -322,6 +322,51 @@
       font-size: 0.95rem;
       color: #333;
     }
+
+    /* === Desktop dashboard layout (2 columns) === */
+    .dashboard-grid {
+      margin-top: 1.5rem;
+    }
+
+    @media (min-width: 900px) {
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+        grid-template-areas:
+          "news submissions"
+          "leaderboard submissions";
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      #homeNews {
+        grid-area: news;
+      }
+
+      #submissionsSection {
+        grid-area: submissions;
+      }
+
+      #leaderboardBlock {
+        grid-area: leaderboard;
+      }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .bubble,
+      .home-post .action-btn,
+      #enablePushButton,
+      #enablePushButton:hover,
+      #enablePushButton:disabled {
+        transition: none !important;
+        transform: none !important;
+      }
+
+      .bubble:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      }
+    }
   </style>
 </head>
 <body>
@@ -339,7 +384,7 @@
 
   <div class="container">
 
-    <!-- Goodreads Quote -->
+    <!-- Goodreads Quote (full-width, above dashboard) -->
     <div id="quote" class="bubble quote-widget">
       <div id="gr_quote_body"></div>
       <div class="quote-author"></div>
@@ -375,43 +420,54 @@
       </script>
     </div>
 
-    <!-- 🔔 Notifications soft prompt -->
-    <section id="notificationsSection" class="bubble center" style="display:none;">
-      <h2>Stay Updated</h2>
-      <p class="notify-message">
-        Turn on notifications to get Reading Challenge updates on this device.
-      </p>
-      <button id="enablePushButton">Enable Notifications</button>
-    </section>
+    <!-- DASHBOARD GRID: Left = News + Leaderboard, Right = Latest Submissions -->
+    <div class="dashboard-grid">
 
-    <!-- Newsfeed section -->
-    <section id="homeNews" class="bubble-section">
-      <div class="bubble" style="text-align:center;"><h2>News</h2></div>
-      <div id="newsfeed"></div>
+      <!-- LEFT COLUMN: News + Notifications "post" -->
+      <section id="homeNews" class="bubble-section">
+        <div class="bubble" style="text-align:center;"><h2>News</h2></div>
 
-      <div class="see-all-bubble">
-        <div class="see-all-wrapper">
-          <a href="newsfeed.html" class="see-all-link">See All News →</a>
+        <!-- 🔔 Notifications styled like a news post -->
+        <div id="notificationsSection" class="bubble center" style="display:none;">
+          <h3 style="margin-top:0; color:#247182;">Enable Notifications</h3>
+          <p class="notify-message">
+            Turn on notifications to get Reading Challenge updates on this device.
+          </p>
+          <button id="enablePushButton">Enable Notifications</button>
         </div>
+
+        <div id="newsfeed"></div>
+
+        <div class="see-all-bubble">
+          <div class="see-all-wrapper">
+            <a href="newsfeed.html" class="see-all-link">See All News →</a>
+          </div>
+        </div>
+      </section>
+      
+      <!-- RIGHT COLUMN: Latest Submissions (header + list + See All) -->
+      <section id="submissionsSection">
+        <div class="bubble" style="text-align: center;">
+          <h2>Latest Submissions</h2>
+        </div>
+
+        <div id="submissions"></div>
+
+        <div class="bubble see-all-bubble">
+          <div class="see-all-wrapper">
+            <a href="submissions.html" class="see-all-link">See All Submissions →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEFT COLUMN, BELOW NEWS: Leaderboard -->
+      <div class="bubble" id="leaderboardBlock">
+        <h2>Prompt Progress Leaderboard</h2>
+        <div id="leaderboard"></div>
       </div>
-    </section>
-    
-    <div class="bubble" style="text-align: center;">
-      <h2>Latest Submissions</h2>
-    </div>
 
-    <div id="submissions"></div>
+    </div> <!-- end .dashboard-grid -->
 
-    <div class="bubble see-all-bubble">
-      <div class="see-all-wrapper">
-        <a href="submissions.html" class="see-all-link">See All Submissions →</a>
-      </div>
-    </div>
-
-    <div class="bubble">
-      <h2>Prompt Progress Leaderboard</h2>
-      <div id="leaderboard"></div>
-    </div>
   </div>
   
   <footer class="site-footer">
@@ -423,7 +479,7 @@
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="newsfeed.js"></script>
-  <script src="https://readingchallenge.statuspage.io/embed/script.js"></script>
+
   <script>
     // ----- Home Newsfeed helpers -----
     const HOME_NEWS_LIMIT = 1; // <-- change this number anytime
@@ -459,12 +515,15 @@
       const items = Array.isArray(window.NEWS_POSTS) ? sortNews(window.NEWS_POSTS) : [];
       const slice = items.slice(0, HOME_NEWS_LIMIT);
 
+      const newsfeedEl = document.getElementById('newsfeed');
+      if (!newsfeedEl) return;
+
       if (!slice.length) {
-        mount.innerHTML = `<div class="bubble">No news yet.</div>`;
+        newsfeedEl.innerHTML = `<div class="bubble">No news yet.</div>`;
         return;
       }
 
-      mount.innerHTML = slice.map(p => {
+      newsfeedEl.innerHTML = slice.map(p => {
         const title = p.title ? `<h3>${escapeHTML(p.title)}</h3>` : '';
         const body  = p.body  ? `<div class="post-body">${escapeHTML(p.body)}</div>` : '';
         const showBtn = p.button && p.link;
@@ -576,7 +635,7 @@
       startCountdown();
       renderHomeNews();
 
-      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
@@ -634,7 +693,7 @@
     });
   </script>
 
-  <!-- 🔔 OneSignal UI logic for the Enable Notifications section -->
+  <!-- 🔔 OneSignal UI logic for the Notifications "post" -->
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
@@ -643,9 +702,13 @@
       const msg = section ? section.querySelector('.notify-message') : null;
       if (!section || !btn || !msg) return;
 
+      // start hidden; we decide later
+      section.style.display = 'none';
+
       let isSupported = false;
       try {
-        isSupported = OneSignal.Notifications.isPushSupported();
+        // v16: isPushSupported() is a function (sync)
+        isSupported = !!OneSignal.Notifications.isPushSupported();
       } catch (e) {
         console.warn('OneSignal support check failed', e);
       }
@@ -655,7 +718,7 @@
         return;
       }
 
-      // Hide if permission already granted
+      // If permission is already granted, hide section (nothing to do)
       const hasPermission = !!OneSignal.Notifications.permission;
       if (hasPermission) {
         section.style.display = 'none';
