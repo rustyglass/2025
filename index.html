@@ -51,18 +51,19 @@
     }
 
     .bubble {
-      background: white;
-      border-radius: 14px;
-      padding: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-      margin-bottom: 1.5rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+  background: white;
+  border-radius: 14px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 
-    .bubble:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-    }
+/* Strong, scale-based hover for all bubbles */
+.bubble:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
 
     h2 {
       color: #247182;
@@ -352,15 +353,6 @@
         transition: none !important;
         transform: none !important;
       }
-
-      /* Restore strong hover effect for all bubble-style cards */
-.bubble:hover,
-.home-post:hover,
-.submission-card:hover,
-.leaderboard-card:hover {
-  transform: scale(1.03);
-  transition: transform 0.25s ease;
-}
     }
   </style>
 </head>
