@@ -19,10 +19,16 @@
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #f4f4f4;
-    color: #333;
+    background: #247182;
+    margin: 0;
+    padding: 0;
   }
 
+   #page-shell {
+     background: #f4f4f4;
+     min-height: 100vh;
+   }
+   
   .content {
     margin-top: 7rem;
     padding: 2rem;
@@ -89,29 +95,30 @@
 </style>
 </head>
 <body>
-  <header id="main-header">
-    <div class="site-name">
-      <img src="favicon.png" alt="Icon" />
-      <span class="desktop-title">2025 Reading Challenge</span>
+  <div id="page-shell">
+    <header id="main-header">
+      <div class="site-name">
+        <img src="favicon.png" alt="Icon" />
+        < span class="desktop-title">2025 Reading Challenge</span>
+      </div>
+      <nav class="menu"></nav>
+      <button class="menu-toggle" id="menu-button">&#9776;</button>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu"></div>
+
+    <div class="content">
+      <h1>404 – Page Not Found</h1>
+      <p>Oops! We couldn't find the page you were looking for.</p>
+      <a href="index.html">Return to Homepage</a>
     </div>
-    <nav class="menu"></nav>
-    <button class="menu-toggle" id="menu-button">&#9776;</button>
-  </header>
 
-  <div class="mobile-menu" id="mobileMenu"></div>
-
-  <div class="content">
-    <h1>404 – Page Not Found</h1>
-    <p>Oops! We couldn't find the page you were looking for.</p>
-    <a href="index.html">Return to Homepage</a>
+    <footer class="site-footer">
+    <div class="footer-logo-container">
+      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+    </div>
+  </footer>
   </div>
-
-  <footer class="site-footer">
-  <div class="footer-logo-container">
-    <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
-  </div>
-</footer>
-
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   </body>
