@@ -1,8 +1,13 @@
+/* Wrapper that holds BOTH the banner and the main header */
+.sticky-header-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 999;           /* make sure it stays above the page content */
+}
+
 /* ===== Site-wide banner ===== */
 
 .site-banner {
-  /* MAIN THINGS YOU’LL TWEAK VISUALLY ARE IN JS (colors + text),
-     THIS JUST HANDLES LAYOUT AND HOVER BEHAVIOR */
   padding: 0.5rem 1rem;
   text-align: center;
   display: flex;
@@ -14,8 +19,7 @@
   font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.95rem;
 
-  /* background-color and text color will be set inline from JS
-     using your banner-config.js (so you don’t have to dig in here) */
+  /* Colors (background + text) are set inline from banner-config.js */
 }
 
 .site-banner-text {
