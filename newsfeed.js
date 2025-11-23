@@ -2,6 +2,13 @@
 // date can be "2025-08-01 10:30:00" or "2025-08-01T10:30:00"
 window.NEWS_POSTS = [
   {
+    title: "Improvements Made to Website!",
+    body: "The home page has been re-designed for laptop/desktop users so they can scroll less, the iPhone status bar is now teal when on the website, filter buttons on the Prompts page have been re-coded for increased stability and better UI, and the Prompts page has new animations.",
+    button: "",
+    link: "",
+    date: "2025-11-23 14:00:00"
+  },
+  {
     title: "Cindy gets 1st Place!",
     body: "Cindy is first to successfully complete all 85 prompts!",
     button: "",
