@@ -694,9 +694,7 @@
     });
   </script>
 
-  <!-- OneSignal UI logic for Notifications post -->
-  <!-- OneSignal UI logic for Notifications post -->
-<!-- OneSignal UI logic for the "Enable Notifications" card -->
+ <!-- OneSignal UI logic for the "Enable Notifications" card -->
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
@@ -709,16 +707,26 @@
     section.style.display = 'none';
 
     try {
-      // Check if this browser/context supports push
-      const supported = await OneSignal.Notifications.isPushSupported();
+      // Make sure the Notifications plugin exists
+      if (!OneSignal.Notifications) {
+        console.warn('OneSignal.Notifications is not available in this context.');
+        return;
+      }
+
+      let supported = false;
+      try {
+        supported = await OneSignal.Notifications.isPushSupported();
+      } catch (err) {
+        console.warn('isPushSupported failed:', err);
+      }
+
+      // If web push isn't supported at all, just keep the card hidden
       if (!supported) {
-        // No web push support here (e.g., older browser / unsupported context)
         section.style.display = 'none';
         return;
       }
 
-      // v16: permission is a PROPERTY, not a function
-      // "default" | "granted" | "denied"
+      // v16: permission is a *property* ("default" | "granted" | "denied")
       const perm = OneSignal.Notifications.permission;
 
       if (perm === 'granted') {
@@ -739,32 +747,51 @@
       // "default" (never asked) → show the Enable button
       section.style.display = 'block';
 
-      btn.addEventListener('click', async () => {
-        try {
-          btn.disabled = true;
-          msg.textContent = 'One moment… asking for permission.';
-
-          // This should trigger the native prompt when permission was "default"
-          const result = await OneSignal.Notifications.requestPermission();
-          // result is usually "granted" | "denied" | "default"
-
-          if (result === 'granted') {
-            msg.textContent = 'Notifications are enabled for this device.';
-            btn.textContent = 'Notifications Enabled';
-            setTimeout(() => {
-              section.style.display = 'none';
-            }, 2000);
-          } else {
+      btn.addEventListener(
+        'click',
+        async () => {
+          // Guard in case requestPermission isn't present
+          if (!OneSignal.Notifications.requestPermission) {
+            console.warn('requestPermission is not available.');
             msg.textContent =
-              'Notifications are still disabled. You can enable them later in your browser settings.';
+              'Notifications cannot be requested in this browser.';
+            return;
+          }
+
+          try {
+            btn.disabled = true;
+            msg.textContent = 'One moment… asking for permission.';
+
+            const result = await OneSignal.Notifications.requestPermission();
+            // result is usually "granted" | "denied" | "default"
+            const currentPerm = OneSignal.Notifications.permission;
+            const finalStatus = result || currentPerm;
+
+            if (finalStatus === 'granted') {
+              msg.textContent = 'Notifications are enabled for this device.';
+              btn.textContent = 'Notifications Enabled';
+              // Hide the card after a short confirmation
+              setTimeout(() => {
+                section.style.display = 'none';
+              }, 2000);
+            } else if (finalStatus === 'denied') {
+              msg.textContent = 'Notifications are blocked in your browser settings.';
+              btn.textContent = 'Notifications Blocked';
+              btn.disabled = true;
+            } else {
+              msg.textContent =
+                'Notifications are still disabled. You can enable them later in your browser settings.';
+              btn.disabled = false;
+            }
+          } catch (e) {
+            console.error('Error requesting notification permission', e);
+            msg.textContent =
+              'Something went wrong while requesting notifications.';
             btn.disabled = false;
           }
-        } catch (e) {
-          console.error('Error requesting permission', e);
-          msg.textContent = 'Something went wrong while requesting notifications.';
-          btn.disabled = false;
-        }
-      });
+        },
+        { once: true } // avoid double-adding the handler
+      );
     } catch (e) {
       console.error('Error initializing notifications UI', e);
       section.style.display = 'none';
