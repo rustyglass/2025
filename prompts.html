@@ -218,7 +218,7 @@
 
 <!-- New: small print button under filters -->
 <div style="text-align:center; margin-bottom:1rem;">
-  <button id="printPDF" class="print-btn">Open Printable Prompt List</button>
+  <button id="printPDF" class="print-btn">Printable List</button>
 </div>
 
 <div id="promptGrid" class="prompt-grid"></div>
@@ -405,20 +405,6 @@
       window.open("list.pdf", "_blank");
     });
   }
-});
-    document.getElementById("printPDF").addEventListener("click", () => {
-  const win = window.open("list.pdf", "_blank");
-
-  if (!win) {
-    alert("Please allow pop-ups to print.");
-    return;
-  }
-
-  // Wait for the PDF to load, then trigger print
-  win.onload = () => {
-    win.focus();
-    win.print();
-  };
 });
   </script>
 </body>
