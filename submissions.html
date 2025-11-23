@@ -12,9 +12,14 @@
 
   <style>
     /* Page layout */
-    body { margin:0; font-family:'Poppins',sans-serif; background:#f4f4f4; color:#333; }
+    body { margin:0; font-family:'Poppins',sans-serif; background:#247182; color:#333; }
     .container { max-width: 900px; margin: 6rem auto 3rem; padding: 0 1rem; }
-
+   
+    #page-shell {
+      background: #f4f4f4;
+      min-height: 100vh;
+      padding-top: 1rem; /* adjust this value */
+    }
     /* Bubbles */
     .bubble {
       background: #fff;
@@ -99,7 +104,7 @@
   </style>
 </head>
 <body>
-  <!-- Header (menu.js styles/behavior) -->
+  <div id="page-shell">
   <header id="main-header">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" />
@@ -125,7 +130,7 @@
       <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
     </div>
   </footer>
-
+  </div>
   <!-- Menu data + builder -->
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
