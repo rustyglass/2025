@@ -712,74 +712,97 @@
     const msg = section ? section.querySelector('.notify-message') : null;
     if (!section || !btn || !msg) return;
 
-    // Always start hidden – only show when it actually makes sense
+    // Hide by default; we only show it when it actually makes sense
     section.style.display = 'none';
 
     try {
-      // Make sure the Notifications plugin exists
-      if (!OneSignal.Notifications) {
-        console.warn('OneSignal.Notifications is not available in this context.');
+      // If the browser has no Notification API at all, we can't do web push
+      if (typeof Notification === 'undefined') {
         return;
       }
 
-      // Check if push is supported in this browser/context
-      let supported = false;
-      try {
-        const maybeSupported = OneSignal.Notifications.isPushSupported();
-        supported = (typeof maybeSupported === 'boolean')
-          ? maybeSupported
-          : await maybeSupported;
-      } catch (err) {
-        console.warn('isPushSupported() failed:', err);
+      // Native permission from the browser: "default" | "granted" | "denied"
+      let nativePerm = Notification.permission || 'default';
+
+      // If already allowed or blocked → follow your rule: hide the card entirely
+      if (nativePerm === 'granted' || nativePerm === 'denied') {
+        // Nothing to show; user either already gets notifications or has blocked them
+        return;
+      }
+
+      // At this point, nativePerm === "default" (never asked).
+      // Check web push support through OneSignal, if available.
+      if (!OneSignal.Notifications) {
+        // No notifications module → just bail out and keep it hidden
+        return;
+      }
+
+      let supported = true;
+      if (typeof OneSignal.Notifications.isPushSupported === 'function') {
+        try {
+          supported = await OneSignal.Notifications.isPushSupported();
+        } catch (err) {
+          console.warn('isPushSupported failed:', err);
+          supported = false;
+        }
       }
 
       if (!supported) {
-        // No web push support (older browser / iOS context / etc.)
-        return; // keep section hidden
-      }
-
-      // v16: permission is a property: "default" | "granted" | "denied"
-      const perm = OneSignal.Notifications.permission;
-
-      if (perm === 'granted' || perm === 'denied') {
-        // Already decided (either allowed or blocked) → hide section completely
+        // Browser/context doesn't support push
         return;
       }
 
-      // "default" (never asked) → show the Enable button
+      // If we got here: browser supports push, permission is "default" → show section
       section.style.display = 'block';
 
-      btn.addEventListener('click', async () => {
-        // Guard in case requestPermission isn't present
-        if (!OneSignal.Notifications.requestPermission) {
-          console.warn('requestPermission is not available on OneSignal.Notifications.');
-          msg.textContent = 'Notifications cannot be requested in this browser.';
-          return;
-        }
-
-        try {
+      btn.addEventListener(
+        'click',
+        async () => {
           btn.disabled = true;
           msg.textContent = 'One moment… asking for permission.';
 
-          const result = await OneSignal.Notifications.requestPermission();
-          const currentPerm = OneSignal.Notifications.permission;
-          const finalStatus = result || currentPerm; // "granted" | "denied" | "default"
+          let result = null;
 
-          if (finalStatus === 'granted' || finalStatus === 'denied') {
-            // Your spec: hide the entire section in both cases
-            section.style.display = 'none';
-          } else {
-            // Still "default" for some reason
+          try {
+            if (
+              OneSignal.Notifications &&
+              typeof OneSignal.Notifications.requestPermission === 'function'
+            ) {
+              // Use OneSignal helper if available
+              result = await OneSignal.Notifications.requestPermission();
+            } else if (typeof Notification.requestPermission === 'function') {
+              // Fallback to native requestPermission
+              result = await Notification.requestPermission();
+            }
+
+            // After requesting, re-check native permission as the final source of truth
+            nativePerm = Notification.permission || result || 'default';
+
+            if (nativePerm === 'granted') {
+              msg.textContent = 'Notifications are enabled for this device.';
+              btn.textContent = 'Notifications Enabled';
+              setTimeout(() => {
+                section.style.display = 'none';
+              }, 2000);
+            } else if (nativePerm === 'denied') {
+              msg.textContent = 'Notifications are blocked in your browser settings.';
+              btn.textContent = 'Notifications Blocked';
+              btn.disabled = true;
+            } else {
+              // Still "default" for some reason
+              msg.textContent =
+                'Notifications are still disabled. You can enable them later in your browser settings.';
+              btn.disabled = false;
+            }
+          } catch (e) {
+            console.error('Error requesting notification permission', e);
             msg.textContent =
-              'Notifications are still disabled. You can enable them later in your browser settings.';
+              'Something went wrong while requesting notifications.';
             btn.disabled = false;
           }
-        } catch (e) {
-          console.error('Error requesting notification permission', e);
-          msg.textContent = 'Something went wrong while requesting notifications.';
-          btn.disabled = false;
-        }
-      }, { once: true });
+        },
+        { once: true } // prevent double-binding the click handler
+      );
     } catch (e) {
       console.error('Error initializing notifications UI', e);
       section.style.display = 'none';
