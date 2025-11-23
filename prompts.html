@@ -20,10 +20,13 @@
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #f4f4f4;
+      background: #247182;
       color: #333;
     }
-
+    #page-shell {
+     background: #f4f4f4;  /* actual visible page background */
+      min-height: 100vh; 
+    }
     .container {
       max-width: 1100px;
       margin: 6rem auto 3rem;
@@ -200,6 +203,7 @@
   </style>
 </head>
 <body>
+  <div id="page-shell">
   <header id="main-header">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" />
@@ -223,7 +227,7 @@
       <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
     </div>
   </footer>
-
+  </div>
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
