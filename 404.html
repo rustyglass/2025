@@ -16,18 +16,21 @@
     box-sizing: border-box;
   }
 
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: #247182;
-    margin: 0;
+  html {
+     background: #247182;   /* Safari uses this for the status bar */
   }
 
-   #page-shell {
-     background: #f4f4f4;
-     min-height: 100vh;
-     position: relative;
-   }
+  body {
+    background: transparent;  /* OR #f4f4f4, as long as html remains teal */
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  #page-shell {
+    background: #f4f4f4;   /* Your site’s visible background */
+    min-height: 100vh;
+  }
  
    #main-header {
       background: #247182 !important; /* Prevent teal patch above content */
