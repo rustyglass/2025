@@ -21,13 +21,17 @@
     font-family: 'Poppins', sans-serif;
     background: #247182;
     margin: 0;
-    padding: 0;
   }
 
    #page-shell {
      background: #f4f4f4;
      min-height: 100vh;
+     position: relative;
    }
+ 
+   #main-header {
+      background: #247182 !important; /* Prevent teal patch above content */
+    }
    
   .content {
     margin-top: 7rem;
