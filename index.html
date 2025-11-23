@@ -696,6 +696,7 @@
 
   <!-- OneSignal UI logic for Notifications post -->
   <!-- OneSignal UI logic for Notifications post -->
+<!-- OneSignal UI logic for the "Enable Notifications" card -->
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
@@ -704,29 +705,38 @@
     const msg = section ? section.querySelector('.notify-message') : null;
     if (!section || !btn || !msg) return;
 
-    // Hide by default; we'll show it only when it makes sense
+    // Hide by default; we only show it when it actually makes sense
     section.style.display = 'none';
 
     try {
-      // ✅ Properly check push support
+      // Check if this browser/context supports push
       const supported = await OneSignal.Notifications.isPushSupported();
       if (!supported) {
-        // This browser / context can't do web push
+        // No web push support here (e.g., older browser / unsupported context)
         section.style.display = 'none';
         return;
       }
 
-      // ✅ Get current permission state: "default" | "granted" | "denied"
-      const perm = await OneSignal.Notifications.getPermission();
+      // v16: permission is a PROPERTY, not a function
+      // "default" | "granted" | "denied"
+      const perm = OneSignal.Notifications.permission;
 
       if (perm === 'granted') {
-        // Already allowed → nothing to ask, so hide
+        // Already allowed → nothing to show
         section.style.display = 'none';
         return;
       }
 
-      // "default" (never asked) or "denied" (user blocked before)
-      // We only get a real native prompt when it's "default"
+      if (perm === 'denied') {
+        // User has explicitly blocked notifications previously
+        section.style.display = 'block';
+        msg.textContent = 'Notifications are blocked in your browser settings.';
+        btn.textContent = 'Notifications Blocked';
+        btn.disabled = true;
+        return;
+      }
+
+      // "default" (never asked) → show the Enable button
       section.style.display = 'block';
 
       btn.addEventListener('click', async () => {
@@ -734,9 +744,9 @@
           btn.disabled = true;
           msg.textContent = 'One moment… asking for permission.';
 
-          // ✅ This should trigger the native prompt when perm was "default"
+          // This should trigger the native prompt when permission was "default"
           const result = await OneSignal.Notifications.requestPermission();
-          // result is usually "granted" or "denied"
+          // result is usually "granted" | "denied" | "default"
 
           if (result === 'granted') {
             msg.textContent = 'Notifications are enabled for this device.';
