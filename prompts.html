@@ -215,12 +215,6 @@
     <h1>Prompts</h1>
 <input type="text" id="searchInput" placeholder="Search prompts..." />
 <div id="filterButtons" class="filter-buttons-container"></div>
-
-<!-- New: small print button under filters -->
-<div style="text-align:center; margin-bottom:1rem;">
-  <button id="printPDF" class="print-btn">Printable List</button>
-</div>
-
 <div id="promptGrid" class="prompt-grid"></div>
   </div>
 
@@ -398,13 +392,34 @@
     renderPrompts(window.prompts);
   });
 
-  // Open prompt list PDF in a new tab
-  const printBtn = document.getElementById("printPDF");
-  if (printBtn) {
-    printBtn.addEventListener("click", () => {
-      window.open("list.pdf", "_blank");
-    });
-  }
+  // 🔹 Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
+  document.addEventListener("keydown", (e) => {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const isPrintShortcut =
+      (isMac && e.metaKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p") ||
+      (!isMac && e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p");
+
+    if (!isPrintShortcut) return;
+
+    e.preventDefault(); // stop browser from printing the page
+
+    const win = window.open("list.pdf", "_blank");
+    if (!win) {
+      alert("Please allow pop-ups to open the printable prompt list.");
+      return;
+    }
+
+    // Try to trigger print on the PDF window once it loads
+    win.onload = () => {
+      try {
+        win.focus();
+        win.print();
+      } catch (err) {
+        // If browser blocks auto-print, at least the PDF is open
+        console.warn("Could not auto-print PDF:", err);
+      }
+    };
+  });
 });
   </script>
 </body>
