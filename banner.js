@@ -1,12 +1,37 @@
 (function () {
   document.addEventListener("DOMContentLoaded", function () {
     const cfg = window.BANNER_CONFIG;
-    if (!cfg || !cfg.message) {
-      // No config or no message → no banner
+
+    // If there is no config or no message, do nothing (no banner)
+    if (!cfg || !cfg.message || cfg.message.trim() === "") {
       return;
     }
 
-    // Create banner container
+    const header = document.getElementById("main-header");
+    if (!header || !header.parentNode) {
+      // Fallback: just append to top of body if header not found
+      const fallbackBanner = buildBanner(cfg);
+      document.body.insertBefore(fallbackBanner, document.body.firstChild || null);
+      return;
+    }
+
+    // Create a wrapper that will hold the banner AND the header
+    let wrapper = document.querySelector(".sticky-header-wrapper");
+    if (!wrapper) {
+      wrapper = document.createElement("div");
+      wrapper.className = "sticky-header-wrapper";
+      // Insert wrapper where the header currently is
+      header.parentNode.insertBefore(wrapper, header);
+      // Move header into wrapper
+      wrapper.appendChild(header);
+    }
+
+    // Build the banner and insert it ABOVE the header inside the wrapper
+    const banner = buildBanner(cfg);
+    wrapper.insertBefore(banner, wrapper.firstChild);
+  });
+
+  function buildBanner(cfg) {
     const banner = document.createElement("div");
     banner.className = "site-banner";
     banner.setAttribute("role", "region");
@@ -16,7 +41,6 @@
     banner.style.backgroundColor = cfg.backgroundColor || "#247182";
     banner.style.color = cfg.textColor || "#ffffff";
 
-    // Message text
     const text = document.createElement("span");
     text.className = "site-banner-text";
     text.textContent = cfg.message;
@@ -33,14 +57,6 @@
       banner.appendChild(btn);
     }
 
-    // Insert under your main header if it exists, otherwise at top of body
-    const header = document.getElementById("main-header");
-    if (header && header.parentNode) {
-      header.parentNode.insertBefore(banner, header.nextSibling);
-    } else if (document.body.firstChild) {
-      document.body.insertBefore(banner, document.body.firstChild);
-    } else {
-      document.body.appendChild(banner);
-    }
-  });
+    return banner;
+  }
 })();
