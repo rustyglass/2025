@@ -180,21 +180,22 @@
       justify-content: center;
     }
     .print-btn {
-  background: #247182;
-  color: white;
-  padding: 0.6rem 1.4rem;
-  border-radius: 30px;
-  border: none;
-  font-weight: 700;
+  background: #ffffff;
+  color: #247182;
+  border: 2px solid #247182;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
-  transition: transform 0.25s ease, background 0.25s ease;
-  font-size: 1rem;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .print-btn:hover {
-  transform: scale(1.05);
-  background: #1b5663;
+  background: #247182;
+  color: #ffffff;
+  transform: scale(1.03);
 }
   </style>
 </head>
@@ -212,12 +213,15 @@
 
   <div class="container">
     <h1>Prompts</h1>
-    <div style="text-align:center; margin-bottom:1rem;">
-  <button id="printPDF" class="print-btn">Print List</button>
+<input type="text" id="searchInput" placeholder="Search prompts..." />
+<div id="filterButtons" class="filter-buttons-container"></div>
+
+<!-- New: small print button under filters -->
+<div style="text-align:center; margin-bottom:1rem;">
+  <button id="printPDF" class="print-btn">Open Printable Prompt List</button>
 </div>
-    <input type="text" id="searchInput" placeholder="Search prompts..." />
-    <div id="filterButtons" class="filter-buttons-container"></div>
-    <div id="promptGrid" class="prompt-grid"></div>
+
+<div id="promptGrid" class="prompt-grid"></div>
   </div>
 
   <footer class="site-footer">
@@ -379,21 +383,29 @@
 
     // Make buttons & prompts appear immediately; fetch submissions in background
     window.addEventListener("DOMContentLoaded", () => {
-      if (typeof prompts !== "undefined") window.prompts = prompts;
+  if (typeof prompts !== "undefined") window.prompts = prompts;
 
-      // Show UI right away
-      renderFilterButtons();
-      renderPrompts(window.prompts);
+  // Show UI right away
+  renderFilterButtons();
+  renderPrompts(window.prompts);
 
-      // Fetch submissions; once ready, update gray-out in place (no re-animation)
-      fetchSubmissions().catch(err => {
-        console.error("Error fetching submissions:", err);
-      });
+  // Fetch submissions; once ready, update gray-out in place (no re-animation)
+  fetchSubmissions().catch(err => {
+    console.error("Error fetching submissions:", err);
+  });
 
-      document.getElementById("searchInput").addEventListener("input", () => {
-        renderPrompts(window.prompts);
-      });
+  document.getElementById("searchInput").addEventListener("input", () => {
+    renderPrompts(window.prompts);
+  });
+
+  // Open prompt list PDF in a new tab
+  const printBtn = document.getElementById("printPDF");
+  if (printBtn) {
+    printBtn.addEventListener("click", () => {
+      window.open("list.pdf", "_blank");
     });
+  }
+});
     document.getElementById("printPDF").addEventListener("click", () => {
   const win = window.open("list.pdf", "_blank");
 
