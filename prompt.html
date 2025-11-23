@@ -13,9 +13,14 @@
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #f4f4f4;
+    background: #247182;
     color: #333;
   }
+    #page-shell {
+  background: #f4f4f4;
+  min-height: 100vh;
+  padding-top: 0.5rem; /* adjust this value */
+}
 
   /* Bubbles / cards */
   .bubble {
@@ -205,6 +210,7 @@
 </style>
 </head>
 <body>
+  <div id="page-shell">
   <header id="main-header">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" style="height: 28px; margin-right: 8px;">
@@ -247,7 +253,7 @@
     <iframe id="p1-rating-form" allowtransparency="true" title="Submit Rating" loading="lazy"
       src="https://tally.so/r/nrV5BM?transparentBackground=1&hideTitle=1&Prompt=1"></iframe>
   </div>
-
+ </div>
   <footer class="site-footer">
     <div class="footer-logo-container">
       <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
