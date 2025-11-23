@@ -1,7 +1,7 @@
 // Global banner settings – change these whenever you want
 window.BANNER_CONFIG = {
   // ⭐ MAIN MESSAGE (required for banner to show)
-  message: "Registration for the 2025 Reading Challenge is now open!",
+  message: "",
 
   // ⭐ COLORS
   // If you leave these out, defaults are used in banner.js
