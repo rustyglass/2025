@@ -19,8 +19,14 @@
   body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: #f4f4f4;
+    background: #247182;
     color: #333;
+  }
+
+  #page-shell {
+    background: #f4f4f4;
+    min-height: 100vh;
+    padding-top: 3rem;
   }
 
   .content {
@@ -89,6 +95,7 @@
 </style>
 </head>
 <body>
+  <div id="page-shell">
   <header id="main-header">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" />
@@ -111,7 +118,7 @@
     <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
   </div>
 </footer>
-
+  </div>
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   </body>
