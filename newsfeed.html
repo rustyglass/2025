@@ -19,8 +19,14 @@
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #f4f4f4;
+      background: #247182;
       color: #333;
+    }
+
+    #page-shell {
+      background: #f4f4f4;
+      min-height: 100vh;
+      padding-top: 3rem;
     }
 
     .container {
@@ -98,6 +104,7 @@
 <body>
   <!-- Header (shared structure across pages) -->
   <header id="main-header">
+    <div id="page-shell">
     <div class="site-name">
       <img src="favicon.png" alt="Icon" />
       <span class="desktop-title">2025 Reading Challenge</span>
@@ -111,7 +118,7 @@
     <div class="bubble" style="text-align:center;"><h1>Newsfeed</h1></div>
     <div id="feed"></div>
   </div>
-
+</div>
   <!-- Menus -->
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
