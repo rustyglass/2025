@@ -1,0 +1,47 @@
+/* ===== Site-wide banner ===== */
+
+.site-banner {
+  /* MAIN THINGS YOU’LL TWEAK VISUALLY ARE IN JS (colors + text),
+     THIS JUST HANDLES LAYOUT AND HOVER BEHAVIOR */
+  padding: 0.5rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+
+  font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.95rem;
+
+  /* background-color and text color will be set inline from JS
+     using your banner-config.js (so you don’t have to dig in here) */
+}
+
+.site-banner-text {
+  font-weight: 500;
+}
+
+.site-banner-button {
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.site-banner-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+  .site-banner {
+    padding: 0.75rem 1rem;
+  }
+}
