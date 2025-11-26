@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Readers - 2025 Reading Challenge</title>
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#247182" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="menu.css">
+  <link rel="stylesheet" href="banner.css">
+  <script src="banner-config.js"></script>
+  <script src="banner.js" defer></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Teal behind overscroll / status bar */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #247182;
+    }
+
+    /* Light shell for actual page content */
+    #page-shell {
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 6rem auto 3rem;
+      padding: 0 1rem 3rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      color: #247182;
+      font-weight: 800;
+      text-align: center;
+      margin: 0 0 1.5rem;
+    }
+
+    /* Reader selector buttons */
+    .reader-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .reader-btn {
+      background: #ffffff;
+      color: #247182;
+      border: 2px solid #247182;
+      border-radius: 30px;
+      padding: 0.45rem 1.1rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .reader-btn:hover {
+      background: #247182;
+      color: #fff;
+      transform: scale(1.02);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .reader-btn.active {
+      background: #247182;
+      color: #fff;
+    }
+
+    /* Generic bubble card, matching homepage feel */
+    .bubble {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      margin-bottom: 1.5rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .bubble:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    }
+
+    .helper-bubble {
+      text-align: center;
+      color: #555;
+      font-size: 1rem;
+    }
+
+    /* Progress bubble */
+    .reader-summary-title {
+      font-size: 1.3rem;
+      color: #247182;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+
+    .reader-summary-subtitle {
+      font-size: 0.95rem;
+      color: #444;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-bar-container {
+      background: #ddd;
+      border-radius: 6px;
+      width: 100%;
+      height: 18px;
+      overflow: hidden;
+      margin: 0.4rem 0 0.3rem;
+    }
+
+    .progress-bar {
+      background: #247182;
+      height: 100%;
+      width: 0;
+      transition: width 0.4s ease;
+    }
+
+    .reader-stats-line {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .reader-stats-line span {
+      white-space: nowrap;
+    }
+
+    /* Book list layout */
+    .books-section-title {
+      font-size: 1.1rem;
+      color: #247182;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .books-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .book-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .book-card img {
+      height: 100px;
+      width: 70px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .book-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .book-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .book-author {
+      font-size: 0.9rem;
+      color: #444;
+      margin-bottom: 0.3rem;
+    }
+
+    .book-meta {
+      font-size: 0.85rem;
+      color: #555;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .book-meta span {
+      white-space: nowrap;
+    }
+
+    .book-timestamp {
+      font-size: 0.85rem;
+      color: #777;
+      align-self: flex-end;
+    }
+
+    @media (max-width: 600px) {
+      .book-card {
+        align-items: flex-start;
+      }
+
+      .book-timestamp {
+        align-self: flex-start;
+        margin-top: 0.3rem;
+      }
+    }
+
+    .site-footer {
+      margin-top: 3rem;
+      padding: 2rem 1rem;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+    }
+
+    .footer-logo-container {
+      width: 350px;
+      height: 140px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .footer-logo {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="page-shell">
+    <header id="main-header">
+      <div class="site-name">
+        <img src="favicon.png" alt="Icon" />
+        <span class="desktop-title">2025 Reading Challenge</span>
+      </div>
+      <nav class="menu"></nav>
+      <button class="menu-toggle" id="menu-button" aria-label="Menu">☰</button>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu"></div>
+
+    <div class="container">
+      <h1>Readers</h1>
+
+      <!-- Reader selection buttons -->
+      <div class="reader-buttons" id="readerButtons"></div>
+
+      <!-- Helper bubble when nothing is selected -->
+      <div class="bubble helper-bubble" id="helperBubble">
+        Select a reader above to view their progress and books.
+      </div>
+
+      <!-- Reader summary + progress -->
+      <div class="bubble" id="summaryBubble" style="display:none;"></div>
+
+      <!-- Reader book list -->
+      <div class="bubble" id="booksBubble" style="display:none;">
+        <div class="books-section-title">Books</div>
+        <div class="books-list" id="booksList"></div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div class="footer-logo-container">
+        <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+      </div>
+    </footer>
+  </div>
+
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+
+  <script>
+    const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
+    const MAX_PROMPTS = 85; // total prompts in the challenge
+    const SHEET_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
+
+    let allRows = [];
+    let activeReader = null;
+
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      const header = lines[0].split(",").map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const cols = line.split(",");
+        const obj = {};
+        header.forEach((h, i) => {
+          obj[h] = (cols[i] || "").trim();
+        });
+        return obj;
+      });
+    }
+
+    function toDateUTCish(s) {
+      if (!s) return null;
+      const str = String(s).trim();
+
+      // Already ISO-ish
+      if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+        return new Date(str.endsWith("Z") ? str : str + "Z");
+      }
+
+      // "YYYY-MM-DD HH:mm[:ss]" from the sheet
+      const m = str.match(
+        /^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/
+      );
+      if (m) {
+        const [_, y, mo, d, h, mi, sec] = m;
+        const pad2 = n => String(n).padStart(2, "0");
+        const iso =
+          `${y}-${pad2(mo)}-${pad2(d)}T${pad2(h)}:${pad2(mi)}:${pad2(sec || "00")}Z`;
+        const dt = new Date(iso);
+        return isNaN(dt) ? null : dt;
+      }
+
+      const dt = new Date(str);
+      return isNaN(dt) ? null : dt;
+    }
+
+    function formatDateCentral(s) {
+      const dt = toDateUTCish(s);
+      if (!dt) return "";
+      return dt
+        .toLocaleString("en-US", {
+          timeZone: "America/Chicago",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        })
+        .replace(",", " at");
+    }
+
+    function renderReaderButtons() {
+      const container = document.getElementById("readerButtons");
+      container.innerHTML = "";
+
+      PARTICIPANTS.forEach(name => {
+        const btn = document.createElement("button");
+        btn.className = "reader-btn";
+        btn.textContent = name;
+        if (activeReader === name) {
+          btn.classList.add("active");
+        }
+        btn.addEventListener("click", () => {
+          if (activeReader === name) {
+            // Toggle off
+            activeReader = null;
+            renderReaderButtons();
+            clearReaderView();
+          } else {
+            activeReader = name;
+            renderReaderButtons();
+            renderReaderView(name);
+          }
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function clearReaderView() {
+      const helper = document.getElementById("helperBubble");
+      const summary = document.getElementById("summaryBubble");
+      const booksBubble = document.getElementById("booksBubble");
+      const booksList = document.getElementById("booksList");
+
+      helper.style.display = "block";
+      summary.style.display = "none";
+      booksBubble.style.display = "none";
+      booksList.innerHTML = "";
+    }
+
+    function renderReaderView(name) {
+      const helper = document.getElementById("helperBubble");
+      const summary = document.getElementById("summaryBubble");
+      const booksBubble = document.getElementById("booksBubble");
+      const booksList = document.getElementById("booksList");
+
+      helper.style.display = "none";
+
+      // Filter rows for this reader
+      const rows = allRows.filter(r => r["Reader"] === name && r["Prompt"]);
+      const totalBooks = rows.length;
+
+      // Unique prompts
+      const promptSet = new Set();
+      rows.forEach(r => {
+        const n = parseInt(r["Prompt"], 10);
+        if (!isNaN(n)) promptSet.add(n);
+      });
+      const completedCount = promptSet.size;
+      const percent = MAX_PROMPTS
+        ? Math.min(100, (completedCount / MAX_PROMPTS) * 100)
+        : 0;
+
+      // Date stats (based on Submitted at)
+      const datedRows = rows
+        .map(r => ({ row: r, dt: toDateUTCish(r["Submitted at"]) }))
+        .filter(x => x.dt);
+      let firstDate = "";
+      let lastDate = "";
+      if (datedRows.length > 0) {
+        datedRows.sort((a, b) => a.dt - b.dt);
+        firstDate = formatDateCentral(datedRows[0].row["Submitted at"]);
+        lastDate = formatDateCentral(
+          datedRows[datedRows.length - 1].row["Submitted at"]
+        );
+      }
+
+      // Summary bubble contents
+      summary.innerHTML = `
+        <div class="reader-summary-title">${name}'s Progress</div>
+        <div class="reader-summary-subtitle">
+          ${completedCount} of ${MAX_PROMPTS} prompts completed
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width:${percent}%;"></div>
+        </div>
+        <div class="reader-stats-line">
+          <span>Total books: <strong>${totalBooks}</strong></span>
+          ${
+            firstDate
+              ? `<span>First submission: <strong>${firstDate}</strong></span>`
+              : ""
+          }
+          ${
+            lastDate
+              ? `<span>Most recent: <strong>${lastDate}</strong></span>`
+              : ""
+          }
+        </div>
+      `;
+      summary.style.display = "block";
+
+      // Books bubble
+      booksList.innerHTML = "";
+      if (rows.length === 0) {
+        booksList.innerHTML =
+          "<p style='text-align:center; color:#777; margin:0;'>No books submitted yet.</p>";
+      } else {
+        // Sort newest → oldest by date
+        const sorted = [...rows].sort((a, b) => {
+          const da = toDateUTCish(a["Submitted at"]);
+          const db = toDateUTCish(b["Submitted at"]);
+          if (!da && !db) return 0;
+          if (!da) return 1;
+          if (!db) return -1;
+          return db - da;
+        });
+
+        sorted.forEach(r => {
+          const cover = r["Cover"] || "no-cover.png";
+          const title = r["Title"] || "(Untitled)";
+          const author = r["Author"] || "Unknown author";
+          const rating = r["Rating"] || "";
+          const prompt = r["Prompt"] || "";
+          const ts = formatDateCentral(r["Submitted at"]);
+
+          const card = document.createElement("div");
+          card.className = "book-card";
+
+          card.innerHTML = `
+            <img src="${cover}" alt="Book cover for ${title}">
+            <div class="book-main">
+              <div class="book-title">${title}</div>
+              <div class="book-author">by ${author}</div>
+              <div class="book-meta">
+                ${
+                  prompt
+                    ? `<span>Prompt #${prompt}</span>`
+                    : ""
+                }
+                ${
+                  rating
+                    ? `<span>${rating} Star${rating === "1" ? "" : "s"}</span>`
+                    : ""
+                }
+              </div>
+            </div>
+            <div class="book-timestamp">
+              ${ts}
+            </div>
+          `;
+          booksList.appendChild(card);
+        });
+      }
+
+      booksBubble.style.display = "block";
+
+      // On mobile, scroll down to the summary when selecting a reader
+      summary.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      renderReaderButtons();
+      clearReaderView(); // show helper bubble by default
+
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+        allRows = parseCSV(text).filter(row => row["Reader"] && row["Title"]);
+      } catch (err) {
+        console.error("Error loading reader data:", err);
+      }
+    });
+  </script>
+</body>
+</html>
