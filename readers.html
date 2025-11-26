@@ -165,7 +165,7 @@
 
     /* Reader summary bubble */
     #summaryBubble {
-      margin-bottom: 1.4rem;
+      margin-bottom: 1.5rem; /* a bit more gap above submissions bubble */
       position: relative; /* for badge placement */
     }
 
@@ -219,15 +219,15 @@
       white-space: nowrap;
     }
 
-    /* Submissions title bubble: taller & a bit bigger */
+    /* Submissions title bubble: taller & bigger */
     .submissions-title-bubble {
       text-align: center;
       font-weight: 700;
       color: #247182;
-      padding-top: 1.2rem;
-      padding-bottom: 1.2rem;
-      font-size: 1.05rem;
-      margin-bottom: 0.9rem;
+      padding-top: 1.8rem;
+      padding-bottom: 1.8rem;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
     }
 
     .books-list {
@@ -236,7 +236,7 @@
       gap: 0.55rem; /* tighter spacing between submissions */
     }
 
-    /* Submission cards (same as submissions.html, but no reader name on right) */
+    /* Submission cards (same feel as submissions.html, but no reader name on right) */
     .submission-card {
       display: flex;
       align-items: center;
@@ -244,7 +244,7 @@
     }
 
     .submission-card.bubble {
-      margin-bottom: 0.4rem; /* tighter than default */
+      margin-bottom: 0.45rem; /* tighter stack */
     }
 
     .submission-card img {
@@ -273,15 +273,18 @@
       color: #777;
       margin-top: 0.5rem;
       align-self: flex-end;
+      text-align: right;
+      width: 100%;
     }
 
     @media (max-width: 600px) {
       .submission-card {
         align-items: flex-start;
       }
+      /* keep timestamps right-aligned on mobile */
       .timestamp {
-        align-self: flex-start;
-        margin-top: 0.3rem;
+        align-self: flex-end;
+        text-align: right;
       }
     }
 
@@ -326,7 +329,7 @@
       <!-- Title row -->
       <div class="page-header-row">
         <button id="backButton" class="back-button" style="display:none;">
-          Back to all readers
+          Back
         </button>
         <h1 id="pageTitle">Readers</h1>
       </div>
@@ -413,7 +416,7 @@
       });
     }
 
-    // Date only (no year) for summary
+    // Date only (no year) for summary line
     function formatDateCentralNoYear(dateStr) {
       const d = buildCentralDate(dateStr);
       if (!d) return "";
@@ -427,7 +430,7 @@
     function computeReaderStats() {
       readerStats = {};
       PARTICIPANTS.forEach(name => {
-        readerStats[name] = { books: 0, promptsCompleted: 0 };
+        readerStats[name] = { promptsCompleted: 0 };
       });
 
       PARTICIPANTS.forEach(name => {
@@ -438,7 +441,6 @@
           if (!isNaN(n)) promptSet.add(n);
         });
         readerStats[name] = {
-          books: rows.length,
           promptsCompleted: promptSet.size
         };
       });
@@ -464,7 +466,7 @@
       grid.innerHTML = "";
 
       PARTICIPANTS.forEach(name => {
-        const stats = readerStats[name] || { books: 0, promptsCompleted: 0 };
+        const stats = readerStats[name] || { promptsCompleted: 0 };
         const percent = MAX_PROMPTS
           ? Math.min(100, (stats.promptsCompleted / MAX_PROMPTS) * 100)
           : 0;
@@ -506,24 +508,18 @@
       booksSection.style.display = "block";
 
       const rows = allRows.filter(r => r.Reader === name && r.Prompt);
-      const totalBooks = rows.length;
-
-      const promptSet = new Set();
-      rows.forEach(r => {
-        const n = parseInt(r.Prompt, 10);
-        if (!isNaN(n)) promptSet.add(n);
-      });
-      const completedCount = promptSet.size;
+      const completedCount = (readerStats[name] && readerStats[name].promptsCompleted) || 0;
       const percent = MAX_PROMPTS
         ? Math.min(100, (completedCount / MAX_PROMPTS) * 100)
         : 0;
       const roundedPercent = Math.round(percent);
 
       const nowYear = new Date().getFullYear();
-      const challengeOver = nowYear >= 2026;
-      const challengeComplete = completedCount === MAX_PROMPTS || challengeOver;
+      const completedAll = completedCount === MAX_PROMPTS;
+      const timeExpired = !completedAll && nowYear >= 2026;
+      const challengeComplete = completedAll || timeExpired;
 
-      if (completedCount === MAX_PROMPTS) {
+      if (completedAll) {
         launchConfetti();
       }
 
@@ -545,18 +541,22 @@
         ? "Challenge completed on:"
         : "Most recent:";
 
+      // Subtitle line: hide 100% only when truly completed via 85/85
+      let subtitleHTML = `<span>${completedCount} of ${MAX_PROMPTS} prompts completed</span>`;
+      if (!completedAll) {
+        subtitleHTML += `<span>• ${roundedPercent}%</span>`;
+      }
+
       summary.innerHTML = `
         ${challengeComplete ? `<div class="challenge-badge">CHALLENGE COMPLETE</div>` : ""}
         <div class="reader-summary-title">${name}'s Progress</div>
         <div class="reader-summary-subtitle">
-          <span>${completedCount} of ${MAX_PROMPTS} prompts completed</span>
-          <span>• ${roundedPercent}%</span>
+          ${subtitleHTML}
         </div>
         <div class="progress-bar-container">
           <div class="progress-bar" style="width:${percent}%;"></div>
         </div>
         <div class="reader-stats-line">
-          <span>Total books: <strong>${totalBooks}</strong></span>
           ${
             firstDate
               ? `<span>First submission: <strong>${firstDate}</strong></span>`
@@ -618,6 +618,14 @@
     window.addEventListener("DOMContentLoaded", async () => {
       const backButton = document.getElementById("backButton");
       backButton.addEventListener("click", showGridView);
+
+      // extra zoom guards (iOS/Safari)
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener("dblclick", function (e) {
+        e.preventDefault();
+      });
 
       try {
         const res = await fetch(SHEET_URL);
