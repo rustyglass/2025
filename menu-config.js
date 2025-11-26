@@ -1,8 +1,9 @@
 const menuItems = [
   { name: "Home", link: "index.html" },
   { name: "Prompts", link: "prompts.html" },
-  { name: "Newsfeed", link: "newsfeed.html" },
   { name: "Submissions", link: "submissions.html" },
+  { name: "Readers", link: "readers.html" },
+  { name: "Newsfeed", link: "newsfeed.html" },
   {
     name: "Other Challenges",
     submenu: [
