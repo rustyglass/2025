@@ -83,7 +83,7 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    /* Generic bubble style (to match rest of site) */
+    /* Generic bubble style (match rest of site) */
     .bubble {
       background: #fff;
       border-radius: 14px;
@@ -100,7 +100,7 @@
 
     /* Progress bubble sits under filter buttons */
     #progressBubble {
-      min-height: 80px;          /* keeps nice chunk of space even when hidden */
+      min-height: 80px;          /* keeps nice chunk of space */
       margin-bottom: 1.5rem;
     }
 
@@ -169,7 +169,6 @@
       animation-delay: var(--delay, 0s);
     }
 
-    /* Strong scale hover — identical to homepage behavior */
     .prompt-card:hover {
       transform: scale(1.03);
       transition: transform 0.25s ease;
@@ -285,7 +284,7 @@
       <input type="text" id="searchInput" placeholder="Search prompts..." />
       <div id="filterButtons" class="filter-buttons-container"></div>
 
-      <!-- Progress bar area (space kept even when inactive) -->
+      <!-- Progress bar area (always shown, content changes) -->
       <div id="progressBubble" class="bubble"></div>
 
       <div id="promptGrid" class="prompt-grid"></div>
@@ -390,7 +389,7 @@
       });
     }
 
-    // Update progress bubble contents
+    // ✅ Update progress bubble contents
     function updateProgressUI() {
       const bubble = document.getElementById("progressBubble");
       if (!bubble) return;
@@ -399,10 +398,15 @@
         ? window.prompts.length
         : 85;
 
+      // No reader selected → show helper text
       if (!activeParticipant) {
-        // keep the gray space, but hide content
-        bubble.style.visibility = "hidden";
-        bubble.innerHTML = "";
+        bubble.style.visibility = "visible";
+        bubble.innerHTML = `
+          <h2>Prompt Progress</h2>
+          <p style="margin:0; font-size:0.95rem;">
+            Select a reader above to highlight which prompts they've completed and see their overall progress.
+          </p>
+        `;
         return;
       }
 
@@ -510,7 +514,7 @@
       // Show UI right away
       renderFilterButtons();
       renderPrompts(window.prompts);
-      updateProgressUI(); // ensures the reserved space is in a clean state
+      updateProgressUI(); // ensures the bubble has helpful text initially
 
       // Fetch submissions; once ready, update gray-out in place
       fetchSubmissions().catch(err => {
@@ -538,7 +542,6 @@
           return;
         }
 
-        // (Optional) you can keep or remove auto-print; leaving the file as-is:
         win.onload = () => {
           try {
             win.focus();
