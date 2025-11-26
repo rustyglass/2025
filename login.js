@@ -23,96 +23,72 @@
         localStorage.removeItem(STORAGE_KEY);
       }
     } catch {
-      // ignore storage errors
+      // ignore
     }
   }
 
-  function updateToggleLabel(btn, name) {
-    if (!btn) return;
-    btn.textContent = name ? `Signed in as ${name}` : 'Not signed in';
-  }
-
   function dispatchReaderChanged(name) {
-    // Custom event so pages (prompts, readers, etc.) can react
     const ev = new CustomEvent('rc25ReaderChanged', {
       detail: { reader: name || null }
     });
     window.dispatchEvent(ev);
   }
 
-  function initLoginUI() {
-    const readers = getReaders();
-    if (!readers.length) return;
-
-    const toggle = document.getElementById('loginToggle');
-    const dropdown = document.getElementById('loginDropdown');
-    if (!toggle || !dropdown) return;
-
-    const current = getStoredReader();
-    updateToggleLabel(toggle, current);
-
-    // Build dropdown buttons
-    dropdown.innerHTML = readers
-      .map(name => {
-        const isActive = name === current;
-        return `
-          <button type="button" data-reader="${name}" class="${isActive ? 'active' : ''}">
-            <span>${name}</span>
-          </button>
-        `;
-      })
-      .join('');
-
-    function closeDropdown() {
-      dropdown.classList.remove('open');
-      dropdown.setAttribute('aria-hidden', 'true');
+  function updateLoginLabels(label) {
+    // Desktop nav
+    const desktopLink = document.querySelector('nav.menu a.login-link');
+    if (desktopLink) {
+      desktopLink.textContent = label;
     }
 
-    function openDropdown() {
-      dropdown.classList.add('open');
-      dropdown.setAttribute('aria-hidden', 'false');
+    // Mobile menu
+    const mobileLink = document.querySelector('#mobileMenu a.login-link');
+    if (mobileLink) {
+      mobileLink.textContent = label;
     }
-
-    // Toggle dropdown on click
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (dropdown.classList.contains('open')) {
-        closeDropdown();
-      } else {
-        openDropdown();
-      }
-    });
-
-    // Click outside to close
-    document.addEventListener('click', () => {
-      if (dropdown.classList.contains('open')) {
-        closeDropdown();
-      }
-    });
-
-    dropdown.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-reader]');
-      if (!btn) return;
-      const name = btn.getAttribute('data-reader');
-
-      // Update active styles
-      dropdown.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      setStoredReader(name);
-      updateToggleLabel(toggle, name);
-      dispatchReaderChanged(name);
-      closeDropdown();
-    });
-
-    // Expose helper globally if you need it anywhere
-    window.rc25GetCurrentReader = function () {
-      return getStoredReader();
-    };
-
-    // Fire initial event, so pages can read existing login on load
-    dispatchReaderChanged(current);
   }
 
-  document.addEventListener('DOMContentLoaded', initLoginUI);
+  function injectLoginLinks() {
+    const reader = getStoredReader();
+    const label = reader || 'Sign In';
+
+    // ----- Desktop nav -----
+    const nav = document.querySelector('nav.menu');
+    if (nav) {
+      const link = document.createElement('a');
+      link.href = 'login.html';
+      link.textContent = label;
+      link.className = 'login-link';
+      nav.appendChild(link);
+    }
+
+    // ----- Mobile sidebar -----
+    // menu.js likely already filled #mobileMenu with links; we just add one more.
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu) {
+      const mobileLink = document.createElement('a');
+      mobileLink.href = 'login.html';
+      mobileLink.textContent = label;
+      mobileLink.className = 'login-link';
+      mobileMenu.appendChild(mobileLink);
+    }
+  }
+
+  function init() {
+    injectLoginLinks();
+
+    // Expose helpers so login.html (and others) can use them
+    window.rc25GetCurrentReader = getStoredReader;
+    window.rc25SetCurrentReader = function (name) {
+      setStoredReader(name);
+      const label = name || 'Sign In';
+      updateLoginLabels(label);
+      dispatchReaderChanged(name);
+    };
+
+    // Fire initial event so pages can react on load
+    dispatchReaderChanged(getStoredReader());
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
 })();
