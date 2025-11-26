@@ -34,7 +34,7 @@
     #page-shell {
       background: #f5f5f5;
       min-height: 100vh;
-      padding-top: 1rem;
+      padding-top: 1rem; 
     }
 
     .container {
@@ -49,40 +49,6 @@
       font-weight: 800;
       text-align: center;
       margin: 0 0 1.5rem;
-    }
-
-    /* Reader selector buttons */
-    .reader-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .reader-btn {
-      background: #ffffff;
-      color: #247182;
-      border: 2px solid #247182;
-      border-radius: 30px;
-      padding: 0.45rem 1.1rem;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.95rem;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .reader-btn:hover {
-      background: #247182;
-      color: #fff;
-      transform: scale(1.02);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    .reader-btn.active {
-      background: #247182;
-      color: #fff;
     }
 
     /* Generic bubble card, matching homepage feel */
@@ -106,20 +72,47 @@
       font-size: 1rem;
     }
 
-    /* Progress bubble */
-    .reader-summary-title {
-      font-size: 1.3rem;
+    /* Reader grid (3 x 2 on desktop, 1 x 6 on mobile) */
+    .reader-grid {
+      display: grid;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Mobile: 1 column */
+    @media (max-width: 699px) {
+      .reader-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Desktop / tablet: 3 columns */
+    @media (min-width: 700px) {
+      .reader-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .reader-card {
+      cursor: pointer;
+      text-align: center;
+      padding: 1rem 1.1rem;
+    }
+
+    .reader-card-name {
+      font-size: 1.05rem;
+      font-weight: 700;
       color: #247182;
-      font-weight: 800;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.4rem;
     }
 
-    .reader-summary-subtitle {
-      font-size: 0.95rem;
+    .reader-card-progress-text {
+      font-size: 0.9rem;
       color: #444;
-      margin-bottom: 0.75rem;
+      margin-top: 0.4rem;
     }
 
+    /* Progress bar reused for both grid + detail */
     .progress-bar-container {
       background: #ddd;
       border-radius: 6px;
@@ -136,6 +129,20 @@
       transition: width 0.4s ease;
     }
 
+    /* Detail summary bubble */
+    .reader-summary-title {
+      font-size: 1.3rem;
+      color: #247182;
+      font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+
+    .reader-summary-subtitle {
+      font-size: 0.95rem;
+      color: #444;
+      margin-bottom: 0.75rem;
+    }
+
     .reader-stats-line {
       font-size: 0.9rem;
       color: #555;
@@ -149,7 +156,7 @@
       white-space: nowrap;
     }
 
-    /* Book list layout */
+    /* Books */
     .books-section-title {
       font-size: 1.1rem;
       color: #247182;
@@ -264,18 +271,18 @@
     <div class="container">
       <h1>Readers</h1>
 
-      <!-- Reader selection buttons -->
-      <div class="reader-buttons" id="readerButtons"></div>
+      <!-- Reader grid view -->
+      <div id="readerGrid" class="reader-grid"></div>
 
       <!-- Helper bubble when nothing is selected -->
       <div class="bubble helper-bubble" id="helperBubble">
-        Select a reader above to view their progress and books.
+        Select a reader card above to view their progress and books.
       </div>
 
-      <!-- Reader summary + progress -->
+      <!-- Reader summary + progress (detail view) -->
       <div class="bubble" id="summaryBubble" style="display:none;"></div>
 
-      <!-- Reader book list -->
+      <!-- Reader book list (detail view) -->
       <div class="bubble" id="booksBubble" style="display:none;">
         <div class="books-section-title">Books</div>
         <div class="books-list" id="booksList"></div>
@@ -294,15 +301,16 @@
 
   <script>
     const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
-    const MAX_PROMPTS = 85; // total prompts in the challenge
+    const MAX_PROMPTS = 85;
     const SHEET_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
 
     let allRows = [];
+    let readerStats = {}; // name -> { books, promptsCompleted }
     let activeReader = null;
 
     function parseCSV(text) {
-      const lines = text.trim().split("\n");
+      const lines = text.trim().split("\\n");
       const header = lines[0].split(",").map(h => h.trim());
       return lines.slice(1).map(line => {
         const cols = line.split(",");
@@ -318,14 +326,14 @@
       if (!s) return null;
       const str = String(s).trim();
 
-      // Already ISO-ish
-      if (/^\d{4}-\d{2}-\d{2}T/.test(str)) {
+      // Already ISO-like
+      if (/^\\d{4}-\\d{2}-\\d{2}T/.test(str)) {
         return new Date(str.endsWith("Z") ? str : str + "Z");
       }
 
-      // "YYYY-MM-DD HH:mm[:ss]" from the sheet
+      // "YYYY-MM-DD HH:mm[:ss]"
       const m = str.match(
-        /^(\d{4})-(\d{1,2})-(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?$/
+        /^(\\d{4})-(\\d{1,2})-(\\d{1,2})\\s+(\\d{1,2}):(\\d{1,2})(?::(\\d{1,2}))?$/
       );
       if (m) {
         const [_, y, mo, d, h, mi, sec] = m;
@@ -355,58 +363,91 @@
         .replace(",", " at");
     }
 
-    function renderReaderButtons() {
-      const container = document.getElementById("readerButtons");
-      container.innerHTML = "";
+    function computeReaderStats() {
+      readerStats = {};
+      PARTICIPANTS.forEach(name => {
+        readerStats[name] = {
+          books: 0,
+          promptsCompleted: 0
+        };
+      });
 
       PARTICIPANTS.forEach(name => {
-        const btn = document.createElement("button");
-        btn.className = "reader-btn";
-        btn.textContent = name;
-        if (activeReader === name) {
-          btn.classList.add("active");
-        }
-        btn.addEventListener("click", () => {
-          if (activeReader === name) {
-            // Toggle off
-            activeReader = null;
-            renderReaderButtons();
-            clearReaderView();
-          } else {
-            activeReader = name;
-            renderReaderButtons();
-            renderReaderView(name);
-          }
+        const rows = allRows.filter(r => r["Reader"] === name && r["Prompt"]);
+        const promptSet = new Set();
+        rows.forEach(r => {
+          const n = parseInt(r["Prompt"], 10);
+          if (!isNaN(n)) promptSet.add(n);
         });
-        container.appendChild(btn);
+        readerStats[name] = {
+          books: rows.length,
+          promptsCompleted: promptSet.size
+        };
       });
     }
 
-    function clearReaderView() {
+    function showGridView() {
+      activeReader = null;
+      const grid = document.getElementById("readerGrid");
       const helper = document.getElementById("helperBubble");
       const summary = document.getElementById("summaryBubble");
       const booksBubble = document.getElementById("booksBubble");
-      const booksList = document.getElementById("booksList");
 
+      grid.style.display = "grid";
       helper.style.display = "block";
       summary.style.display = "none";
       booksBubble.style.display = "none";
-      booksList.innerHTML = "";
+    }
+
+    function renderReaderGrid() {
+      const grid = document.getElementById("readerGrid");
+      grid.innerHTML = "";
+
+      PARTICIPANTS.forEach(name => {
+        const stats = readerStats[name] || { books: 0, promptsCompleted: 0 };
+        const percent = MAX_PROMPTS
+          ? Math.min(100, (stats.promptsCompleted / MAX_PROMPTS) * 100)
+          : 0;
+
+        const card = document.createElement("div");
+        card.className = "bubble reader-card";
+
+        card.innerHTML = `
+          <div class="reader-card-name">${name}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width:${percent}%;"></div>
+          </div>
+          <div class="reader-card-progress-text">
+            ${stats.promptsCompleted}/${MAX_PROMPTS} Prompts
+          </div>
+        `;
+
+        card.addEventListener("click", () => {
+          activeReader = name;
+          renderReaderView(name);
+        });
+
+        grid.appendChild(card);
+      });
     }
 
     function renderReaderView(name) {
+      const grid = document.getElementById("readerGrid");
       const helper = document.getElementById("helperBubble");
       const summary = document.getElementById("summaryBubble");
       const booksBubble = document.getElementById("booksBubble");
       const booksList = document.getElementById("booksList");
 
+      // Hide grid + helper; show detail
+      grid.style.display = "none";
       helper.style.display = "none";
+      summary.style.display = "block";
+      booksBubble.style.display = "block";
 
       // Filter rows for this reader
       const rows = allRows.filter(r => r["Reader"] === name && r["Prompt"]);
       const totalBooks = rows.length;
 
-      // Unique prompts
       const promptSet = new Set();
       rows.forEach(r => {
         const n = parseInt(r["Prompt"], 10);
@@ -417,7 +458,7 @@
         ? Math.min(100, (completedCount / MAX_PROMPTS) * 100)
         : 0;
 
-      // Date stats (based on Submitted at)
+      // Date stats
       const datedRows = rows
         .map(r => ({ row: r, dt: toDateUTCish(r["Submitted at"]) }))
         .filter(x => x.dt);
@@ -454,77 +495,73 @@
           }
         </div>
       `;
-      summary.style.display = "block";
 
-      // Books bubble
+      // Books list
       booksList.innerHTML = "";
       if (rows.length === 0) {
         booksList.innerHTML =
           "<p style='text-align:center; color:#777; margin:0;'>No books submitted yet.</p>";
-      } else {
-        // Sort newest → oldest by date
-        const sorted = [...rows].sort((a, b) => {
-          const da = toDateUTCish(a["Submitted at"]);
-          const db = toDateUTCish(b["Submitted at"]);
-          if (!da && !db) return 0;
-          if (!da) return 1;
-          if (!db) return -1;
-          return db - da;
-        });
-
-        sorted.forEach(r => {
-          const cover = r["Cover"] || "no-cover.png";
-          const title = r["Title"] || "(Untitled)";
-          const author = r["Author"] || "Unknown author";
-          const rating = r["Rating"] || "";
-          const prompt = r["Prompt"] || "";
-          const ts = formatDateCentral(r["Submitted at"]);
-
-          const card = document.createElement("div");
-          card.className = "book-card";
-
-          card.innerHTML = `
-            <img src="${cover}" alt="Book cover for ${title}">
-            <div class="book-main">
-              <div class="book-title">${title}</div>
-              <div class="book-author">by ${author}</div>
-              <div class="book-meta">
-                ${
-                  prompt
-                    ? `<span>Prompt #${prompt}</span>`
-                    : ""
-                }
-                ${
-                  rating
-                    ? `<span>${rating} Star${rating === "1" ? "" : "s"}</span>`
-                    : ""
-                }
-              </div>
-            </div>
-            <div class="book-timestamp">
-              ${ts}
-            </div>
-          `;
-          booksList.appendChild(card);
-        });
+        return;
       }
 
-      booksBubble.style.display = "block";
+      const sorted = [...rows].sort((a, b) => {
+        const da = toDateUTCish(a["Submitted at"]);
+        const db = toDateUTCish(b["Submitted at"]);
+        if (!da && !db) return 0;
+        if (!da) return 1;
+        if (!db) return -1;
+        return db - da;
+      });
 
-      // On mobile, scroll down to the summary when selecting a reader
-      summary.scrollIntoView({ behavior: "smooth", block: "start" });
+      sorted.forEach(r => {
+        const cover = r["Cover"] || "no-cover.png";
+        const title = r["Title"] || "(Untitled)";
+        const author = r["Author"] || "Unknown author";
+        const rating = r["Rating"] || "";
+        const prompt = r["Prompt"] || "";
+        const ts = formatDateCentral(r["Submitted at"]);
+
+        const card = document.createElement("div");
+        card.className = "book-card";
+
+        card.innerHTML = `
+          <img src="${cover}" alt="Book cover for ${title}">
+          <div class="book-main">
+            <div class="book-title">${title}</div>
+            <div class="book-author">by ${author}</div>
+            <div class="book-meta">
+              ${prompt ? `<span>Prompt #${prompt}</span>` : ""}
+              ${
+                rating
+                  ? `<span>${rating} Star${rating === "1" ? "" : "s"}</span>`
+                  : ""
+              }
+            </div>
+          </div>
+          <div class="book-timestamp">
+            ${ts}
+          </div>
+        `;
+        booksList.appendChild(card);
+      });
+
+      // 🔕 No automatic scrolling; stays where the user left it
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-      renderReaderButtons();
-      clearReaderView(); // show helper bubble by default
+      const helper = document.getElementById("helperBubble");
+      helper.textContent = "Loading reader data…";
 
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
         allRows = parseCSV(text).filter(row => row["Reader"] && row["Title"]);
+        computeReaderStats();
+        renderReaderGrid();
+        helper.textContent = "Select a reader card above to view their progress and books.";
       } catch (err) {
         console.error("Error loading reader data:", err);
+        helper.textContent = "Error loading reader data. Please try again later.";
       }
     });
   </script>
