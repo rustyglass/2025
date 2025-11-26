@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Prompts - 2025 Reading Challenge</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="/ios-icon.png">
@@ -23,11 +24,13 @@
       background: #247182;
       color: #333;
     }
+
     #page-shell {
-     background: #f4f4f4;  /* actual visible page background */
-      min-height: 100vh; 
+      background: #f4f4f4;  /* actual visible page background */
+      min-height: 100vh;
       padding-top: 1rem;
     }
+
     .container {
       max-width: 1100px;
       margin: 6rem auto 3rem;
@@ -39,7 +42,7 @@
       color: #247182;
       font-weight: 800;
       text-align: center;
-      margin-bottom: 0 0 1rem;
+      margin: 0 0 1rem;
     }
 
     #filterButtons {
@@ -47,7 +50,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.0rem;
     }
 
     .filter-btn {
@@ -80,6 +83,62 @@
       font-family: 'Poppins', sans-serif;
     }
 
+    /* Generic bubble style (to match rest of site) */
+    .bubble {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      margin-bottom: 1rem;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .bubble:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    /* Progress bubble sits under filter buttons */
+    #progressBubble {
+      min-height: 80px;          /* keeps nice chunk of space even when hidden */
+      margin-bottom: 1.5rem;
+    }
+
+    #progressBubble h2 {
+      font-size: 1.3rem;
+      color: #247182;
+      margin: 0 0 0.5rem;
+    }
+
+    .progress-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .progress-percent {
+      font-weight: 700;
+      color: #247182;
+    }
+
+    .progress-bar-container {
+      background: #ddd;
+      border-radius: 6px;
+      width: 100%;
+      height: 18px;
+      overflow: hidden;
+      margin-top: 0.2rem;
+    }
+
+    .progress-bar {
+      background: #247182;
+      height: 100%;
+      width: 0;
+    }
+
     .prompt-grid {
       display: grid;
       gap: 1.5rem;
@@ -93,29 +152,29 @@
     }
 
     /* 🎬 Animated prompt cards */
-.prompt-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  cursor: pointer;
+    .prompt-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      cursor: pointer;
 
-  /* Smooth hover transition */
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+      /* Smooth hover transition */
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
 
-  /* Entrance animation */
-  opacity: 0;
-  transform: translateY(10px);
-  animation: promptIn 0.35s ease forwards;
-  animation-delay: var(--delay, 0s);
-}
+      /* Entrance animation */
+      opacity: 0;
+      transform: translateY(10px);
+      animation: promptIn 0.35s ease forwards;
+      animation-delay: var(--delay, 0s);
+    }
 
-/* Strong scale hover — identical to homepage behavior */
-.prompt-card:hover {
-  transform: scale(1.03);
-  transition: transform 0.25s ease;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.14);
-}
+    /* Strong scale hover — identical to homepage behavior */
+    .prompt-card:hover {
+      transform: scale(1.03);
+      transition: transform 0.25s ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.14);
+    }
 
     .prompt-card.grayed-out {
       color: #cccccc;
@@ -160,6 +219,10 @@
         opacity: 1;
         transform: none;
       }
+      .bubble {
+        transition: none !important;
+        transform: none !important;
+      }
     }
 
     .footer-logo-container {
@@ -183,52 +246,58 @@
       display: flex;
       justify-content: center;
     }
-    .print-btn {
-  background: #ffffff;
-  color: #247182;
-  border: 2px solid #247182;
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
 
-.print-btn:hover {
-  background: #247182;
-  color: #ffffff;
-  transform: scale(1.03);
-}
+    .print-btn {
+      background: #ffffff;
+      color: #247182;
+      border: 2px solid #247182;
+      border-radius: 999px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .print-btn:hover {
+      background: #247182;
+      color: #ffffff;
+      transform: scale(1.03);
+    }
   </style>
 </head>
 <body>
   <div id="page-shell">
-  <header id="main-header">
-    <div class="site-name">
-      <img src="favicon.png" alt="Icon" />
-      <span class="desktop-title">2025 Reading Challenge</span>
+    <header id="main-header">
+      <div class="site-name">
+        <img src="favicon.png" alt="Icon" />
+        <span class="desktop-title">2025 Reading Challenge</span>
+      </div>
+      <nav class="menu"></nav>
+      <button class="menu-toggle" id="menu-button">&#9776;</button>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu"></div>
+
+    <div class="container">
+      <h1>Prompts</h1>
+      <input type="text" id="searchInput" placeholder="Search prompts..." />
+      <div id="filterButtons" class="filter-buttons-container"></div>
+
+      <!-- Progress bar area (space kept even when inactive) -->
+      <div id="progressBubble" class="bubble"></div>
+
+      <div id="promptGrid" class="prompt-grid"></div>
     </div>
-    <nav class="menu"></nav>
-    <button class="menu-toggle" id="menu-button">&#9776;</button>
-  </header>
 
-  <div class="mobile-menu" id="mobileMenu"></div>
-
-  <div class="container">
-    <h1>Prompts</h1>
-<input type="text" id="searchInput" placeholder="Search prompts..." />
-<div id="filterButtons" class="filter-buttons-container"></div>
-<div id="promptGrid" class="prompt-grid"></div>
+    <footer class="site-footer">
+      <div class="footer-logo-container">
+        <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+      </div>
+    </footer>
   </div>
 
-  <footer class="site-footer">
-    <div class="footer-logo-container">
-      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
-    </div>
-  </footer>
-  </div>
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
@@ -280,17 +349,18 @@
         btn.textContent = name;
 
         btn.onclick = () => {
-  const wasActive = activeParticipant === name;
+          const wasActive = activeParticipant === name;
 
-  // 🎉 Only fire confetti when Cindy is newly selected
-  if (!wasActive && name === "Cindy") {
-    launchConfetti();
-  }
+          // 🎉 Only fire confetti when Cindy is newly selected
+          if (!wasActive && name === "Cindy") {
+            launchConfetti();
+          }
 
-  activeParticipant = wasActive ? null : name;
-  renderFilterButtons();
-  renderPrompts(window.prompts);
-};
+          activeParticipant = wasActive ? null : name;
+          renderFilterButtons();
+          renderPrompts(window.prompts);
+          updateProgressUI(); // update bar whenever selection changes
+        };
 
         if (activeParticipant === name) {
           btn.classList.add("active");
@@ -320,6 +390,58 @@
       });
     }
 
+    // Update progress bubble contents
+    function updateProgressUI() {
+      const bubble = document.getElementById("progressBubble");
+      if (!bubble) return;
+
+      const totalPrompts = Array.isArray(window.prompts)
+        ? window.prompts.length
+        : 85;
+
+      if (!activeParticipant) {
+        // keep the gray space, but hide content
+        bubble.style.visibility = "hidden";
+        bubble.innerHTML = "";
+        return;
+      }
+
+      // If submissions not loaded yet, show loading text
+      if (!allSubmissions.length) {
+        bubble.style.visibility = "visible";
+        bubble.innerHTML = `
+          <h2>${activeParticipant}'s Progress</h2>
+          <div class="progress-top-row">
+            <span>Loading progress…</span>
+          </div>
+        `;
+        return;
+      }
+
+      const completedSet = new Set(
+        allSubmissions
+          .filter(s => s.Reader === activeParticipant)
+          .map(s => s.Prompt)
+      );
+
+      const completedCount = completedSet.size;
+      const pct = totalPrompts
+        ? Math.round((completedCount / totalPrompts) * 100)
+        : 0;
+
+      bubble.style.visibility = "visible";
+      bubble.innerHTML = `
+        <h2>${activeParticipant}'s Progress</h2>
+        <div class="progress-top-row">
+          <span>${completedCount} of ${totalPrompts} prompts completed</span>
+          <span class="progress-percent">${pct}%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width:${pct}%;"></div>
+        </div>
+      `;
+    }
+
     function renderPrompts(prompts) {
       const grid = document.getElementById("promptGrid");
       const input = document.getElementById("searchInput");
@@ -341,7 +463,7 @@
         card.className = "prompt-card";
 
         // Staggered animation delay per card
-        const delayMs = index * 70; // tweak 50–100ms if you want faster/slower cascade
+        const delayMs = index * 70;
         card.style.setProperty("--delay", `${delayMs}ms`);
 
         // Store prompt number on the card for later gray-out updates
@@ -376,56 +498,57 @@
         }))
         .filter(row => row.Reader && !isNaN(row.Prompt));
 
-      // Once we have data, update gray-out on existing cards
+      // Once we have data, update gray-out and progress
       updateGrayOut();
+      updateProgressUI();
     }
 
     // Make buttons & prompts appear immediately; fetch submissions in background
     window.addEventListener("DOMContentLoaded", () => {
-  if (typeof prompts !== "undefined") window.prompts = prompts;
+      if (typeof prompts !== "undefined") window.prompts = prompts;
 
-  // Show UI right away
-  renderFilterButtons();
-  renderPrompts(window.prompts);
+      // Show UI right away
+      renderFilterButtons();
+      renderPrompts(window.prompts);
+      updateProgressUI(); // ensures the reserved space is in a clean state
 
-  // Fetch submissions; once ready, update gray-out in place (no re-animation)
-  fetchSubmissions().catch(err => {
-    console.error("Error fetching submissions:", err);
-  });
+      // Fetch submissions; once ready, update gray-out in place
+      fetchSubmissions().catch(err => {
+        console.error("Error fetching submissions:", err);
+      });
 
-  document.getElementById("searchInput").addEventListener("input", () => {
-    renderPrompts(window.prompts);
-  });
+      document.getElementById("searchInput").addEventListener("input", () => {
+        renderPrompts(window.prompts);
+      });
 
-  // 🔹 Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
-  document.addEventListener("keydown", (e) => {
-    const isMac = navigator.platform.toUpperCase().includes("MAC");
-    const isPrintShortcut =
-      (isMac && e.metaKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p") ||
-      (!isMac && e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p");
+      // Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
+      document.addEventListener("keydown", (e) => {
+        const isMac = navigator.platform.toUpperCase().includes("MAC");
+        const isPrintShortcut =
+          (isMac && e.metaKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p") ||
+          (!isMac && e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p");
 
-    if (!isPrintShortcut) return;
+        if (!isPrintShortcut) return;
 
-    e.preventDefault(); // stop browser from printing the page
+        e.preventDefault(); // stop browser from printing the page
 
-    const win = window.open("list.pdf", "_blank");
-    if (!win) {
-      alert("Please allow pop-ups to open the printable prompt list.");
-      return;
-    }
+        const win = window.open("list.pdf", "_blank");
+        if (!win) {
+          alert("Please allow pop-ups to open the printable prompt list.");
+          return;
+        }
 
-    // Try to trigger print on the PDF window once it loads
-    win.onload = () => {
-      try {
-        win.focus();
-        win.print();
-      } catch (err) {
-        // If browser blocks auto-print, at least the PDF is open
-        console.warn("Could not auto-print PDF:", err);
-      }
-    };
-  });
-});
+        // (Optional) you can keep or remove auto-print; leaving the file as-is:
+        win.onload = () => {
+          try {
+            win.focus();
+            win.print();
+          } catch (err) {
+            console.warn("Could not auto-print PDF:", err);
+          }
+        };
+      });
+    });
   </script>
 </body>
 </html>
