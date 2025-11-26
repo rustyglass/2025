@@ -17,6 +17,9 @@
   <script src="banner-config.js"></script>
   <script src="banner.js" defer></script>
 
+  <!-- PapaParse for proper CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -34,7 +37,7 @@
     #page-shell {
       background: #f5f5f5;
       min-height: 100vh;
-      padding-top: 1rem; 
+      padding-top: 1rem; /* your padding fix */
     }
 
     .container {
@@ -48,10 +51,39 @@
       color: #247182;
       font-weight: 800;
       text-align: center;
-      margin: 0 0 1.5rem;
+      margin: 0 0 1.2rem;
     }
 
-    /* Generic bubble card, matching homepage feel */
+    /* Back row / button */
+    .back-row {
+      max-width: 1100px;
+      margin: 0 auto 0.75rem;
+      padding: 0 1rem;
+    }
+
+    .back-button {
+      border: none;
+      background: none;
+      color: #247182;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .back-button::before {
+      content: "←";
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      text-decoration: underline;
+    }
+
+    /* Generic bubble card */
     .bubble {
       background: #ffffff;
       border-radius: 14px;
@@ -79,17 +111,15 @@
       margin-bottom: 1.5rem;
     }
 
-    /* Mobile: 1 column */
     @media (max-width: 699px) {
       .reader-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* 1 x 6 mobile */
       }
     }
 
-    /* Desktop / tablet: 3 columns */
     @media (min-width: 700px) {
       .reader-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr); /* 3 x 2 desktop */
       }
     }
 
@@ -112,7 +142,6 @@
       margin-top: 0.4rem;
     }
 
-    /* Progress bar reused for both grid + detail */
     .progress-bar-container {
       background: #ddd;
       border-radius: 6px;
@@ -225,7 +254,6 @@
       .book-card {
         align-items: flex-start;
       }
-
       .book-timestamp {
         align-self: flex-start;
         margin-top: 0.3rem;
@@ -268,6 +296,11 @@
 
     <div class="mobile-menu" id="mobileMenu"></div>
 
+    <!-- Back row: only visible in detail view -->
+    <div class="back-row" id="backRow" style="display:none;">
+      <button id="backButton" class="back-button">Back to all readers</button>
+    </div>
+
     <div class="container">
       <h1>Readers</h1>
 
@@ -276,7 +309,7 @@
 
       <!-- Helper bubble when nothing is selected -->
       <div class="bubble helper-bubble" id="helperBubble">
-        Select a reader card above to view their progress and books.
+        Loading reader data…
       </div>
 
       <!-- Reader summary + progress (detail view) -->
@@ -308,19 +341,6 @@
     let allRows = [];
     let readerStats = {}; // name -> { books, promptsCompleted }
     let activeReader = null;
-
-    function parseCSV(text) {
-      const lines = text.trim().split("\\n");
-      const header = lines[0].split(",").map(h => h.trim());
-      return lines.slice(1).map(line => {
-        const cols = line.split(",");
-        const obj = {};
-        header.forEach((h, i) => {
-          obj[h] = (cols[i] || "").trim();
-        });
-        return obj;
-      });
-    }
 
     function toDateUTCish(s) {
       if (!s) return null;
@@ -373,10 +393,10 @@
       });
 
       PARTICIPANTS.forEach(name => {
-        const rows = allRows.filter(r => r["Reader"] === name && r["Prompt"]);
+        const rows = allRows.filter(r => r.Reader === name && r.Prompt);
         const promptSet = new Set();
         rows.forEach(r => {
-          const n = parseInt(r["Prompt"], 10);
+          const n = parseInt(r.Prompt, 10);
           if (!isNaN(n)) promptSet.add(n);
         });
         readerStats[name] = {
@@ -392,11 +412,13 @@
       const helper = document.getElementById("helperBubble");
       const summary = document.getElementById("summaryBubble");
       const booksBubble = document.getElementById("booksBubble");
+      const backRow = document.getElementById("backRow");
 
       grid.style.display = "grid";
       helper.style.display = "block";
       summary.style.display = "none";
       booksBubble.style.display = "none";
+      backRow.style.display = "none";
     }
 
     function renderReaderGrid() {
@@ -437,20 +459,22 @@
       const summary = document.getElementById("summaryBubble");
       const booksBubble = document.getElementById("booksBubble");
       const booksList = document.getElementById("booksList");
+      const backRow = document.getElementById("backRow");
 
-      // Hide grid + helper; show detail
+      // Hide grid + helper; show detail + back button
       grid.style.display = "none";
       helper.style.display = "none";
       summary.style.display = "block";
       booksBubble.style.display = "block";
+      backRow.style.display = "block";
 
       // Filter rows for this reader
-      const rows = allRows.filter(r => r["Reader"] === name && r["Prompt"]);
+      const rows = allRows.filter(r => r.Reader === name && r.Prompt);
       const totalBooks = rows.length;
 
       const promptSet = new Set();
       rows.forEach(r => {
-        const n = parseInt(r["Prompt"], 10);
+        const n = parseInt(r.Prompt, 10);
         if (!isNaN(n)) promptSet.add(n);
       });
       const completedCount = promptSet.size;
@@ -545,23 +569,33 @@
         booksList.appendChild(card);
       });
 
-      // 🔕 No automatic scrolling; stays where the user left it
+      // 🔕 No automatic scrolling – user stays where they are.
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
       const helper = document.getElementById("helperBubble");
-      helper.textContent = "Loading reader data…";
+      const backButton = document.getElementById("backButton");
+
+      backButton.addEventListener("click", showGridView);
 
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
-        allRows = parseCSV(text).filter(row => row["Reader"] && row["Title"]);
+
+        // Use PapaParse to handle commas/quotes correctly
+        const parsed = Papa.parse(text, { header: true });
+        allRows = parsed.data.filter(
+          row => row.Reader && row.Reader.trim() && row.Title && row.Title.trim()
+        );
+
         computeReaderStats();
         renderReaderGrid();
-        helper.textContent = "Select a reader card above to view their progress and books.";
+        helper.textContent =
+          "Select a reader card above to view their progress and books.";
       } catch (err) {
         console.error("Error loading reader data:", err);
-        helper.textContent = "Error loading reader data. Please try again later.";
+        helper.textContent =
+          "Error loading reader data. Please try again later.";
       }
     });
   </script>
