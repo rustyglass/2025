@@ -203,3 +203,93 @@ header.scrolled nav.menu a.active::after {
 .mobile-menu.active a.active::after {
   background: #fff;
 }
+/* ===== Reader Login (header) ===== */
+
+.login-container {
+  position: relative;
+  margin-left: auto;
+  margin-right: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Keep layout nice when header collapses on mobile */
+@media (max-width: 700px) {
+  .login-container {
+    margin-right: 0.25rem;
+  }
+}
+
+.login-toggle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 2px solid #247182;
+  background: #ffffff;
+  color: #247182;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.login-toggle::after {
+  content: '▾';
+  font-size: 0.7rem;
+}
+
+.login-toggle:hover {
+  background: #247182;
+  color: #ffffff;
+  transform: scale(1.03);
+}
+
+.login-dropdown {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 180px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  padding: 0.4rem 0;
+  z-index: 9999;
+  display: none;
+}
+
+.login-dropdown.open {
+  display: block;
+}
+
+.login-dropdown button {
+  width: 100%;
+  padding: 0.4rem 0.85rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-dropdown button:hover {
+  background: #f0f6f8;
+}
+
+.login-dropdown button.active {
+  font-weight: 700;
+  color: #247182;
+}
+
+.login-dropdown button.active::after {
+  content: '✓';
+  font-size: 0.75rem;
+}
