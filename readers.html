@@ -17,10 +17,10 @@
   <script src="banner-config.js"></script>
   <script src="banner.js" defer></script>
 
-  <!-- PapaParse for proper CSV parsing -->
+  <!-- PapaParse for CSV parsing -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-  <!-- Confetti (same library used on prompts.html) -->
+  <!-- Confetti (same as prompts.html) -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -37,11 +37,11 @@
       color: #333;
     }
 
-    /* Light shell for actual page content */
+    /* Light shell for page content */
     #page-shell {
       background: #f4f4f4;
       min-height: 100vh;
-      padding-top: 1rem; /* matches your other pages */
+      padding-top: 1rem;
     }
 
     .container {
@@ -50,7 +50,7 @@
       padding: 0 1rem 3rem;
     }
 
-    /* Page header row: back button + title */
+    /* Header row: back + centered title */
     .page-header-row {
       display: flex;
       align-items: center;
@@ -90,7 +90,7 @@
       text-decoration: underline;
     }
 
-    /* Bubbles – same style family as index/submissions */
+    /* Bubbles */
     .bubble {
       background: #fff;
       border-radius: 14px;
@@ -99,15 +99,10 @@
       margin-bottom: 1rem;
       transition: transform .2s ease, box-shadow .2s ease;
     }
+
     .bubble:hover {
       transform: scale(1.02);
       box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-    }
-
-    .helper-bubble {
-      text-align: center;
-      color: #555;
-      font-size: 1rem;
     }
 
     /* Reader grid (3x2 desktop, 1x6 mobile) */
@@ -119,13 +114,13 @@
 
     @media (max-width: 699px) {
       .reader-grid {
-        grid-template-columns: 1fr; /* 1-wide on mobile */
+        grid-template-columns: 1fr;
       }
     }
 
     @media (min-width: 700px) {
       .reader-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 x 2 on desktop */
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -164,7 +159,7 @@
       transition: width 0.4s ease;
     }
 
-    /* Reader summary bubble (above the books list) */
+    /* Reader summary bubble */
     .reader-summary-title {
       font-size: 1.3rem;
       color: #247182;
@@ -191,12 +186,11 @@
       white-space: nowrap;
     }
 
-    /* “Books” section title bubble */
-    .books-section-title {
-      font-size: 1.1rem;
-      color: #247182;
+    /* Submissions title bubble */
+    .submissions-title-bubble {
+      text-align: center;
       font-weight: 700;
-      margin-bottom: 0.75rem;
+      color: #247182;
     }
 
     .books-list {
@@ -205,7 +199,7 @@
       gap: 0.75rem;
     }
 
-    /* Submission cards – copied from submissions.html for consistent look */
+    /* Submission cards (same as submissions.html) */
     .submission-card {
       display: flex;
       align-items: center;
@@ -295,7 +289,7 @@
     <div class="mobile-menu" id="mobileMenu"></div>
 
     <div class="container">
-      <!-- Title row: back button + heading -->
+      <!-- Title row -->
       <div class="page-header-row">
         <button id="backButton" class="back-button" style="display:none;">
           Back to all readers
@@ -306,17 +300,11 @@
       <!-- Reader grid view -->
       <div id="readerGrid" class="reader-grid"></div>
 
-      <!-- Helper bubble when nothing is selected / loading -->
-      <div class="bubble helper-bubble" id="helperBubble">
-        Loading reader data…
-      </div>
-
-      <!-- Reader summary + progress (detail view) -->
+      <!-- Summary + books (detail view) -->
       <div class="bubble" id="summaryBubble" style="display:none;"></div>
 
-      <!-- Reader book list (detail view) -->
-      <div class="bubble" id="booksBubble" style="display:none;">
-        <div class="books-section-title">Books</div>
+      <div id="booksSection" style="display:none;">
+        <div class="bubble submissions-title-bubble">Submissions</div>
         <div class="books-list" id="booksList"></div>
       </div>
     </div>
@@ -338,10 +326,10 @@
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
 
     let allRows = [];
-    let readerStats = {}; // name -> { books, promptsCompleted }
+    let readerStats = {};
     let activeReader = null;
 
-    // 🎉 Same confetti pattern as prompts.html
+    // 🎉 Confetti (same behavior as prompts.html)
     function launchConfetti() {
       if (typeof confetti !== "function") return;
 
@@ -368,66 +356,45 @@
       })();
     }
 
-    function toDateUTCish(s) {
-      if (!s) return null;
-      const str = String(s).trim();
-
-      // Already ISO-like
-      if (/^\\d{4}-\\d{2}-\\d{2}T/.test(str)) {
-        return new Date(str.endsWith("Z") ? str : str + "Z");
-      }
-
-      // "YYYY-MM-DD HH:mm[:ss]"
-      const m = str.match(
-        /^(\\d{4})-(\\d{1,2})-(\\d{1,2})\\s+(\\d{1,2}):(\\d{1,2})(?::(\\d{1,2}))?$/
-      );
-      if (m) {
-        const [_, y, mo, d, h, mi, sec] = m;
-        const pad2 = n => String(n).padStart(2, "0");
-        const iso =
-          `${y}-${pad2(mo)}-${pad2(d)}T${pad2(h)}:${pad2(mi)}:${pad2(sec || "00")}Z`;
-        const dt = new Date(iso);
-        return isNaN(dt) ? null : dt;
-      }
-
-      const dt = new Date(str);
-      return isNaN(dt) ? null : dt;
+    // === Time helpers (match submissions.html behavior) ===
+    function buildCentralDate(dateStr) {
+      if (!dateStr) return null;
+      const fixed = String(dateStr).replace(/ (\d):/, " 0$1:");
+      const iso = fixed.replace(" ", "T") + "Z";
+      const d = new Date(iso);
+      return isNaN(d) ? null : d;
     }
 
-    // Full date/time – used on cards
+    // Full date+time for cards
     function formatDateCentral(dateStr) {
-      const dt = toDateUTCish(dateStr);
-      if (!dt) return "";
-      return dt
-        .toLocaleString("en-US", {
-          timeZone: "America/Chicago",
-          month: "long",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true
-        });
-    }
-
-    // Date-only – used in the summary for First / Most recent
-    function formatDateCentralDateOnly(dateStr) {
-      const dt = toDateUTCish(dateStr);
-      if (!dt) return "";
-      return dt.toLocaleDateString("en-US", {
+      const d = buildCentralDate(dateStr);
+      if (!d) return "";
+      return d.toLocaleString("en-US", {
         timeZone: "America/Chicago",
         month: "long",
         day: "numeric",
-        year: "numeric"
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      });
+    }
+
+    // Date only (no year) for summary
+    function formatDateCentralNoYear(dateStr) {
+      const d = buildCentralDate(dateStr);
+      if (!d) return "";
+      // Month + day only
+      return d.toLocaleString("en-US", {
+        timeZone: "America/Chicago",
+        month: "long",
+        day: "numeric"
       });
     }
 
     function computeReaderStats() {
       readerStats = {};
       PARTICIPANTS.forEach(name => {
-        readerStats[name] = {
-          books: 0,
-          promptsCompleted: 0
-        };
+        readerStats[name] = { books: 0, promptsCompleted: 0 };
       });
 
       PARTICIPANTS.forEach(name => {
@@ -446,19 +413,16 @@
 
     function showGridView() {
       activeReader = null;
-
       const grid = document.getElementById("readerGrid");
-      const helper = document.getElementById("helperBubble");
       const summary = document.getElementById("summaryBubble");
-      const booksBubble = document.getElementById("booksBubble");
+      const booksSection = document.getElementById("booksSection");
       const backButton = document.getElementById("backButton");
       const title = document.getElementById("pageTitle");
 
       title.textContent = "Readers";
       grid.style.display = "grid";
-      helper.style.display = "block";
       summary.style.display = "none";
-      booksBubble.style.display = "none";
+      booksSection.style.display = "none";
       backButton.style.display = "none";
     }
 
@@ -474,7 +438,6 @@
 
         const card = document.createElement("div");
         card.className = "bubble reader-card";
-
         card.innerHTML = `
           <div class="reader-card-name">${name}</div>
           <div class="progress-bar-container">
@@ -484,7 +447,6 @@
             ${stats.promptsCompleted}/${MAX_PROMPTS} Prompts
           </div>
         `;
-
         card.addEventListener("click", () => {
           activeReader = name;
           renderReaderView(name);
@@ -496,24 +458,20 @@
 
     function renderReaderView(name) {
       const grid = document.getElementById("readerGrid");
-      const helper = document.getElementById("helperBubble");
       const summary = document.getElementById("summaryBubble");
-      const booksBubble = document.getElementById("booksBubble");
+      const booksSection = document.getElementById("booksSection");
       const booksList = document.getElementById("booksList");
       const backButton = document.getElementById("backButton");
       const title = document.getElementById("pageTitle");
 
-      // Update heading to reader's name
+      // Heading: reader name
       title.textContent = name;
 
-      // Show back button, hide grid/helper, show detail bubbles
       backButton.style.display = "inline-flex";
       grid.style.display = "none";
-      helper.style.display = "none";
       summary.style.display = "block";
-      booksBubble.style.display = "block";
+      booksSection.style.display = "block";
 
-      // Filter rows for this reader
       const rows = allRows.filter(r => r.Reader === name && r.Prompt);
       const totalBooks = rows.length;
 
@@ -527,26 +485,24 @@
         ? Math.min(100, (completedCount / MAX_PROMPTS) * 100)
         : 0;
 
-      // If they hit 85/85, 🎉 confetti
       if (completedCount === MAX_PROMPTS) {
         launchConfetti();
       }
 
-      // Date stats (date-only)
+      // Date stats (date only, no year)
       const datedRows = rows
-        .map(r => ({ row: r, dt: toDateUTCish(r["Submitted at"]) }))
-        .filter(x => x.dt);
+        .map(r => ({ row: r, d: buildCentralDate(r["Submitted at"]) }))
+        .filter(x => x.d);
       let firstDate = "";
       let lastDate = "";
       if (datedRows.length > 0) {
-        datedRows.sort((a, b) => a.dt - b.dt);
-        firstDate = formatDateCentralDateOnly(datedRows[0].row["Submitted at"]);
-        lastDate = formatDateCentralDateOnly(
+        datedRows.sort((a, b) => a.d - b.d);
+        firstDate = formatDateCentralNoYear(datedRows[0].row["Submitted at"]);
+        lastDate = formatDateCentralNoYear(
           datedRows[datedRows.length - 1].row["Submitted at"]
         );
       }
 
-      // Summary bubble contents
       summary.innerHTML = `
         <div class="reader-summary-title">${name}'s Progress</div>
         <div class="reader-summary-subtitle">
@@ -570,17 +526,17 @@
         </div>
       `;
 
-      // Books list – each submission gets its own bubble like submissions.html
+      // Books list (individual bubbles)
       booksList.innerHTML = "";
       if (rows.length === 0) {
         booksList.innerHTML =
-          "<p style='text-align:center; color:#777; margin:0;'>No books submitted yet.</p>";
+          "<div class='bubble' style='text-align:center; color:#777; margin:0;'>No books submitted yet.</div>";
         return;
       }
 
       const sorted = [...rows].sort((a, b) => {
-        const da = toDateUTCish(a["Submitted at"]);
-        const db = toDateUTCish(b["Submitted at"]);
+        const da = buildCentralDate(a["Submitted at"]);
+        const db = buildCentralDate(b["Submitted at"]);
         if (!da && !db) return 0;
         if (!da) return 1;
         if (!db) return -1;
@@ -597,9 +553,7 @@
         const starsWord = Number(rating) === 1 ? "Star" : "Stars";
 
         const card = document.createElement("div");
-        // Same pattern as submissions.html: submission-card + bubble
         card.className = "submission-card bubble";
-
         card.innerHTML = `
           <img src="${cover}" alt="Cover for ${titleText}">
           <div class="submission-info">
@@ -616,21 +570,17 @@
         `;
         booksList.appendChild(card);
       });
-
-      // No auto-scroll – user stays where they are.
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
-      const helper = document.getElementById("helperBubble");
       const backButton = document.getElementById("backButton");
-
       backButton.addEventListener("click", showGridView);
 
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
-
         const parsed = Papa.parse(text, { header: true });
+
         allRows = parsed.data.filter(
           row =>
             row.Reader &&
@@ -641,12 +591,11 @@
 
         computeReaderStats();
         renderReaderGrid();
-        helper.textContent =
-          "Select a reader card above to view their progress and books.";
       } catch (err) {
         console.error("Error loading reader data:", err);
-        helper.textContent =
-          "Error loading reader data. Please try again later.";
+        const grid = document.getElementById("readerGrid");
+        grid.innerHTML =
+          "<div class='bubble' style='text-align:center;'>Error loading reader data. Please try again later.</div>";
       }
     });
   </script>
