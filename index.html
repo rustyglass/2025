@@ -369,14 +369,24 @@
 </head>
 <body>
   <div class="page-shell">
-  <header id="main-header">
-    <div class="site-name">
-      <img src="favicon.png" alt="Icon" />
-      <span class="desktop-title">2025 Reading Challenge</span>
-    </div>
-    <nav class="menu"></nav>
-    <button class="menu-toggle" id="menu-button" aria-label="Menu">☰</button>
-  </header>
+ <header id="main-header">
+  <div class="site-name">
+    <img src="favicon.png" alt="Icon" />
+    <span class="desktop-title">2025 Reading Challenge</span>
+  </div>
+
+  <nav class="menu"></nav>
+
+  <!-- 🔐 Reader login status + dropdown -->
+  <div class="login-container">
+    <button id="loginToggle" class="login-toggle" type="button">
+      Not signed in
+    </button>
+    <div id="loginDropdown" class="login-dropdown" aria-hidden="true"></div>
+  </div>
+
+  <button class="menu-toggle" id="menu-button">&#9776;</button>
+</header>
 
   <div class="mobile-menu" id="mobileMenu"></div>
   <img src="site-banner.png" alt="Header Banner" class="site-header" />
