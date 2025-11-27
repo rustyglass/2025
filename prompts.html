@@ -264,6 +264,10 @@
       color: #ffffff;
       transform: scale(1.03);
     }
+    /* Hide cards while we wait for submissions if auto-filtering */
+.prompt-grid.loading {
+  visibility: hidden;
+}
   </style>
 </head>
 <body>
@@ -303,12 +307,13 @@
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="prompts.js"></script>
-
 <script>
   window.prompts = allPrompts;
   const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
   let allSubmissions = [];
   let activeParticipant = null;
+  let initialAutoFilterReader = null;   // 👈 who we auto-filter for at startup (if any)
+  let submissionsLoaded = false;
 
   // Confetti helper for Cindy
   function launchConfetti() {
@@ -502,6 +507,8 @@
       }))
       .filter(row => row.Reader && !isNaN(row.Prompt));
 
+    submissionsLoaded = true;
+
     // Once we have data, update gray-out and progress
     updateGrayOut();
     updateProgressUI();
@@ -521,36 +528,51 @@
     return null;
   }
 
-  // 🎯 Auto-click the right filter button based on who is signed in
-  function autoFilterFromLogin() {
-    const currentReader = getCurrentReaderFromStorage();
-    if (!currentReader) return;
-
-    const buttons = document.querySelectorAll("#filterButtons .filter-btn");
-    const match = Array.from(buttons).find(
-      btn => btn.textContent.trim().toLowerCase() === currentReader.trim().toLowerCase()
-    );
-    if (match) {
-      match.click();
-    }
-  }
-
-  // Make buttons & prompts appear immediately; fetch submissions in background
   window.addEventListener("DOMContentLoaded", () => {
     if (typeof prompts !== "undefined") window.prompts = prompts;
 
+    const grid = document.getElementById("promptGrid");
+
+    // 🔍 See if we should auto-filter on load
+    const storedReader = getCurrentReaderFromStorage();
+    if (storedReader && PARTICIPANTS.includes(storedReader)) {
+      initialAutoFilterReader = storedReader;
+      // Hide prompt cards while we fetch submissions,
+      // so we don't show black → then gray.
+      grid.classList.add("loading");
+    }
+
     // Show UI right away
     renderFilterButtons();
-    renderPrompts(window.prompts);
+
+    // If no auto-filter reader, render prompts immediately (old behavior)
+    if (!initialAutoFilterReader) {
+      renderPrompts(window.prompts);
+    }
+
     updateProgressUI(); // ensures the bubble has helpful text initially
 
-    // 🔁 Auto-apply filter based on saved login (if any)
-    autoFilterFromLogin();
-
-    // Fetch submissions; once ready, update gray-out in place
-    fetchSubmissions().catch(err => {
-      console.error("Error fetching submissions:", err);
-    });
+    // Fetch submissions; once ready, if we have an initial auto-reader,
+    // apply that filter and then reveal the grid.
+    fetchSubmissions()
+      .then(() => {
+        if (initialAutoFilterReader) {
+          activeParticipant = initialAutoFilterReader;
+          renderFilterButtons();
+          renderPrompts(window.prompts);
+          updateProgressUI();
+          grid.classList.remove("loading"); // 👈 show cards only now
+          initialAutoFilterReader = null;
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching submissions:", err);
+        // If something breaks, at least show the prompts
+        grid.classList.remove("loading");
+        if (!grid.innerHTML.trim()) {
+          renderPrompts(window.prompts);
+        }
+      });
 
     document.getElementById("searchInput").addEventListener("input", () => {
       renderPrompts(window.prompts);
