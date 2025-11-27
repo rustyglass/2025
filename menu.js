@@ -20,7 +20,11 @@ function updateLoginStatusAvatar() {
   const current = localStorage.getItem("rc25_current_reader");
   const avatarSrc = current && AVATARS[current] ? AVATARS[current] : DEFAULT_AVATAR;
 
-  const html = `<img src="${avatarSrc}" class="login-avatar" alt="Profile Avatar">`;
+ const html = `
+  <div class="login-avatar-wrap">
+    <img src="${avatarSrc}" class="login-avatar" alt="Profile Avatar">
+  </div>
+`;
 
   if (desktopEl) {
     desktopEl.innerHTML = html;
