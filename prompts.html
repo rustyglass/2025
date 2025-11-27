@@ -395,24 +395,21 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
   }
 
   // Apply or remove gray-out based on allSubmissions + activeParticipant
-  function updateGrayOut() {
-    const cards = document.querySelectorAll(".prompt-card");
+ function updateGrayOut() {
+  const cards = document.querySelectorAll(".prompt-card");
 
-    cards.forEach(card => {
-      const num = parseInt(card.dataset.promptNumber, 10);
+  cards.forEach(card => {
+    const num = card.dataset.promptNumber; // string from data-attribute
 
-      if (
-        activeParticipant &&
-        allSubmissions.some(
-          s => s.Reader === activeParticipant && s.Prompt === num
-        )
-      ) {
-        card.classList.add("grayed-out");
-      } else {
-        card.classList.remove("grayed-out");
-      }
-    });
-  }
+    const isComplete =
+      activeParticipant &&
+      allSubmissions.some(
+        s => s.Reader === activeParticipant && s.Prompt === num
+      );
+
+    card.classList.toggle("grayed-out", !!isComplete);
+  });
+}
 
   // ✅ Update progress bubble contents
   function updateProgressUI() {
