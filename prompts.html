@@ -301,11 +301,19 @@
     </footer>
   </div>
 
-  <!-- Confetti library -->
+    <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Prompts data (defines allPrompts) -->
+  <script src="prompts.js"></script>
+
   <script>
-// Use prompts that prompts.js already put on window (or fall back to empty)
-window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
+  // Make sure window.prompts is populated from prompts.js
+  if (typeof allPrompts !== "undefined" && Array.isArray(allPrompts)) {
+    window.prompts = allPrompts;
+  } else if (!Array.isArray(window.prompts)) {
+    window.prompts = [];
+  }
 
   const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
   let allSubmissions = [];
@@ -368,10 +376,8 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
         const wasActive = activeParticipant === name;
         const willBeActive = !wasActive;
 
-        // Toggle active participant
         activeParticipant = willBeActive ? name : null;
 
-        // Re-render UI
         renderFilterButtons();
         renderPrompts(window.prompts);
         updateProgressUI();
@@ -395,21 +401,21 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
   }
 
   // Apply or remove gray-out based on allSubmissions + activeParticipant
- function updateGrayOut() {
-  const cards = document.querySelectorAll(".prompt-card");
+  function updateGrayOut() {
+    const cards = document.querySelectorAll(".prompt-card");
 
-  cards.forEach(card => {
-    const num = card.dataset.promptNumber; // string from data-attribute
+    cards.forEach(card => {
+      const num = card.dataset.promptNumber; // string from data-attribute
 
-    const isComplete =
-      activeParticipant &&
-      allSubmissions.some(
-        s => s.Reader === activeParticipant && s.Prompt === num
-      );
+      const isComplete =
+        activeParticipant &&
+        allSubmissions.some(
+          s => s.Reader === activeParticipant && s.Prompt === num
+        );
 
-    card.classList.toggle("grayed-out", !!isComplete);
-  });
-}
+      card.classList.toggle("grayed-out", !!isComplete);
+    });
+  }
 
   // ✅ Update progress bubble contents
   function updateProgressUI() {
@@ -418,7 +424,6 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
 
     const totalPrompts = getTotalPrompts();
 
-    // No reader selected → show helper text
     if (!activeParticipant) {
       bubble.style.visibility = "visible";
       bubble.innerHTML = `
@@ -430,7 +435,6 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       return;
     }
 
-    // If submissions not loaded yet, show loading text
     if (!allSubmissions.length) {
       bubble.style.visibility = "visible";
       bubble.innerHTML = `
@@ -480,11 +484,9 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       const card = document.createElement("div");
       card.className = "prompt-card";
 
-      // Staggered animation delay per card
       const delayMs = index * 70;
       card.style.setProperty("--delay", `${delayMs}ms`);
 
-      // Store prompt number on the card for later gray-out updates
       card.dataset.promptNumber = p.number;
 
       card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
@@ -497,7 +499,6 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       grid.appendChild(card);
     });
 
-    // After drawing cards, apply gray-out if we already have submissions loaded
     if (allSubmissions.length > 0) {
       updateGrayOut();
     }
@@ -510,15 +511,14 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
 
     const parsed = Papa.parse(csv, { header: true });
     allSubmissions = parsed.data
-  .map(row => ({
-    Reader: row.Reader?.trim(),
-    Prompt: row.Prompt?.trim()
-  }))
-  .filter(row => row.Reader && row.Prompt && !isNaN(Number(row.Prompt)));
+      .map(row => ({
+        Reader: row.Reader?.trim(),
+        Prompt: row.Prompt?.trim()
+      }))
+      .filter(row => row.Reader && row.Prompt && !isNaN(Number(row.Prompt)));
 
     submissionsLoaded = true;
 
-    // Once we have data, update gray-out and progress
     updateGrayOut();
     updateProgressUI();
   }
@@ -530,9 +530,7 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       try {
         const val = localStorage.getItem(key);
         if (val) return val;
-      } catch (e) {
-        // ignore
-      }
+      } catch (e) {}
     }
     return null;
   }
@@ -540,27 +538,20 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
   window.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("promptGrid");
 
-    // 🔍 See if we should auto-filter on load
     const storedReader = getCurrentReaderFromStorage();
     if (storedReader && PARTICIPANTS.includes(storedReader)) {
       initialAutoFilterReader = storedReader;
-      // Hide prompt cards while we fetch submissions,
-      // so we don't show black → then gray.
       grid.classList.add("loading");
     }
 
-    // Show UI right away
     renderFilterButtons();
 
-    // If no auto-filter reader, render prompts immediately (old behavior)
     if (!initialAutoFilterReader) {
       renderPrompts(window.prompts);
     }
 
-    updateProgressUI(); // ensures the bubble has helpful text initially
+    updateProgressUI();
 
-    // Fetch submissions; once ready, if we have an initial auto-reader,
-    // apply that filter and then reveal the grid.
     fetchSubmissions()
       .then(() => {
         if (initialAutoFilterReader) {
@@ -569,19 +560,17 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
           renderPrompts(window.prompts);
           updateProgressUI();
 
-          // 🎉 Confetti on auto-load if they completed all prompts
           const totalPrompts = getTotalPrompts();
           if (getCompletedCountFor(activeParticipant) >= totalPrompts) {
             launchConfetti();
           }
 
-          grid.classList.remove("loading"); // show cards only now
+          grid.classList.remove("loading");
           initialAutoFilterReader = null;
         }
       })
       .catch(err => {
         console.error("Error fetching submissions:", err);
-        // If something breaks, at least show the prompts
         grid.classList.remove("loading");
         if (!grid.innerHTML.trim()) {
           renderPrompts(window.prompts);
@@ -592,7 +581,6 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       renderPrompts(window.prompts);
     });
 
-    // Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
     document.addEventListener("keydown", (e) => {
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const isPrintShortcut =
@@ -601,7 +589,7 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
 
       if (!isPrintShortcut) return;
 
-      e.preventDefault(); // stop browser from printing the page
+      e.preventDefault();
 
       const win = window.open("list.pdf", "_blank");
       if (!win) {
@@ -619,10 +607,9 @@ window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
       };
     });
   });
-</script>
+  </script>
+
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
-  <script src="prompts.js"></script>
-  
 </body>
 </html>
