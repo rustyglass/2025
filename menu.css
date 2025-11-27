@@ -25,7 +25,6 @@ header {
 
 header.scrolled {
   background: #247182;
-  
 }
 
 /* Left title/logo */
@@ -184,6 +183,7 @@ nav.menu a.active::after {
   nav.menu { display: none; }
   .menu-toggle { display: block; }
 }
+
 /* When header is scrolled */
 header.scrolled .site-name,
 header.scrolled .site-name span,
@@ -203,8 +203,10 @@ header.scrolled nav.menu a.active::after {
 .mobile-menu.active a.active::after {
   background: #fff;
 }
+
 /* ===== Reader Login (header) ===== */
 
+/* Optional container if you ever wrap avatar + anything */
 .login-container {
   position: relative;
   margin-left: auto;
@@ -212,15 +214,31 @@ header.scrolled nav.menu a.active::after {
   display: flex;
   align-items: center;
 }
+
 @media (max-width: 700px) {
   .login-container {
     margin-right: 0.25rem;
   }
 }
+
+/* Bold if you ever show it as text link in menus */
 nav.menu a.login-link,
 #mobileMenu a.login-link {
   font-weight: 800;
 }
+
+/* Ensure the loginStatus link aligns like other menu items */
+#loginStatus {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+/* Remove underline bar from avatar item */
+#loginStatus::after {
+  content: none;
+}
+
 /* Wrapper for cropped circle */
 .login-avatar-wrap {
   width: 34px;
@@ -230,7 +248,7 @@ nav.menu a.login-link,
   flex-shrink: 0;
 }
 
-/* Avatar image */
+/* Avatar image (slight 105% zoom for cleaner edge) */
 .login-avatar {
   width: 105%;
   height: 105%;
@@ -241,6 +259,7 @@ nav.menu a.login-link,
   transform: translate(-2.5%, -2.5%);
 }
 
+/* Subtle hover pop */
 .login-avatar:hover {
   transform: translate(-2.5%, -2.5%) scale(1.03);
   transition: 0.15s ease;
