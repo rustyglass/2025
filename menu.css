@@ -285,3 +285,27 @@ nav.menu a.login-link,
 #mobileMenu a.login-link {
   font-weight: 800;       /* heavy bold to match the updated header style */
 }
+
+/* avatar in top-right */
+.login-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #247182;
+  cursor: pointer;
+}
+
+/* Slight hover scale */
+.login-avatar:hover {
+  transform: scale(1.06);
+  transition: 0.15s ease;
+}
+
+/* Mobile menu avatar */
+.mobile-menu .login-avatar {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #247182;
+  margin-top: 0.5rem;
+}
