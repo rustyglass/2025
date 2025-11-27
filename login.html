@@ -255,18 +255,18 @@
   <script src="menu.js"></script>
 
  <script>
-  // Use the same storage key the menu/header uses
-  const STORAGE_KEY = 'rc2025_reader';
+  // Use both keys so old + new code stay in sync
+  const STORAGE_KEYS = ['rc2025_reader', 'rc25_current_reader'];
 
   function setReaderAndGo(nameOrNull) {
     try {
-      if (nameOrNull) {
-        // Save selected reader
-        localStorage.setItem(STORAGE_KEY, nameOrNull);
-      } else {
-        // Clear selection on sign-out
-        localStorage.removeItem(STORAGE_KEY);
-      }
+      STORAGE_KEYS.forEach((key) => {
+        if (nameOrNull) {
+          localStorage.setItem(key, nameOrNull);
+        } else {
+          localStorage.removeItem(key);
+        }
+      });
 
       // If menu.js exposes a helper, let it update its own UI too
       if (typeof window.setLoggedInReader === 'function') {
@@ -276,7 +276,7 @@
       console.error('Error updating logged-in reader in storage', e);
     }
 
-    // Go back to home (or change this to wherever you want to land)
+    // Go back to home (or change this to another page if you prefer)
     window.location.href = 'index.html';
   }
 
