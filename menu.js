@@ -20,28 +20,26 @@ function updateLoginStatusAvatar() {
   const current = localStorage.getItem("rc25_current_reader");
   const avatarSrc = current && AVATARS[current] ? AVATARS[current] : DEFAULT_AVATAR;
 
- const html = `
-  <div class="login-avatar-wrap">
-    <img src="${avatarSrc}" class="login-avatar" alt="Profile Avatar">
-  </div>
-`;
+  const html = `
+    <span class="login-avatar-wrap">
+      <img src="${avatarSrc}" class="login-avatar" alt="Profile Avatar">
+    </span>
+  `;
 
   if (desktopEl) {
-    desktopEl.innerHTML = html;
+    desktopEl.innerHTML = html;      // ✅ only avatar, no text
     desktopEl.onclick = () => { window.location.href = "login.html"; };
   }
 
   if (mobileEl) {
-    mobileEl.innerHTML = html;
+    mobileEl.innerHTML = html;       // ✅ only avatar, no text
     mobileEl.onclick = () => { 
-      // close drawer if open
       const mobileMenu = document.getElementById("mobileMenu");
       if (mobileMenu) mobileMenu.classList.remove("active");
       window.location.href = "login.html"; 
     };
   }
 }
-
 /* =========================
    Shared menu (robust boot)
    ========================= */
