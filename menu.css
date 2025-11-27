@@ -270,3 +270,13 @@ nav.menu a.login-link,
   width: 48px;
   height: 48px;
 }
+/* Header login avatar alignment */
+.login-status {
+  display: flex;
+  align-items: center;
+  margin-left: 0.75rem; /* small gap after "Contact" */
+}
+
+.login-status img.login-avatar {
+  display: block;
+}
