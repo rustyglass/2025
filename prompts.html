@@ -553,5 +553,32 @@
       });
     });
   </script>
+  <script>
+  // Automatically apply reader filter based on who is signed in
+  function autoFilterFromLogin() {
+    // If menu.js didn't expose it yet, or nothing is stored, bail out
+    if (!window.rc25GetCurrentReader) return;
+    const currentReader = window.rc25GetCurrentReader();
+    if (!currentReader) return;
+
+    // Find the matching participant button
+    const btn = document.querySelector(
+      '.participant-filter[data-reader="' + currentReader + '"]'
+    );
+
+    if (!btn) return;
+
+    // Pretend the user clicked their own button
+    btn.click();
+  }
+
+  // Run after the page has built the prompts + filter buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    // If your page has some async setup (like fetching from Sheets)
+    // and calls an "init" function, you can call autoFilterFromLogin()
+    // at the end of that instead. For many setups this works fine:
+    setTimeout(autoFilterFromLogin, 50);
+  });
+</script>
 </body>
 </html>
