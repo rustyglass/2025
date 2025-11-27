@@ -303,19 +303,15 @@
 
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
-  <script src="menu-config.js"></script>
-  <script src="menu.js"></script>
-  <script src="prompts.js"></script>
-<script>
+  <script>
   window.prompts = allPrompts;
   const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
   let allSubmissions = [];
   let activeParticipant = null;
-  let initialAutoFilterReader = null;   // 👈 who we auto-filter for at startup (if any)
+  let initialAutoFilterReader = null;   // who we auto-filter for at startup (if any)
   let submissionsLoaded = false;
 
-  // Confetti helper for Cindy
+  // 🎉 Confetti helper
   function launchConfetti() {
     if (typeof confetti !== "function") return;
 
@@ -342,6 +338,20 @@
     })();
   }
 
+  function getTotalPrompts() {
+    return Array.isArray(window.prompts) ? window.prompts.length : 85;
+  }
+
+  function getCompletedCountFor(reader) {
+    if (!reader || !allSubmissions.length) return 0;
+    const completedSet = new Set(
+      allSubmissions
+        .filter(s => s.Reader === reader)
+        .map(s => s.Prompt)
+    );
+    return completedSet.size;
+  }
+
   // Renders participant filter buttons (no Clear Filter button)
   function renderFilterButtons() {
     const container = document.getElementById("filterButtons");
@@ -354,16 +364,24 @@
 
       btn.onclick = () => {
         const wasActive = activeParticipant === name;
+        const willBeActive = !wasActive;
 
-        // 🎉 Only fire confetti when Cindy is newly selected
-        if (!wasActive && name === "Cindy") {
-          launchConfetti();
-        }
+        // Toggle active participant
+        activeParticipant = willBeActive ? name : null;
 
-        activeParticipant = wasActive ? null : name;
+        // Re-render UI
         renderFilterButtons();
         renderPrompts(window.prompts);
-        updateProgressUI(); // update bar whenever selection changes
+        updateProgressUI();
+
+        // 🎉 Confetti when this person has completed all prompts
+        if (willBeActive && submissionsLoaded) {
+          const totalPrompts = getTotalPrompts();
+          const completed = getCompletedCountFor(name);
+          if (completed >= totalPrompts) {
+            launchConfetti();
+          }
+        }
       };
 
       if (activeParticipant === name) {
@@ -399,9 +417,7 @@
     const bubble = document.getElementById("progressBubble");
     if (!bubble) return;
 
-    const totalPrompts = Array.isArray(window.prompts)
-      ? window.prompts.length
-      : 85;
+    const totalPrompts = getTotalPrompts();
 
     // No reader selected → show helper text
     if (!activeParticipant) {
@@ -427,13 +443,7 @@
       return;
     }
 
-    const completedSet = new Set(
-      allSubmissions
-        .filter(s => s.Reader === activeParticipant)
-        .map(s => s.Prompt)
-    );
-
-    const completedCount = completedSet.size;
+    const completedCount = getCompletedCountFor(activeParticipant);
     const pct = totalPrompts
       ? Math.round((completedCount / totalPrompts) * 100)
       : 0;
@@ -561,7 +571,14 @@
           renderFilterButtons();
           renderPrompts(window.prompts);
           updateProgressUI();
-          grid.classList.remove("loading"); // 👈 show cards only now
+
+          // 🎉 Confetti on auto-load if they completed all prompts
+          const totalPrompts = getTotalPrompts();
+          if (getCompletedCountFor(activeParticipant) >= totalPrompts) {
+            launchConfetti();
+          }
+
+          grid.classList.remove("loading"); // show cards only now
           initialAutoFilterReader = null;
         }
       })
@@ -606,5 +623,9 @@
     });
   });
 </script>
+  <script src="menu-config.js"></script>
+  <script src="menu.js"></script>
+  <script src="prompts.js"></script>
+  
 </body>
 </html>
