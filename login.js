@@ -1,16 +1,10 @@
 // login.js
 (function () {
   const STORAGE_KEY = 'rc25_current_reader';
-  let injected = false; // prevent double-injection
-
-  function getReaders() {
-    return Array.isArray(window.RC25_READERS) ? window.RC25_READERS : [];
-  }
 
   function getStoredReader() {
     try {
-      const val = localStorage.getItem(STORAGE_KEY);
-      return val || null;
+      return localStorage.getItem(STORAGE_KEY) || null;
     } catch {
       return null;
     }
@@ -35,72 +29,82 @@
     window.dispatchEvent(ev);
   }
 
-  function updateLoginLabels(label) {
-    // Desktop nav
-    const desktopLink = document.querySelector('nav.menu a.login-link');
-    if (desktopLink) desktopLink.textContent = label;
-
-    // Mobile menu
-    const mobileLink = document.querySelector('#mobileMenu a.login-link');
-    if (mobileLink) mobileLink.textContent = label;
-  }
-
-  function injectLoginLinks() {
-    if (injected) return;
-    injected = true;
-
+  function ensureLoginLinks() {
     const reader = getStoredReader();
     const label = reader || 'Sign In';
 
-    // ----- Desktop nav -----
+    // Desktop nav
     const nav = document.querySelector('nav.menu');
     if (nav) {
-      const link = document.createElement('a');
-      link.href = 'login.html';
-      link.textContent = label;
-      link.className = 'login-link';
-      nav.appendChild(link);
+      let desktopLink = nav.querySelector('a.login-link');
+      if (!desktopLink) {
+        desktopLink = document.createElement('a');
+        desktopLink.className = 'login-link';
+        desktopLink.href = 'login.html';
+        nav.appendChild(desktopLink);
+      }
+      desktopLink.textContent = label;
     }
 
-    // ----- Mobile sidebar -----
+    // Mobile menu
     const mobileMenu = document.getElementById('mobileMenu');
     if (mobileMenu) {
-      const mobileLink = document.createElement('a');
-      mobileLink.href = 'login.html';
+      let mobileLink = mobileMenu.querySelector('a.login-link');
+      if (!mobileLink) {
+        mobileLink = document.createElement('a');
+        mobileLink.className = 'login-link';
+        mobileLink.href = 'login.html';
+        mobileMenu.appendChild(mobileLink);
+      }
       mobileLink.textContent = label;
-      mobileLink.className = 'login-link';
-      mobileMenu.appendChild(mobileLink);
     }
-
-    // Expose helpers *after* links exist
-    window.rc25GetCurrentReader = getStoredReader;
-    window.rc25SetCurrentReader = function (name) {
-      setStoredReader(name);
-      const newLabel = name || 'Sign In';
-      updateLoginLabels(newLabel);
-      dispatchReaderChanged(name);
-    };
-
-    // Fire initial event so pages can react on load
-    dispatchReaderChanged(reader);
   }
 
-  // Wait until menu.js has built the menu, then inject
-  function waitForMenuAndInject() {
+  function setupObservers() {
     const nav = document.querySelector('nav.menu');
     const mobileMenu = document.getElementById('mobileMenu');
 
-    // We want to wait until nav exists *and* has some children
+    if (nav) {
+      const navObserver = new MutationObserver(() => {
+        // If menu.js rebuilds nav, re-ensure the login link exists
+        ensureLoginLinks();
+      });
+      navObserver.observe(nav, { childList: true, subtree: false });
+    }
+
+    if (mobileMenu) {
+      const mobileObserver = new MutationObserver(() => {
+        ensureLoginLinks();
+      });
+      mobileObserver.observe(mobileMenu, { childList: true, subtree: false });
+    }
+  }
+
+  function waitForMenuThenInit() {
+    const nav = document.querySelector('nav.menu');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    // Wait until menu.js has actually created the menus
     if (!nav || nav.children.length === 0 || !mobileMenu) {
-      // Try again shortly
-      setTimeout(waitForMenuAndInject, 50);
+      setTimeout(waitForMenuThenInit, 50);
       return;
     }
 
-    injectLoginLinks();
+    // Make sure links exist & are labeled correctly
+    ensureLoginLinks();
+    setupObservers();
+
+    // Expose helpers to the rest of the app
+    window.rc25GetCurrentReader = getStoredReader;
+    window.rc25SetCurrentReader = function (name) {
+      setStoredReader(name);
+      ensureLoginLinks();
+      dispatchReaderChanged(name);
+    };
+
+    // Fire initial event so pages can react
+    dispatchReaderChanged(getStoredReader());
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    waitForMenuAndInject();
-  });
+  document.addEventListener('DOMContentLoaded', waitForMenuThenInit);
 })();
