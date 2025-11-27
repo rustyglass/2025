@@ -68,6 +68,7 @@ nav.menu a {
   text-decoration: none;
   color: #000;
   position: relative;
+  padding-bottom: 0.35rem;   /* room for underline without moving text */
 }
 
 nav.menu .dropdown-wrapper {
@@ -281,4 +282,13 @@ nav.menu a.login-link,
 #loginStatusMobile .login-avatar-wrap {
   width: 48px;
   height: 48px;
+}
+nav.menu a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;                 /* sits at bottom of the link box */
+  height: 3px;
+  background: #247182;
 }
