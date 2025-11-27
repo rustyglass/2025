@@ -110,58 +110,66 @@
     }
 
     /* Reader grid (3x2 desktop, 1x6 mobile) */
-    .reader-grid {
-      display: grid;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+.reader-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.8rem;
+}
 
-    @media (max-width: 699px) {
-      .reader-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+@media (max-width: 699px) {
+  .reader-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
-    @media (min-width: 700px) {
-      .reader-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
+@media (min-width: 700px) {
+  .reader-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
-    .reader-card {
-      cursor: pointer;
-      text-align: center;
-      padding: 1rem 1.1rem;
-    }
+/* 🔹 Bigger reader cards – only the 6 at the top */
+.reader-card {
+  cursor: pointer;
+  text-align: center;
+  padding: 1.6rem 1.5rem;      /* more padding = bigger bubble */
+  min-height: 150px;           /* gives them nice vertical size */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-    .reader-card-name {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #247182;
-      margin-bottom: 0.4rem;
-    }
+/* Name text a bit larger, like login cards */
+.reader-card-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #247182;
+  margin-bottom: 0.6rem;
+}
 
-    .reader-card-progress-text {
-      font-size: 0.9rem;
-      color: #444;
-      margin-top: 0.4rem;
-    }
+/* Progress text slightly larger too */
+.reader-card-progress-text {
+  font-size: 1rem;
+  color: #444;
+  margin-top: 0.5rem;
+}
 
-    .progress-bar-container {
-      background: #ddd;
-      border-radius: 6px;
-      width: 100%;
-      height: 18px;
-      overflow: hidden;
-      margin: 0.4rem 0 0.3rem;
-    }
+/* Thicker progress bar for these cards */
+.progress-bar-container {
+  background: #ddd;
+  border-radius: 8px;
+  width: 100%;
+  height: 22px;               /* was 18px */
+  overflow: hidden;
+  margin: 0.5rem 0 0.35rem;
+}
 
-    .progress-bar {
-      background: #247182;
-      height: 100%;
-      width: 0;
-      transition: width 0.4s ease;
-    }
+.progress-bar {
+  background: #247182;
+  height: 100%;
+  width: 0;
+  transition: width 0.4s ease;
+}
 
     /* Reader summary bubble */
     #summaryBubble {
