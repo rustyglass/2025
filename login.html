@@ -6,25 +6,28 @@
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
-  <title>Sign In - 2025 Reading Challenge</title>
+  <title>Sign In – 2025 Reading Challenge</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="/ios-icon.png">
   <meta name="theme-color" content="#247182" />
   <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
   <meta name="apple-mobile-web-app-capable" content="yes">
+
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap"
     rel="stylesheet"
-  >
+  />
   <link rel="stylesheet" href="menu.css">
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #247182;  /* underlay for Safari status bar / overscroll */
+      background: #247182; /* underlay to tint Safari bar */
       color: #333;
     }
 
@@ -35,69 +38,110 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 6rem auto 3rem;
       padding: 0 1rem;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 2.2rem;
       color: #247182;
       font-weight: 800;
       text-align: center;
       margin: 0 0 1.5rem;
     }
 
-    .bubble {
-      background: #fff;
-      border-radius: 14px;
-      padding: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      margin-bottom: 1rem;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .bubble:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-    }
-
-    .intro {
+    .subtitle {
       text-align: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      color: #555;
+      font-size: 0.98rem;
     }
 
-    .readers-grid {
+    /* Grid of reader cards */
+    .reader-grid {
       display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(1, minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.2rem;
     }
 
-    @media (min-width: 700px) {
-      .readers-grid {
-        grid-template-columns: repeat(3, minmax(0,1fr));
+    @media (max-width: 700px) {
+      .reader-grid {
+        grid-template-columns: 1fr;
       }
     }
 
     .reader-card {
-      border: 2px solid #247182;
-      border-radius: 14px;
-      padding: 1rem;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.3rem 1rem 1.4rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       text-align: center;
       cursor: pointer;
-      font-weight: 700;
-      color: #247182;
-      background: #ffffff;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-    }
-
-    .reader-card.active {
-      background: #247182;
-      color: #ffffff;
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
     }
 
     .reader-card:hover {
       transform: scale(1.03);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+
+    .reader-avatar {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 0.75rem;
+      border: 3px solid #247182;
+      background: #e7e7e7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reader-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .reader-name {
+      font-weight: 800;
+      color: #247182;
+      font-size: 1.1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .reader-caption {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* Optional sign-out bubble */
+    .signout-bubble {
+      margin-top: 2rem;
+      display: inline-block;
+      padding: 0.75rem 1.4rem;
+      border-radius: 999px;
+      border: 2px solid #247182;
+      background: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #247182;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+    }
+
+    .signout-bubble:hover {
+      background: #247182;
+      color: #ffffff;
+      transform: scale(1.03);
+    }
+
+    .signout-wrapper {
+      text-align: center;
+      margin-top: 1rem;
     }
 
     .site-footer {
@@ -138,12 +182,65 @@
 
     <div class="container">
       <h1>Sign In</h1>
+      <p class="subtitle">
+        Choose your name to personalize parts of the Reading Challenge site.
+      </p>
 
-      <div class="bubble intro">
-        <p>Select your name to personalize prompts, readers, and submissions.</p>
+      <div class="reader-grid">
+        <div class="reader-card" onclick="chooseReader('Cassy')">
+          <div class="reader-avatar">
+            <img src="avatars/cassy.png" alt="Cassy">
+          </div>
+          <div class="reader-name">Cassy</div>
+          <div class="reader-caption">Tap to sign in as Cassy</div>
+        </div>
+
+        <div class="reader-card" onclick="chooseReader('Cindy')">
+          <div class="reader-avatar">
+            <img src="avatars/cindy.png" alt="Cindy">
+          </div>
+          <div class="reader-name">Cindy</div>
+          <div class="reader-caption">Tap to sign in as Cindy</div>
+        </div>
+
+        <div class="reader-card" onclick="chooseReader('Noah')">
+          <div class="reader-avatar">
+            <img src="avatars/noah.png" alt="Noah">
+          </div>
+          <div class="reader-name">Noah</div>
+          <div class="reader-caption">Tap to sign in as Noah</div>
+        </div>
+
+        <div class="reader-card" onclick="chooseReader('Rusty')">
+          <div class="reader-avatar">
+            <img src="avatars/rusty.png" alt="Rusty">
+          </div>
+          <div class="reader-name">Rusty</div>
+          <div class="reader-caption">Tap to sign in as Rusty</div>
+        </div>
+
+        <div class="reader-card" onclick="chooseReader('Winny')">
+          <div class="reader-avatar">
+            <img src="avatars/winny.png" alt="Winny">
+          </div>
+          <div class="reader-name">Winny</div>
+          <div class="reader-caption">Tap to sign in as Winny</div>
+        </div>
+
+        <div class="reader-card" onclick="chooseReader('Zoey')">
+          <div class="reader-avatar">
+            <img src="avatars/zoey.png" alt="Zoey">
+          </div>
+          <div class="reader-name">Zoey</div>
+          <div class="reader-caption">Tap to sign in as Zoey</div>
+        </div>
       </div>
 
-      <div id="readersGrid" class="readers-grid"></div>
+      <div class="signout-wrapper">
+        <button class="signout-bubble" type="button" onclick="signOutReader()">
+          Sign Out
+        </button>
+      </div>
     </div>
 
     <footer class="site-footer">
@@ -153,232 +250,39 @@
     </footer>
   </div>
 
+  <!-- Menu scripts -->
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
-  <script src="login-config.js"></script>
-  <script src="login.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const readers = Array.isArray(window.RC25_READERS) ? window.RC25_READERS : [];
-      const current = typeof window.rc25GetCurrentReader === 'function'
-        ? window.rc25GetCurrentReader()
-        : null;
-
-      const grid = document.getElementById('readersGrid');
-      if (!grid) return;
-
-      grid.innerHTML = '';
-
-      readers.forEach(name => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'reader-card bubble' + (current === name ? ' active' : '');
-        card.textContent = name;
-
-        card.addEventListener('click', () => {
-          if (typeof window.rc25SetCurrentReader === 'function') {
-            window.rc25SetCurrentReader(name);
-          }
-          // After sign-in, go back to homepage (we can change this later if you want)
-          window.location.href = 'index.html';
-        });
-
-        grid.appendChild(card);
-      });
-    });
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
-  <title>Sign In - 2025 Reading Challenge</title>
-  <link rel="icon" href="favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="/ios-icon.png">
-  <meta name="theme-color" content="#247182" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="#247182">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap"
-    rel="stylesheet"
-  >
-  <link rel="stylesheet" href="menu.css">
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #247182;  /* underlay for Safari status bar / overscroll */
-      color: #333;
-    }
-
-    #page-shell {
-      background: #f4f4f4;
-      min-height: 100vh;
-      padding-top: 1rem;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 6rem auto 3rem;
-      padding: 0 1rem;
-    }
-
-    h1 {
-      font-size: 2rem;
-      color: #247182;
-      font-weight: 800;
-      text-align: center;
-      margin: 0 0 1.5rem;
-    }
-
-    .bubble {
-      background: #fff;
-      border-radius: 14px;
-      padding: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      margin-bottom: 1rem;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-
-    .bubble:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-    }
-
-    .intro {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .readers-grid {
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: repeat(1, minmax(0,1fr));
-    }
-
-    @media (min-width: 700px) {
-      .readers-grid {
-        grid-template-columns: repeat(3, minmax(0,1fr));
+    // Helper to set the logged-in reader in a way that works with menu.js
+    function chooseReader(name) {
+      try {
+        if (typeof window.setLoggedInReader === 'function') {
+          window.setLoggedInReader(name);
+        } else {
+          // Fallback if helper not present
+          localStorage.setItem('rc2025_reader', name);
+        }
+      } catch (e) {
+        console.error('Error setting logged-in reader', e);
       }
+      // Go back to the homepage (or wherever you like)
+      window.location.href = 'index.html';
     }
 
-    .reader-card {
-      border: 2px solid #247182;
-      border-radius: 14px;
-      padding: 1rem;
-      text-align: center;
-      cursor: pointer;
-      font-weight: 700;
-      color: #247182;
-      background: #ffffff;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    function signOutReader() {
+      try {
+        if (typeof window.setLoggedInReader === 'function') {
+          window.setLoggedInReader(null);
+        } else {
+          localStorage.removeItem('rc2025_reader');
+        }
+      } catch (e) {
+        console.error('Error signing out reader', e);
+      }
+      window.location.href = 'index.html';
     }
-
-    .reader-card.active {
-      background: #247182;
-      color: #ffffff;
-    }
-
-    .reader-card:hover {
-      transform: scale(1.03);
-    }
-
-    .site-footer {
-      margin-top: 3rem;
-      padding: 2rem 1rem;
-      background-color: transparent;
-      display: flex;
-      justify-content: center;
-    }
-
-    .footer-logo-container {
-      width: 350px;
-      height: 140px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .footer-logo {
-      width: 100%;
-      height: auto;
-    }
-  </style>
-</head>
-<body>
-  <div id="page-shell">
-    <header id="main-header">
-      <div class="site-name">
-        <img src="favicon.png" alt="Icon" />
-        <span class="desktop-title">2025 Reading Challenge</span>
-      </div>
-      <nav class="menu"></nav>
-      <button class="menu-toggle" id="menu-button" aria-label="Menu">&#9776;</button>
-    </header>
-
-    <div class="mobile-menu" id="mobileMenu"></div>
-
-    <div class="container">
-      <h1>Sign In</h1>
-
-      <div class="bubble intro">
-        <p>Select your name to personalize prompts, readers, and submissions.</p>
-      </div>
-
-      <div id="readersGrid" class="readers-grid"></div>
-    </div>
-
-    <footer class="site-footer">
-      <div class="footer-logo-container">
-        <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
-      </div>
-    </footer>
-  </div>
-
-  <script src="menu-config.js"></script>
-  <script src="menu.js"></script>
-  <script src="login-config.js"></script>
-  <script src="login.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const readers = Array.isArray(window.RC25_READERS) ? window.RC25_READERS : [];
-      const current = typeof window.rc25GetCurrentReader === 'function'
-        ? window.rc25GetCurrentReader()
-        : null;
-
-      const grid = document.getElementById('readersGrid');
-      if (!grid) return;
-
-      grid.innerHTML = '';
-
-      readers.forEach(name => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'reader-card bubble' + (current === name ? ' active' : '');
-        card.textContent = name;
-
-        card.addEventListener('click', () => {
-          if (typeof window.rc25SetCurrentReader === 'function') {
-            window.rc25SetCurrentReader(name);
-          }
-          // After sign-in, go back to homepage (we can change this later if you want)
-          window.location.href = 'index.html';
-        });
-
-        grid.appendChild(card);
-      });
-    });
   </script>
 </body>
 </html>
