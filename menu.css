@@ -212,100 +212,42 @@ header.scrolled nav.menu a.active::after {
   display: flex;
   align-items: center;
 }
-
-/* Keep layout nice when header collapses on mobile */
 @media (max-width: 700px) {
   .login-container {
     margin-right: 0.25rem;
   }
 }
-
-.login-toggle {
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.85rem;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  border: 2px solid #247182;
-  background: #ffffff;
-  color: #247182;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  white-space: nowrap;
-}
-
-.login-toggle::after {
-  content: '▾';
-  font-size: 0.7rem;
-}
-
-.login-toggle:hover {
-  background: #247182;
-  color: #ffffff;
-  transform: scale(1.03);
-}
-
-.login-dropdown {
-  position: absolute;
-  top: calc(100% + 0.35rem);
-  right: 0;
-  min-width: 180px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-  padding: 0.4rem 0;
-  z-index: 9999;
-  display: none;
-}
-
-.login-dropdown.open {
-  display: block;
-}
-
-.login-dropdown button {
-  width: 100%;
-  padding: 0.4rem 0.85rem;
-  text-align: left;
-  background: transparent;
-  border: none;
-  font-family: 'Poppins', sans-serif;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: #333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Make the login link bold so it stands out */
 nav.menu a.login-link,
 #mobileMenu a.login-link {
-  font-weight: 800;       /* heavy bold to match the updated header style */
+  font-weight: 800;
 }
-
-/* avatar in top-right */
-.login-avatar {
-  width: 38px;
-  height: 38px;
+/* Wrapper for cropped circle */
+.login-avatar-wrap {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #247182;
-  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* Slight hover scale */
+/* Avatar image */
+.login-avatar {
+  width: 105%;
+  height: 105%;
+  object-fit: cover;
+  display: block;
+  border: none;
+  box-shadow: none;
+  transform: translate(-2.5%, -2.5%);
+}
+
 .login-avatar:hover {
-  transform: scale(1.06);
+  transform: translate(-2.5%, -2.5%) scale(1.03);
   transition: 0.15s ease;
 }
 
-/* Mobile menu avatar */
-.mobile-menu .login-avatar {
+/* Larger version used in mobile menu, if needed */
+.mobile-menu .login-avatar-wrap {
   width: 48px;
   height: 48px;
-  border: 2px solid #247182;
-  margin-top: 0.5rem;
 }
