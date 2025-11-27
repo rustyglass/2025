@@ -1,5 +1,7 @@
 /* ========== Global ========== */
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+}
 
 body {
   margin: 0;
@@ -58,7 +60,8 @@ header.scrolled {
 nav.menu {
   display: flex;
   gap: 1rem;
-  margin-left: auto; /* push to the right edge */
+  margin-left: auto;         /* push to the right edge */
+  align-items: center;       /* align links and avatar vertically */
 }
 
 nav.menu a {
@@ -204,7 +207,7 @@ header.scrolled nav.menu a.active::after {
   background: #fff;
 }
 
-/* ===== Reader Login (header) ===== */
+/* ===== Reader Login (header avatar) ===== */
 
 /* Optional container if you ever wrap avatar + anything */
 .login-container {
@@ -227,11 +230,13 @@ nav.menu a.login-link,
   font-weight: 800;
 }
 
-/* Ensure the loginStatus link aligns like other menu items */
+/* Desktop avatar slot */
 #loginStatus {
   display: flex;
   align-items: center;
   padding: 0;
+  margin-left: 0.75rem; /* small gap after "Contact" */
+  cursor: pointer;
 }
 
 /* Remove underline bar from avatar item */
@@ -265,18 +270,14 @@ nav.menu a.login-link,
   transition: 0.15s ease;
 }
 
-/* Larger version used in mobile menu, if needed */
-.mobile-menu .login-avatar-wrap {
-  width: 48px;
-  height: 48px;
-}
-/* Header login avatar alignment */
-.login-status {
+/* Mobile avatar container (at bottom of drawer) */
+#loginStatusMobile {
   display: flex;
   align-items: center;
-  margin-left: 0.75rem; /* small gap after "Contact" */
+  margin-top: 1.5rem;
 }
 
-.login-status img.login-avatar {
-  display: block;
+#loginStatusMobile .login-avatar-wrap {
+  width: 48px;
+  height: 48px;
 }
