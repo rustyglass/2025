@@ -153,3 +153,33 @@
     tryRenderWithRetries(4, 250);
   });
 })();
+// === LOGIN AVATAR IN MENU ===
+
+const AVATARS = {
+  "Rusty": "/avatars/rusty.png",
+  "Cindy": "/avatars/cindy.png",
+  "Cassy": "/avatars/cassy.png",
+  "Noah": "/avatars/noah.png",
+  "Winny": "/avatars/winny.png",
+  "Zoey": "/avatars/zoey.png"
+};
+
+const DEFAULT_AVATAR = "/avatars/guest.svg";
+
+function updateLoginStatusAvatar() {
+  const el = document.getElementById("loginStatus");
+  if (!el) return;
+
+  const current = localStorage.getItem("rc25_current_reader");
+
+  const avatarSrc = current && AVATARS[current]
+    ? AVATARS[current]
+    : DEFAULT_AVATAR;
+
+  el.innerHTML = `<img src="${avatarSrc}" class="login-avatar" alt="User Avatar">`;
+
+  // clicking avatar goes to login page
+  el.onclick = () => window.location.href = "login.html";
+}
+
+updateLoginStatusAvatar();
