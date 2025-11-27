@@ -304,280 +304,284 @@
   <script src="menu.js"></script>
   <script src="prompts.js"></script>
 
-  <script>
-    window.prompts = allPrompts;
-    const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
-    let allSubmissions = [];
-    let activeParticipant = null;
+<script>
+  window.prompts = allPrompts;
+  const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
+  let allSubmissions = [];
+  let activeParticipant = null;
 
-    // Confetti helper for Cindy
-    function launchConfetti() {
-      if (typeof confetti !== "function") return;
+  // Confetti helper for Cindy
+  function launchConfetti() {
+    if (typeof confetti !== "function") return;
 
-      const duration = 2000; // 2 seconds
-      const end = Date.now() + duration;
+    const duration = 2000; // 2 seconds
+    const end = Date.now() + duration;
 
-      (function frame() {
-        confetti({
-          particleCount: 10,
-          angle: 60,
-          spread: 100,
-          origin: { x: 0, y: 0.8 }
-        });
-        confetti({
-          particleCount: 10,
-          angle: 120,
-          spread: 100,
-          origin: { x: 1, y: 0.8 }
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
-
-    // Renders participant filter buttons (no Clear Filter button)
-    function renderFilterButtons() {
-      const container = document.getElementById("filterButtons");
-      container.innerHTML = "";
-
-      PARTICIPANTS.forEach(name => {
-        const btn = document.createElement("button");
-        btn.className = "filter-btn";
-        btn.textContent = name;
-
-        btn.onclick = () => {
-          const wasActive = activeParticipant === name;
-
-          // 🎉 Only fire confetti when Cindy is newly selected
-          if (!wasActive && name === "Cindy") {
-            launchConfetti();
-          }
-
-          activeParticipant = wasActive ? null : name;
-          renderFilterButtons();
-          renderPrompts(window.prompts);
-          updateProgressUI(); // update bar whenever selection changes
-        };
-
-        if (activeParticipant === name) {
-          btn.classList.add("active");
-        }
-
-        container.appendChild(btn);
+    (function frame() {
+      confetti({
+        particleCount: 10,
+        angle: 60,
+        spread: 100,
+        origin: { x: 0, y: 0.8 }
       });
-    }
-
-    // Apply or remove gray-out based on allSubmissions + activeParticipant
-    function updateGrayOut() {
-      const cards = document.querySelectorAll(".prompt-card");
-
-      cards.forEach(card => {
-        const num = parseInt(card.dataset.promptNumber, 10);
-
-        if (
-          activeParticipant &&
-          allSubmissions.some(
-            s => s.Reader === activeParticipant && s.Prompt === num
-          )
-        ) {
-          card.classList.add("grayed-out");
-        } else {
-          card.classList.remove("grayed-out");
-        }
+      confetti({
+        particleCount: 10,
+        angle: 120,
+        spread: 100,
+        origin: { x: 1, y: 0.8 }
       });
-    }
 
-    // ✅ Update progress bubble contents
-    function updateProgressUI() {
-      const bubble = document.getElementById("progressBubble");
-      if (!bubble) return;
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+  }
 
-      const totalPrompts = Array.isArray(window.prompts)
-        ? window.prompts.length
-        : 85;
+  // Renders participant filter buttons (no Clear Filter button)
+  function renderFilterButtons() {
+    const container = document.getElementById("filterButtons");
+    container.innerHTML = "";
 
-      // No reader selected → show helper text
-      if (!activeParticipant) {
-        bubble.style.visibility = "visible";
-        bubble.innerHTML = `
-          <h2>Prompt Progress</h2>
-          <p style="margin:0; font-size:0.95rem;">
-            Select a reader above to highlight which prompts they've completed and see their overall progress.
-          </p>
-        `;
-        return;
+    PARTICIPANTS.forEach(name => {
+      const btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.textContent = name;
+
+      btn.onclick = () => {
+        const wasActive = activeParticipant === name;
+
+        // 🎉 Only fire confetti when Cindy is newly selected
+        if (!wasActive && name === "Cindy") {
+          launchConfetti();
+        }
+
+        activeParticipant = wasActive ? null : name;
+        renderFilterButtons();
+        renderPrompts(window.prompts);
+        updateProgressUI(); // update bar whenever selection changes
+      };
+
+      if (activeParticipant === name) {
+        btn.classList.add("active");
       }
 
-      // If submissions not loaded yet, show loading text
-      if (!allSubmissions.length) {
-        bubble.style.visibility = "visible";
-        bubble.innerHTML = `
-          <h2>${activeParticipant}'s Progress</h2>
-          <div class="progress-top-row">
-            <span>Loading progress…</span>
-          </div>
-        `;
-        return;
+      container.appendChild(btn);
+    });
+  }
+
+  // Apply or remove gray-out based on allSubmissions + activeParticipant
+  function updateGrayOut() {
+    const cards = document.querySelectorAll(".prompt-card");
+
+    cards.forEach(card => {
+      const num = parseInt(card.dataset.promptNumber, 10);
+
+      if (
+        activeParticipant &&
+        allSubmissions.some(
+          s => s.Reader === activeParticipant && s.Prompt === num
+        )
+      ) {
+        card.classList.add("grayed-out");
+      } else {
+        card.classList.remove("grayed-out");
       }
+    });
+  }
 
-      const completedSet = new Set(
-        allSubmissions
-          .filter(s => s.Reader === activeParticipant)
-          .map(s => s.Prompt)
-      );
+  // ✅ Update progress bubble contents
+  function updateProgressUI() {
+    const bubble = document.getElementById("progressBubble");
+    if (!bubble) return;
 
-      const completedCount = completedSet.size;
-      const pct = totalPrompts
-        ? Math.round((completedCount / totalPrompts) * 100)
-        : 0;
+    const totalPrompts = Array.isArray(window.prompts)
+      ? window.prompts.length
+      : 85;
 
+    // No reader selected → show helper text
+    if (!activeParticipant) {
+      bubble.style.visibility = "visible";
+      bubble.innerHTML = `
+        <h2>Prompt Progress</h2>
+        <p style="margin:0; font-size:0.95rem;">
+          Select a reader above to highlight which prompts they've completed and see their overall progress.
+        </p>
+      `;
+      return;
+    }
+
+    // If submissions not loaded yet, show loading text
+    if (!allSubmissions.length) {
       bubble.style.visibility = "visible";
       bubble.innerHTML = `
         <h2>${activeParticipant}'s Progress</h2>
         <div class="progress-top-row">
-          <span>${completedCount} of ${totalPrompts} prompts completed</span>
-          <span class="progress-percent">${pct}%</span>
-        </div>
-        <div class="progress-bar-container">
-          <div class="progress-bar" style="width:${pct}%;"></div>
+          <span>Loading progress…</span>
         </div>
       `;
+      return;
     }
 
-    function renderPrompts(prompts) {
-      const grid = document.getElementById("promptGrid");
-      const input = document.getElementById("searchInput");
-      const search = input.value.toLowerCase();
+    const completedSet = new Set(
+      allSubmissions
+        .filter(s => s.Reader === activeParticipant)
+        .map(s => s.Prompt)
+    );
 
-      grid.innerHTML = "";
-      const filteredPrompts = prompts.filter(p =>
-        p.title.toLowerCase().includes(search) ||
-        (p.description && p.description.toLowerCase().includes(search))
-      );
+    const completedCount = completedSet.size;
+    const pct = totalPrompts
+      ? Math.round((completedCount / totalPrompts) * 100)
+      : 0;
 
-      if (filteredPrompts.length === 0) {
-        grid.innerHTML = "<p style='text-align:center; color: #999;'>No prompts found.</p>";
+    bubble.style.visibility = "visible";
+    bubble.innerHTML = `
+      <h2>${activeParticipant}'s Progress</h2>
+      <div class="progress-top-row">
+        <span>${completedCount} of ${totalPrompts} prompts completed</span>
+        <span class="progress-percent">${pct}%</span>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" style="width:${pct}%;"></div>
+      </div>
+    `;
+  }
+
+  function renderPrompts(prompts) {
+    const grid = document.getElementById("promptGrid");
+    const input = document.getElementById("searchInput");
+    const search = input.value.toLowerCase();
+
+    grid.innerHTML = "";
+    const filteredPrompts = prompts.filter(p =>
+      p.title.toLowerCase().includes(search) ||
+      (p.description && p.description.toLowerCase().includes(search))
+    );
+
+    if (filteredPrompts.length === 0) {
+      grid.innerHTML = "<p style='text-align:center; color: #999;'>No prompts found.</p>";
+      return;
+    }
+
+    filteredPrompts.forEach((p, index) => {
+      const card = document.createElement("div");
+      card.className = "prompt-card";
+
+      // Staggered animation delay per card
+      const delayMs = index * 70;
+      card.style.setProperty("--delay", `${delayMs}ms`);
+
+      // Store prompt number on the card for later gray-out updates
+      card.dataset.promptNumber = p.number;
+
+      card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
+      card.innerHTML = `
+        <h2>Prompt #${p.number}</h2>
+        <h3>${p.title}</h3>
+        ${p.description ? `<p>${p.description}</p>` : ""}
+        <p class="creator">By ${p.creator}</p>
+      `;
+      grid.appendChild(card);
+    });
+
+    // After drawing cards, apply gray-out if we already have submissions loaded
+    if (allSubmissions.length > 0) {
+      updateGrayOut();
+    }
+  }
+
+  async function fetchSubmissions() {
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
+    const res = await fetch(sheetUrl);
+    const csv = await res.text();
+
+    const parsed = Papa.parse(csv, { header: true });
+    allSubmissions = parsed.data
+      .map(row => ({
+        Reader: row.Reader?.trim(),
+        Prompt: parseInt(row.Prompt?.trim())
+      }))
+      .filter(row => row.Reader && !isNaN(row.Prompt));
+
+    // Once we have data, update gray-out and progress
+    updateGrayOut();
+    updateProgressUI();
+  }
+
+  // 🔎 Read current reader from storage (supports old + new keys)
+  function getCurrentReaderFromStorage() {
+    const keys = ["rc25_current_reader", "rc2025_reader"];
+    for (const key of keys) {
+      try {
+        const val = localStorage.getItem(key);
+        if (val) return val;
+      } catch (e) {
+        // ignore
+      }
+    }
+    return null;
+  }
+
+  // 🎯 Auto-click the right filter button based on who is signed in
+  function autoFilterFromLogin() {
+    const currentReader = getCurrentReaderFromStorage();
+    if (!currentReader) return;
+
+    const buttons = document.querySelectorAll("#filterButtons .filter-btn");
+    const match = Array.from(buttons).find(
+      btn => btn.textContent.trim().toLowerCase() === currentReader.trim().toLowerCase()
+    );
+    if (match) {
+      match.click();
+    }
+  }
+
+  // Make buttons & prompts appear immediately; fetch submissions in background
+  window.addEventListener("DOMContentLoaded", () => {
+    if (typeof prompts !== "undefined") window.prompts = prompts;
+
+    // Show UI right away
+    renderFilterButtons();
+    renderPrompts(window.prompts);
+    updateProgressUI(); // ensures the bubble has helpful text initially
+
+    // 🔁 Auto-apply filter based on saved login (if any)
+    autoFilterFromLogin();
+
+    // Fetch submissions; once ready, update gray-out in place
+    fetchSubmissions().catch(err => {
+      console.error("Error fetching submissions:", err);
+    });
+
+    document.getElementById("searchInput").addEventListener("input", () => {
+      renderPrompts(window.prompts);
+    });
+
+    // Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
+    document.addEventListener("keydown", (e) => {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const isPrintShortcut =
+        (isMac && e.metaKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p") ||
+        (!isMac && e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p");
+
+      if (!isPrintShortcut) return;
+
+      e.preventDefault(); // stop browser from printing the page
+
+      const win = window.open("list.pdf", "_blank");
+      if (!win) {
+        alert("Please allow pop-ups to open the printable prompt list.");
         return;
       }
 
-      filteredPrompts.forEach((p, index) => {
-        const card = document.createElement("div");
-        card.className = "prompt-card";
-
-        // Staggered animation delay per card
-        const delayMs = index * 70;
-        card.style.setProperty("--delay", `${delayMs}ms`);
-
-        // Store prompt number on the card for later gray-out updates
-        card.dataset.promptNumber = p.number;
-
-        card.onclick = () => { location.href = `/prompt.html?number=${p.number}`; };
-        card.innerHTML = `
-          <h2>Prompt #${p.number}</h2>
-          <h3>${p.title}</h3>
-          ${p.description ? `<p>${p.description}</p>` : ""}
-          <p class="creator">By ${p.creator}</p>
-        `;
-        grid.appendChild(card);
-      });
-
-      // After drawing cards, apply gray-out if we already have submissions loaded
-      if (allSubmissions.length > 0) {
-        updateGrayOut();
-      }
-    }
-
-    async function fetchSubmissions() {
-      const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv";
-      const res = await fetch(sheetUrl);
-      const csv = await res.text();
-
-      const parsed = Papa.parse(csv, { header: true });
-      allSubmissions = parsed.data
-        .map(row => ({
-          Reader: row.Reader?.trim(),
-          Prompt: parseInt(row.Prompt?.trim())
-        }))
-        .filter(row => row.Reader && !isNaN(row.Prompt));
-
-      // Once we have data, update gray-out and progress
-      updateGrayOut();
-      updateProgressUI();
-    }
-
-    // Make buttons & prompts appear immediately; fetch submissions in background
-    window.addEventListener("DOMContentLoaded", () => {
-      if (typeof prompts !== "undefined") window.prompts = prompts;
-
-      // Show UI right away
-      renderFilterButtons();
-      renderPrompts(window.prompts);
-      updateProgressUI(); // ensures the bubble has helpful text initially
-
-      // Fetch submissions; once ready, update gray-out in place
-      fetchSubmissions().catch(err => {
-        console.error("Error fetching submissions:", err);
-      });
-
-      document.getElementById("searchInput").addEventListener("input", () => {
-        renderPrompts(window.prompts);
-      });
-
-      // Intercept Ctrl+P / Cmd+P and open list.pdf instead of printing this page
-      document.addEventListener("keydown", (e) => {
-        const isMac = navigator.platform.toUpperCase().includes("MAC");
-        const isPrintShortcut =
-          (isMac && e.metaKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p") ||
-          (!isMac && e.ctrlKey && !e.shiftKey && !e.altKey && e.key.toLowerCase() === "p");
-
-        if (!isPrintShortcut) return;
-
-        e.preventDefault(); // stop browser from printing the page
-
-        const win = window.open("list.pdf", "_blank");
-        if (!win) {
-          alert("Please allow pop-ups to open the printable prompt list.");
-          return;
+      win.onload = () => {
+        try {
+          win.focus();
+          win.print();
+        } catch (err) {
+          console.warn("Could not auto-print PDF:", err);
         }
-
-        win.onload = () => {
-          try {
-            win.focus();
-            win.print();
-          } catch (err) {
-            console.warn("Could not auto-print PDF:", err);
-          }
-        };
-      });
+      };
     });
-  </script>
-  <script>
-  // Automatically apply reader filter based on who is signed in
-  function autoFilterFromLogin() {
-    // If menu.js didn't expose it yet, or nothing is stored, bail out
-    if (!window.rc25GetCurrentReader) return;
-    const currentReader = window.rc25GetCurrentReader();
-    if (!currentReader) return;
-
-    // Find the matching participant button
-    const btn = document.querySelector(
-      '.participant-filter[data-reader="' + currentReader + '"]'
-    );
-
-    if (!btn) return;
-
-    // Pretend the user clicked their own button
-    btn.click();
-  }
-
-  // Run after the page has built the prompts + filter buttons
-  document.addEventListener('DOMContentLoaded', () => {
-    // If your page has some async setup (like fetching from Sheets)
-    // and calls an "init" function, you can call autoFilterFromLogin()
-    // at the end of that instead. For many setups this works fine:
-    setTimeout(autoFilterFromLogin, 50);
   });
 </script>
 </body>
