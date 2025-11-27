@@ -1,4 +1,44 @@
 /* =========================
+   Login avatar helpers
+   ========================= */
+const AVATARS = {
+  "Rusty": "/avatars/rusty.png",
+  "Cindy": "/avatars/cindy.png",
+  "Cassy": "/avatars/cassy.png",
+  "Noah": "/avatars/noah.png",
+  "Winny": "/avatars/winny.png",
+  "Zoey": "/avatars/zoey.png"
+};
+
+const DEFAULT_AVATAR = "/avatars/guest.svg";
+
+function updateLoginStatusAvatar() {
+  const desktopEl = document.getElementById("loginStatus");
+  const mobileEl  = document.getElementById("loginStatusMobile");
+  if (!desktopEl && !mobileEl) return;
+
+  const current = localStorage.getItem("rc25_current_reader");
+  const avatarSrc = current && AVATARS[current] ? AVATARS[current] : DEFAULT_AVATAR;
+
+  const html = `<img src="${avatarSrc}" class="login-avatar" alt="Profile Avatar">`;
+
+  if (desktopEl) {
+    desktopEl.innerHTML = html;
+    desktopEl.onclick = () => { window.location.href = "login.html"; };
+  }
+
+  if (mobileEl) {
+    mobileEl.innerHTML = html;
+    mobileEl.onclick = () => { 
+      // close drawer if open
+      const mobileMenu = document.getElementById("mobileMenu");
+      if (mobileMenu) mobileMenu.classList.remove("active");
+      window.location.href = "login.html"; 
+    };
+  }
+}
+
+/* =========================
    Shared menu (robust boot)
    ========================= */
 (function () {
@@ -81,6 +121,20 @@
       }
     });
 
+    // 🔹 Append login avatar slot AFTER the normal items
+
+    // Desktop avatar container (right of Contact)
+    const loginSpan = document.createElement("span");
+    loginSpan.id = "loginStatus";
+    loginSpan.className = "login-status";
+    nav.appendChild(loginSpan);
+
+    // Mobile avatar container (as its own item at bottom of drawer)
+    const mobileLogin = document.createElement("div");
+    mobileLogin.id = "loginStatusMobile";
+    mobileLogin.className = "login-status-mobile";
+    mobile.appendChild(mobileLogin);
+
     // Close drawer when a mobile link is tapped
     mobile.querySelectorAll("a[href]").forEach(a => {
       a.addEventListener("click", () => {
@@ -130,6 +184,8 @@
         clearInterval(timer);
         bootOnce();
         renderMenu(items);
+        // 🔹 Now that the loginStatus elements exist, update them with the avatar
+        updateLoginStatusAvatar();
       } else if (tries >= maxTries) {
         clearInterval(timer);
         // Last-ditch log to help debug if needed
@@ -153,33 +209,3 @@
     tryRenderWithRetries(4, 250);
   });
 })();
-// === LOGIN AVATAR IN MENU ===
-
-const AVATARS = {
-  "Rusty": "/avatars/rusty.png",
-  "Cindy": "/avatars/cindy.png",
-  "Cassy": "/avatars/cassy.png",
-  "Noah": "/avatars/noah.png",
-  "Winny": "/avatars/winny.png",
-  "Zoey": "/avatars/zoey.png"
-};
-
-const DEFAULT_AVATAR = "/avatars/guest.svg";
-
-function updateLoginStatusAvatar() {
-  const el = document.getElementById("loginStatus");
-  if (!el) return;
-
-  const current = localStorage.getItem("rc25_current_reader");
-
-  const avatarSrc = current && AVATARS[current]
-    ? AVATARS[current]
-    : DEFAULT_AVATAR;
-
-  el.innerHTML = `<img src="${avatarSrc}" class="login-avatar" alt="User Avatar">`;
-
-  // clicking avatar goes to login page
-  el.onclick = () => window.location.href = "login.html";
-}
-
-updateLoginStatusAvatar();
