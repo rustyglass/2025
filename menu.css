@@ -73,6 +73,8 @@ nav.menu a {
 
 nav.menu .dropdown-wrapper {
   position: relative;
+  display: flex;          /* NEW: align wrapper like other items */
+  align-items: center;    /* NEW: vertically center the label */
 }
 
 nav.menu .submenu {
