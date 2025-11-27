@@ -270,11 +270,12 @@ nav.menu a.login-link,
   transition: 0.15s ease;
 }
 
-/* Mobile avatar container (at bottom of drawer) */
+/* Mobile "Signed in as X" text */
 #loginStatusMobile {
-  display: flex;
-  align-items: center;
+  font-weight: 800;
   margin-top: 1.5rem;
+  cursor: pointer;
+  color: #fff; /* good contrast on teal background */
 }
 
 #loginStatusMobile .login-avatar-wrap {
