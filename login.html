@@ -18,154 +18,160 @@
     rel="stylesheet"
   />
   <link rel="stylesheet" href="menu.css">
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #247182; /* underlay to tint Safari bar */
+    color: #333;
+  }
 
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #247182; /* underlay to tint Safari bar */
-      color: #333;
-    }
+  #page-shell {
+    background: #f4f4f4;
+    min-height: 100vh;
+    padding-top: 1rem;
+  }
 
-    #page-shell {
-      background: #f4f4f4;
-      min-height: 100vh;
-      padding-top: 1rem;
-    }
+  .container {
+    max-width: 1100px;
+    margin: 6rem auto 3rem;
+    padding: 0 1rem;
+  }
 
-    .container {
-      max-width: 1100px;
-      margin: 6rem auto 3rem;
-      padding: 0 1rem;
-    }
+  h1 {
+    font-size: 2.2rem;
+    color: #247182;
+    font-weight: 800;
+    text-align: center;
+    margin: 0 0 1.5rem;
+  }
 
-    h1 {
-      font-size: 2.2rem;
-      color: #247182;
-      font-weight: 800;
-      text-align: center;
-      margin: 0 0 1.5rem;
-    }
+  .subtitle {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #555;
+    font-size: 0.98rem;
+  }
 
-    .subtitle {
-      text-align: center;
-      margin-bottom: 2rem;
-      color: #555;
-      font-size: 0.98rem;
-    }
+  /* ===== GRID OF READER CARDS ===== */
+  .reader-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.2rem;
+  }
 
-    /* Grid of reader cards */
+  @media (max-width: 700px) {
     .reader-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.2rem;
+      grid-template-columns: 1fr;
     }
+  }
 
-    @media (max-width: 700px) {
-      .reader-grid {
-        grid-template-columns: 1fr;
-      }
-    }
+  .reader-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.3rem 1rem 1.4rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
 
-    .reader-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 1.3rem 1rem 1.4rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.22s ease, box-shadow 0.22s ease;
-    }
+  .reader-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  }
 
-    .reader-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
-    }
+  /* ===== AVATAR WRAPPER (CIRCLE) ===== */
+  .reader-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 0.75rem;
+  }
 
-    .reader-avatar {
-      width: 86px;
-      height: 86px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto 0.75rem;
-      border: 3px solid #247182;
-      background: #e7e7e7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  /* ===== ACTUAL IMAGE (105% zoom) ===== */
+  .reader-avatar img {
+    width: 105%;
+    height: 105%;
+    object-fit: cover;
+    display: block;
+    border: none;
+    box-shadow: none;
+    transform: translate(-2.5%, -2.5%);
+    transition: transform 0.15s ease;
+  }
 
-    .reader-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+  /* ===== Hover zoom only affects the image ===== */
+  .reader-card:hover .reader-avatar img {
+    transform: translate(-2.5%, -2.5%) scale(1.03);
+  }
 
-    .reader-name {
-      font-weight: 800;
-      color: #247182;
-      font-size: 1.1rem;
-      margin-bottom: 0.35rem;
-    }
+  .reader-name {
+    font-weight: 800;
+    color: #247182;
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+  }
 
-    .reader-caption {
-      font-size: 0.9rem;
-      color: #666;
-    }
+  .reader-caption {
+    font-size: 0.9rem;
+    color: #666;
+  }
 
-    /* Optional sign-out bubble */
-    .signout-bubble {
-      margin-top: 2rem;
-      display: inline-block;
-      padding: 0.75rem 1.4rem;
-      border-radius: 999px;
-      border: 2px solid #247182;
-      background: #ffffff;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #247182;
-      cursor: pointer;
-      transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
-    }
+  /* ===== Optional sign-out bubble ===== */
+  .signout-bubble {
+    margin-top: 2rem;
+    display: inline-block;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    border: 2px solid #247182;
+    background: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #247182;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  }
 
-    .signout-bubble:hover {
-      background: #247182;
-      color: #ffffff;
-      transform: scale(1.03);
-    }
+  .signout-bubble:hover {
+    background: #247182;
+    color: #ffffff;
+    transform: scale(1.03);
+  }
 
-    .signout-wrapper {
-      text-align: center;
-      margin-top: 1rem;
-    }
+  .signout-wrapper {
+    text-align: center;
+    margin-top: 1rem;
+  }
 
-    .site-footer {
-      margin-top: 3rem;
-      padding: 2rem 1rem;
-      background-color: transparent;
-      display: flex;
-      justify-content: center;
-    }
+  /* ===== FOOTER ===== */
+  .site-footer {
+    margin-top: 3rem;
+    padding: 2rem 1rem;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+  }
 
-    .footer-logo-container {
-      width: 350px;
-      height: 140px;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  .footer-logo-container {
+    width: 350px;
+    height: 140px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .footer-logo {
-      width: 100%;
-      height: auto;
-    }
-  </style>
+  .footer-logo {
+    width: 100%;
+    height: auto;
+  }
+</style>
 </head>
 <body>
   <div id="page-shell">
