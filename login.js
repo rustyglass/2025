@@ -1,6 +1,7 @@
 // login.js
 (function () {
   const STORAGE_KEY = 'rc25_current_reader';
+  let injected = false; // prevent double-injection
 
   function getReaders() {
     return Array.isArray(window.RC25_READERS) ? window.RC25_READERS : [];
@@ -37,18 +38,17 @@
   function updateLoginLabels(label) {
     // Desktop nav
     const desktopLink = document.querySelector('nav.menu a.login-link');
-    if (desktopLink) {
-      desktopLink.textContent = label;
-    }
+    if (desktopLink) desktopLink.textContent = label;
 
     // Mobile menu
     const mobileLink = document.querySelector('#mobileMenu a.login-link');
-    if (mobileLink) {
-      mobileLink.textContent = label;
-    }
+    if (mobileLink) mobileLink.textContent = label;
   }
 
   function injectLoginLinks() {
+    if (injected) return;
+    injected = true;
+
     const reader = getStoredReader();
     const label = reader || 'Sign In';
 
@@ -63,7 +63,6 @@
     }
 
     // ----- Mobile sidebar -----
-    // menu.js likely already filled #mobileMenu with links; we just add one more.
     const mobileMenu = document.getElementById('mobileMenu');
     if (mobileMenu) {
       const mobileLink = document.createElement('a');
@@ -72,23 +71,36 @@
       mobileLink.className = 'login-link';
       mobileMenu.appendChild(mobileLink);
     }
-  }
 
-  function init() {
-    injectLoginLinks();
-
-    // Expose helpers so login.html (and others) can use them
+    // Expose helpers *after* links exist
     window.rc25GetCurrentReader = getStoredReader;
     window.rc25SetCurrentReader = function (name) {
       setStoredReader(name);
-      const label = name || 'Sign In';
-      updateLoginLabels(label);
+      const newLabel = name || 'Sign In';
+      updateLoginLabels(newLabel);
       dispatchReaderChanged(name);
     };
 
     // Fire initial event so pages can react on load
-    dispatchReaderChanged(getStoredReader());
+    dispatchReaderChanged(reader);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  // Wait until menu.js has built the menu, then inject
+  function waitForMenuAndInject() {
+    const nav = document.querySelector('nav.menu');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    // We want to wait until nav exists *and* has some children
+    if (!nav || nav.children.length === 0 || !mobileMenu) {
+      // Try again shortly
+      setTimeout(waitForMenuAndInject, 50);
+      return;
+    }
+
+    injectLoginLinks();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    waitForMenuAndInject();
+  });
 })();
