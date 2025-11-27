@@ -304,13 +304,8 @@
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script>
-  // Safely populate window.prompts from prompts.js (allPrompts)
-  if (typeof allPrompts !== "undefined") {
-    window.prompts = allPrompts;
-  } else {
-    window.prompts = window.prompts || [];
-    console.warn("allPrompts is not defined; window.prompts left as", window.prompts);
-  }
+// Use prompts that prompts.js already put on window (or fall back to empty)
+window.prompts = Array.isArray(window.prompts) ? window.prompts : [];
 
   const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
   let allSubmissions = [];
@@ -518,11 +513,11 @@
 
     const parsed = Papa.parse(csv, { header: true });
     allSubmissions = parsed.data
-      .map(row => ({
-        Reader: row.Reader?.trim(),
-        Prompt: parseInt(row.Prompt?.trim())
-      }))
-      .filter(row => row.Reader && !isNaN(row.Prompt));
+  .map(row => ({
+    Reader: row.Reader?.trim(),
+    Prompt: row.Prompt?.trim()
+  }))
+  .filter(row => row.Reader && row.Prompt && !isNaN(Number(row.Prompt)));
 
     submissionsLoaded = true;
 
