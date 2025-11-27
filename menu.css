@@ -280,16 +280,8 @@ header.scrolled nav.menu a.active::after {
   align-items: center;
 }
 
-.login-dropdown button:hover {
-  background: #f0f6f8;
-}
-
-.login-dropdown button.active {
-  font-weight: 700;
-  color: #247182;
-}
-
-.login-dropdown button.active::after {
-  content: '✓';
-  font-size: 0.75rem;
+/* Make the login link bold so it stands out */
+nav.menu a.login-link,
+#mobileMenu a.login-link {
+  font-weight: 800;       /* heavy bold to match the updated header style */
 }
