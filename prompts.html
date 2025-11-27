@@ -304,7 +304,14 @@
   <!-- Confetti library -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script>
-  window.prompts = allPrompts;
+  // Safely populate window.prompts from prompts.js (allPrompts)
+  if (typeof allPrompts !== "undefined") {
+    window.prompts = allPrompts;
+  } else {
+    window.prompts = window.prompts || [];
+    console.warn("allPrompts is not defined; window.prompts left as", window.prompts);
+  }
+
   const PARTICIPANTS = ["Cassy", "Cindy", "Noah", "Rusty", "Winny", "Zoey"];
   let allSubmissions = [];
   let activeParticipant = null;
@@ -539,8 +546,6 @@
   }
 
   window.addEventListener("DOMContentLoaded", () => {
-    if (typeof prompts !== "undefined") window.prompts = prompts;
-
     const grid = document.getElementById("promptGrid");
 
     // 🔍 See if we should auto-filter on load
