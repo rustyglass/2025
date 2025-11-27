@@ -29,9 +29,7 @@ function updateLoginStatusAvatar() {
       </span>
     `;
     desktopEl.innerHTML = html;
-    desktopEl.onclick = () => {
-      window.location.href = "login.html";
-    };
+    desktopEl.onclick = () => { window.location.href = "login.html"; };
   }
 
   // ----- Mobile: bold text only -----
@@ -55,7 +53,7 @@ function updateLoginStatusAvatar() {
     const mobile = document.getElementById("mobileMenu");
     if (!nav || !mobile || !Array.isArray(items)) return;
 
-    // Determine current path (and alias prompt.html -> prompts.html if desired)
+    // Determine current path
     let currentPath = (location.pathname.split("/").pop() || "index.html");
     const alias = {
       "": "index.html",
@@ -80,13 +78,25 @@ function updateLoginStatusAvatar() {
         const sub = document.createElement("div");
         sub.className = "submenu";
 
+        let sectionIsActive = false;  // 🔹 track if any child matches
+
         item.submenu.forEach(s => {
           const a = document.createElement("a");
           a.href = s.link;
           a.textContent = s.name;
-          if (a.getAttribute("href") === currentPath) a.classList.add("active");
+
+          if (a.getAttribute("href") === currentPath) {
+            a.classList.add("active");
+            sectionIsActive = true;   // 🔹 remember a child is active
+          }
+
           sub.appendChild(a);
         });
+
+        // 🔹 If any submenu item is active, underline the parent label too
+        if (sectionIsActive) {
+          title.classList.add("active");
+        }
 
         wrap.appendChild(title);
         wrap.appendChild(sub);
@@ -139,7 +149,7 @@ function updateLoginStatusAvatar() {
     mobileLogin.className = "login-status-mobile";
     mobile.appendChild(mobileLogin);
 
-    // Close drawer when a *normal* mobile link is tapped
+    // Close drawer when a normal mobile link is tapped
     mobile.querySelectorAll("a[href]").forEach(a => {
       a.addEventListener("click", () => {
         mobile.classList.remove("active");
@@ -152,7 +162,6 @@ function updateLoginStatusAvatar() {
 
   // ----- Boot (scroll color + toggle + safe retries to render) -----
   function bootOnce() {
-    // Header color on scroll
     const header = document.getElementById("main-header");
     if (header && !bootOnce._scrollBound) {
       window.addEventListener("scroll", () => {
@@ -161,7 +170,6 @@ function updateLoginStatusAvatar() {
       bootOnce._scrollBound = true;
     }
 
-    // Mobile drawer toggle
     const mobileMenu = document.getElementById("mobileMenu");
     const menuBtn = document.getElementById("menu-button");
     if (menuBtn && mobileMenu && !bootOnce._toggleBound) {
@@ -172,7 +180,6 @@ function updateLoginStatusAvatar() {
     }
   }
 
-  // Try to render when both DOM targets and menuItems exist.
   function tryRenderWithRetries(maxTries = 12, intervalMs = 250) {
     let tries = 0;
     const timer = setInterval(() => {
@@ -180,20 +187,21 @@ function updateLoginStatusAvatar() {
 
       const nav = document.querySelector("nav.menu");
       const mobile = document.getElementById("mobileMenu");
-      const items = (typeof window.menuItems !== "undefined")
-        ? window.menuItems
-        : (typeof menuItems !== "undefined" ? menuItems : null);
+      const items =
+        (typeof window.menuItems !== "undefined") ? window.menuItems :
+        (typeof menuItems !== "undefined" ? menuItems : null);
 
       if (nav && mobile && Array.isArray(items)) {
         clearInterval(timer);
         bootOnce();
         renderMenu(items);
-        // 🔹 Now that loginStatus elements exist, update with avatar/text
         updateLoginStatusAvatar();
       } else if (tries >= maxTries) {
         clearInterval(timer);
         console.warn("[menu] Failed to render after retries", {
-          hasNav: !!nav, hasMobile: !!mobile, hasItems: Array.isArray(items)
+          hasNav: !!nav,
+          hasMobile: !!mobile,
+          hasItems: Array.isArray(items)
         });
       }
     }, intervalMs);
