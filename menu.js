@@ -1,12 +1,17 @@
-// Track last visited page
+// Track last visited page (including query string)
 (function () {
-  const page = window.location.pathname.split("/").pop() || "index.html";
+  // Get just the file name (or "index.html" for root)
+  const path = window.location.pathname.split("/").pop() || "index.html";
+  const search = window.location.search || "";
+  const full = path + search; // e.g. "prompt.html?number=12"
 
-  // Do NOT save login.html as the last page
-  if (page !== "login.html") {
+  // Don't store login.html as "last page"
+  if (path !== "login.html") {
     try {
-      localStorage.setItem("rc25_last_page", page);
-    } catch (e) {}
+      localStorage.setItem("rc25_last_page", full);
+    } catch (e) {
+      // ignore storage errors
+    }
   }
 })();
 /* =========================
@@ -23,12 +28,53 @@ const AVATARS = {
 
 const DEFAULT_AVATAR = "/avatars/guest.svg";
 
+/* =========================
+   Shared login helpers
+   ========================= */
+const RC25_READER_KEYS = ["rc25_current_reader", "rc2025_reader"];
+
+function rc25GetCurrentReader() {
+  for (const key of RC25_READER_KEYS) {
+    try {
+      const val = localStorage.getItem(key);
+      if (val) return val;
+    } catch (e) {}
+  }
+  return null;
+}
+
+function rc25SetCurrentReader(nameOrNull) {
+  try {
+    RC25_READER_KEYS.forEach(key => {
+      if (nameOrNull) {
+        localStorage.setItem(key, nameOrNull);
+      } else {
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (e) {}
+
+  // keep header UI in sync
+  updateLoginStatusAvatar();
+}
+
+function rc25SignOut() {
+  rc25SetCurrentReader(null);
+  // end session → always go home
+  window.location.href = "index.html";
+}
+
+// Expose globally for other pages to use
+window.rc25GetCurrentReader = rc25GetCurrentReader;
+window.rc25SetCurrentReader = rc25SetCurrentReader;
+window.rc25SignOut = rc25SignOut;
+
 function updateLoginStatusAvatar() {
   const desktopEl = document.getElementById("loginStatus");
   const mobileEl  = document.getElementById("loginStatusMobile");
   if (!desktopEl && !mobileEl) return;
 
-  const current = localStorage.getItem("rc25_current_reader");
+    const current = rc25GetCurrentReader();
   const avatarSrc = current && AVATARS[current] ? AVATARS[current] : DEFAULT_AVATAR;
   const label = current ? `Signed in as ${current}` : "Sign In";
 
