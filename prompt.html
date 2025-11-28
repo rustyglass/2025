@@ -567,7 +567,6 @@ async function renderDefaultPrompt(container, promptNum) {
   safeSet(container, html);
 }
 async function gateFormForPrompt(promptNum) {
-  const formHeadingEl = document.querySelector(".form-heading");
   const genericBlock  = document.getElementById("genericFormBlock");
   const p7Block       = document.getElementById("p7-forms");
   const p1Block       = document.getElementById("p1-form");
@@ -582,37 +581,30 @@ async function gateFormForPrompt(promptNum) {
     if (p1Block)      p1Block.style.display      = "none";
   }
 
-  // Reset bubbles (but leave the "Submit Book" heading alone!)
-  if (alreadyBubble) alreadyBubble.style.display = "none";
-  if (closedBubble)  closedBubble.style.display  = "none";
-  if (mustSignIn)    mustSignIn.style.display    = "none";
+  function hideAllBubbles() {
+    if (alreadyBubble) alreadyBubble.style.display = "none";
+    if (closedBubble)  closedBubble.style.display  = "none";
+    if (mustSignIn)    mustSignIn.style.display    = "none";
+  }
 
-  // 🔹 1) Global OFF switch
-  if (!SUBMISSIONS_OPEN) {
-    hideAllForms();
+  // Start with everything hidden so there is NO flash
+  hideAllForms();
+  hideAllBubbles();
+
+  // 🔹 1) Global “submissions closed” toggle
+  if (typeof SUBMISSIONS_OPEN !== "undefined" && !SUBMISSIONS_OPEN) {
     if (closedBubble) closedBubble.style.display = "block";
     return;
   }
 
-  // 🔹 2) Check who is signed in
+  // 🔹 2) Must be signed in
   const current = getCurrentReader();
-
   if (!current) {
-    // Not signed in → no forms, show "must sign in" bubble
-    hideAllForms();
     if (mustSignIn) mustSignIn.style.display = "block";
     return;
   }
 
-  // 🔹 3) Someone is signed in; hide form blocks while we check for duplicates
-  const blocks = [genericBlock, p7Block, p1Block];
-  blocks.forEach(b => {
-    if (b && b.style.display !== "none") {
-      b.style.visibility = "hidden";
-    }
-  });
-
-  // 🔹 4) Check the sheet to see if this reader already submitted to this prompt
+  // 🔹 3) Check if this reader already submitted to this prompt
   const rows = await loadCSV(SUBMISSIONS_SHEET);
   const alreadyHas = rows.some(r =>
     num(get(r, "Prompt")) === promptNum &&
@@ -620,17 +612,13 @@ async function gateFormForPrompt(promptNum) {
   );
 
   if (alreadyHas) {
-    // Already submitted → keep forms hidden, show "already submitted" bubble
-    hideAllForms();
     if (alreadyBubble) alreadyBubble.style.display = "block";
-  } else {
-    // Has NOT submitted → reveal whichever form block is active
-    blocks.forEach(b => {
-      if (b && b.style.display !== "none") {
-        b.style.visibility = "visible";
-      }
-    });
+    return;
   }
+
+  // 🔹 4) All clear → now we finally show the *correct* form block
+  // (this will set src with Prompt + Reader and turn on the right block)
+  configureFormsForPrompt(promptNum);
 }
     function applyReaderToIframe(iframe, promptNum) {
   if (!iframe) return;
@@ -667,32 +655,28 @@ function configureFormsForPrompt(promptNum) {
   const p1Block       = $('p1-form');
   const p1Iframe      = $('p1-rating-form');
 
-  // Default: hide all form blocks, we’ll turn on the right one below
+  // Default: hide all
   if (genericWrap) genericWrap.style.display = 'none';
   if (p7Block)     p7Block.style.display     = 'none';
   if (p1Block)     p1Block.style.display     = 'none';
 
   if (promptNum === 7) {
-    // Prompt #7 → special rating form
     if (p7Block && p7Iframe) {
       p7Block.style.display = 'block';
       applyReaderToIframe(p7Iframe, 7);
     }
   } else if (promptNum === 1) {
-    // Prompt #1 → special rating form
     if (p1Block && p1Iframe) {
       p1Block.style.display = 'block';
       applyReaderToIframe(p1Iframe, 1);
     }
   } else {
-    // All other prompts → generic book submission form
     if (genericWrap && genericIframe) {
       genericWrap.style.display = 'block';
       applyReaderToIframe(genericIframe, promptNum);
     }
   }
 }
-
 /* ========= BOOT ========= */
 (async function bootPromptPage() {
   const params = new URLSearchParams(location.search);
@@ -701,22 +685,16 @@ function configureFormsForPrompt(promptNum) {
   // 1) Prompt header/notes
   renderPromptHeader(promptNum);
 
-  // 2) Optional: Prompt 1 showcase (now that promptNum exists)
+  // 2) Optional: Prompt 1 showcase
   if (promptNum === 1) {
     renderPrompt1Showcase();
   }
 
-  // 3) Container guard (prevents "null innerHTML" errors)
   const container = $('submissionsContainer');
   if (!container) return;
 
-  // Loading state
   safeSet(container, `<div class="bubble center" id="loadingMessage">Loading…</div>`);
 
-  // 4) Special form visibility
-  configureFormsForPrompt(promptNum);
-
-  // 5) Render submissions list
   try {
     if (promptNum === 7) {
       await renderPrompt7(container, promptNum);
@@ -730,7 +708,6 @@ function configureFormsForPrompt(promptNum) {
     safeSet(container, `<div class="bubble center">Failed to load submissions.</div>`);
   }
 
-  // 🔹 6) Finally, gate the form based on login + prior submission
   await gateFormForPrompt(promptNum);
 })();
 </script>
