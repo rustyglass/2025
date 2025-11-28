@@ -28,43 +28,35 @@ const AVATARS = {
 
 const DEFAULT_AVATAR = "/avatars/guest.svg";
 
-/* =========================
-   Shared login helpers
-   ========================= */
-const RC25_READER_KEYS = ["rc25_current_reader", "rc2025_reader"];
+// One clean key used across the entire site:
+const READER_KEY = "current_reader";
 
 function rc25GetCurrentReader() {
-  for (const key of RC25_READER_KEYS) {
-    try {
-      const val = localStorage.getItem(key);
-      if (val) return val;
-    } catch (e) {}
+  try {
+    return localStorage.getItem(READER_KEY) || null;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 function rc25SetCurrentReader(nameOrNull) {
   try {
-    RC25_READER_KEYS.forEach(key => {
-      if (nameOrNull) {
-        localStorage.setItem(key, nameOrNull);
-      } else {
-        localStorage.removeItem(key);
-      }
-    });
-  } catch (e) {}
+    if (nameOrNull) {
+      localStorage.setItem(READER_KEY, nameOrNull);
+    } else {
+      localStorage.removeItem(READER_KEY);
+    }
+  } catch {}
 
-  // keep header UI in sync
   updateLoginStatusAvatar();
 }
 
 function rc25SignOut() {
-  rc25SetCurrentReader(null);
-  // end session → always go home
+  rc25SetCurrentReader(null);   // clears all login info
   window.location.href = "index.html";
 }
 
-// Expose globally for other pages to use
+// Expose globally
 window.rc25GetCurrentReader = rc25GetCurrentReader;
 window.rc25SetCurrentReader = rc25SetCurrentReader;
 window.rc25SignOut = rc25SignOut;
