@@ -487,6 +487,8 @@
   <script src="newsfeed.js"></script>
 
   <script>
+    // Global submissions cache for personalization + other pages
+    window.allRows = window.allRows || [];
     // ----- Home Newsfeed helpers -----
     const HOME_NEWS_LIMIT = 2; // <-- change this number anytime
 
@@ -644,66 +646,75 @@
     }
 
     /* ========= Boot ========= */
-    window.addEventListener("DOMContentLoaded", async () => {
-      startCountdown();
-      renderHomeNews();
-      renderPersonalizedWelcome();
-      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
-      try {
-        const res = await fetch(SHEET_URL);
-        const text = await res.text();
-        const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
+   window.addEventListener("DOMContentLoaded", async () => {
+  startCountdown();
+  renderHomeNews();
 
-        // Latest 6 instead of 10
-        const latest = data.slice(-6).reverse();
-        const submissions = document.getElementById('submissions');
-        if (submissions) {
-          submissions.innerHTML = "";
-          latest.forEach(row => {
-            const card = document.createElement('div');
-            card.className = 'submission-card bubble';
-            card.innerHTML = `
-             <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
-              <div class="submission-info">
-                <div class="prompt-tag">Prompt #${row['Prompt']}</div>
-                <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
-                <div>${row['Rating']} Star${row['Rating'] === '1' ? '' : 's'}</div>
-                <div class="timestamp">${formatDate(row['Submitted at'])}</div>
-              </div>
-              <div class="reader-name">${row['Reader']}</div>
-            `;
-            submissions.appendChild(card);
-          });
-        }
+  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
+  try {
+    const res = await fetch(SHEET_URL);
+    const text = await res.text();
+    const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
 
-        // Leaderboard
-        const counts = {};
-        data.forEach(row => {
-          const reader = row['Reader'];
-          if (reader) counts[reader] = (counts[reader] || 0) + 1;
-        });
-        const leaderboard = document.getElementById('leaderboard');
-        if (leaderboard) {
-          leaderboard.innerHTML = "";
-          Object.entries(counts)
-            .sort((a, b) => b[1] - a[1])
-            .forEach(([reader, count]) => {
-              const card = document.createElement('div');
-              card.className = 'leaderboard-card bubble';
-              card.innerHTML = `
-                <div><strong>${reader}</strong></div>
-                <div class="progress-bar-container">
-                  <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
-                </div>
-                <div>${count}/85 prompts</div>
-              `;
-              leaderboard.appendChild(card);
-            });
-        }
-      } catch (err) {
-        console.error('Error loading sheet:', err);
-      } 
+    // ⬇️ make this visible to renderPersonalizedWelcome + others
+    window.allRows = data;
+
+    // Latest 6 instead of 10
+    const latest = data.slice(-6).reverse();
+    const submissions = document.getElementById('submissions');
+    if (submissions) {
+      submissions.innerHTML = "";
+      latest.forEach(row => {
+        const card = document.createElement('div');
+        card.className = 'submission-card bubble';
+        card.innerHTML = `
+          <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
+          <div class="submission-info">
+            <div class="prompt-tag">Prompt #${row['Prompt']}</div>
+            <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
+            <div>${row['Rating']} Star${row['Rating'] === '1' ? '' : 's'}</div>
+            <div class="timestamp">${formatDate(row['Submitted at'])}</div>
+          </div>
+          <div class="reader-name">${row['Reader']}</div>
+        `;
+        submissions.appendChild(card);
+      });
+    }
+
+    // Leaderboard
+    const counts = {};
+    data.forEach(row => {
+      const reader = row['Reader'];
+      if (reader) counts[reader] = (counts[reader] || 0) + 1;
     });
+    const leaderboard = document.getElementById('leaderboard');
+    if (leaderboard) {
+      leaderboard.innerHTML = "";
+      Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .forEach(([reader, count]) => {
+          const card = document.createElement('div');
+          card.className = 'leaderboard-card bubble';
+          card.innerHTML = `
+            <div><strong>${reader}</strong></div>
+            <div class="progress-bar-container">
+              <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
+            </div>
+            <div>${count}/85 prompts</div>
+          `;
+          leaderboard.appendChild(card);
+        });
+    }
+
+    // ✅ Now that allRows is ready, render personalized welcome
+    renderPersonalizedWelcome();
+
+  } catch (err) {
+    console.error('Error loading sheet:', err);
+    // Still show a generic non-signed-in welcome if something breaks
+    renderPersonalizedWelcome();
+  }
+});
   </script>
 
  <!-- OneSignal UI logic for the "Enable Notifications" card -->
@@ -813,7 +824,7 @@
   });
 </script>
 <script>
-// ========= Name & Progress Helpers (no new CSV load) =========
+// ========= Name & Progress Helpers (uses existing window.allRows) =========
 
 function getCurrentReader() {
   try {
@@ -823,13 +834,16 @@ function getCurrentReader() {
   }
 }
 
-// Count completed prompts using the already-loaded allRows[]
+// Count completed prompts using the already-loaded window.allRows
 function countCompletedPrompts(reader) {
-  if (!reader || !Array.isArray(allRows)) return 0;
+  if (!reader) return 0;
+
+  const rows = Array.isArray(window.allRows) ? window.allRows : [];
+  if (!rows.length) return 0;
 
   const set = new Set();
 
-  allRows.forEach(r => {
+  rows.forEach(r => {
     const who = (r.Reader || "").trim();
     const p = parseInt(r.Prompt, 10);
 
@@ -861,15 +875,15 @@ function buildGreeting(reader, completedCount) {
   return `What prompts will you complete today, ${nameTag}?`;
 }
 
-// ========= Personalization Renderer (runs AFTER allRows is populated) =========
+// ========= Personalization Renderer (call AFTER window.allRows is filled) =========
 function renderPersonalizedWelcome() {
   const bubble = document.getElementById("welcomeBubble");
   if (!bubble) return;
 
   const reader = getCurrentReader();
 
+  // Not signed in
   if (!reader) {
-    // 🔹 Not signed in
     bubble.style.display = "block";
     bubble.innerHTML = `
       <div style="font-size:1.1rem; font-weight:700; color:#247182; margin-bottom:.3rem;">
@@ -882,7 +896,6 @@ function renderPersonalizedWelcome() {
     return;
   }
 
-  // 🔹 Signed in — use already-loaded allRows[]
   const completed = countCompletedPrompts(reader);
   const TOTAL = 85;
   const pct = Math.round((completed / TOTAL) * 100);
