@@ -523,17 +523,23 @@
     updateProgressUI();
   }
 
-  // 🔎 Read current reader from storage (supports old + new keys)
+  // 🔎 Read current reader from storage
   function getCurrentReaderFromStorage() {
-    const keys = ["rc25_current_reader", "rc2025_reader"];
-    for (const key of keys) {
-      try {
-        const val = localStorage.getItem(key);
-        if (val) return val;
-      } catch (e) {}
-    }
-    return null;
+  // Prefer shared helper if menu.js loaded
+  if (typeof window.rc25GetCurrentReader === "function") {
+    return window.rc25GetCurrentReader();
   }
+
+  // Fallback
+  const keys = ["rc25_current_reader", "rc2025_reader"];
+  for (const key of keys) {
+    try {
+      const val = localStorage.getItem(key);
+      if (val) return val;
+    } catch (e) {}
+  }
+  return null;
+}
 
   window.addEventListener("DOMContentLoaded", () => {
     const grid = document.getElementById("promptGrid");
