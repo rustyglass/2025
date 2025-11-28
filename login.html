@@ -255,20 +255,10 @@
 
 <script>
   function chooseReader(name) {
-    // Set current reader using shared helper if available
-    try {
-      if (typeof window.rc25SetCurrentReader === "function") {
-        window.rc25SetCurrentReader(name);
-      } else {
-        // fallback, just in case
-        localStorage.setItem("rc25_current_reader", name);
-        localStorage.setItem("rc2025_reader", name);
-      }
-    } catch (e) {}
+    rc25SetCurrentReader(name);
 
-    // Go back to last page (including query) or home
-    const lastPage = localStorage.getItem("rc25_last_page") || "index.html";
-    window.location.href = lastPage;
+    const last = localStorage.getItem("rc25_last_page") || "index.html";
+    window.location.href = last;
   }
 </script>
 </body>
