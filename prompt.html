@@ -562,19 +562,14 @@ async function gateFormForPrompt(promptNum) {
     if (p1Block)      p1Block.style.display      = "none";
   }
 
-  // Reset bubbles + heading visibility
+  // Reset bubbles (but DO NOT hide the heading anymore)
   if (alreadyBubble) alreadyBubble.style.display = "none";
   if (closedBubble)  closedBubble.style.display  = "none";
-  if (formHeadingEl) {
-    formHeadingEl.style.display   = "block";
-    formHeadingEl.style.visibility = "visible";
-  }
 
-  // 🔹 1) Global submissions closed? → hide forms immediately for everyone
+  // 🔹 1) Global submissions closed? → hide forms, show closed bubble, keep heading
   if (!SUBMISSIONS_OPEN) {
     hideAllForms();
     if (closedBubble)  closedBubble.style.display = "block";
-    if (formHeadingEl) formHeadingEl.style.display = "none";
     return;
   }
 
@@ -586,7 +581,7 @@ async function gateFormForPrompt(promptNum) {
 
   const blocks = [genericBlock, p7Block, p1Block];
 
-  // If someone *is* signed in, hide whatever form is visible
+  // If someone *is* signed in, hide whichever form is visible
   // (avoid flashing it while we fetch + check CSV)
   if (current) {
     blocks.forEach(b => {
@@ -594,7 +589,7 @@ async function gateFormForPrompt(promptNum) {
         b.style.visibility = "hidden";
       }
     });
-    if (formHeadingEl) formHeadingEl.style.visibility = "hidden";
+    // ❌ no more formHeading hiding here
   } else {
     // No one signed in → no per-reader gating; show the forms as-is.
     return;
@@ -611,7 +606,7 @@ async function gateFormForPrompt(promptNum) {
     // They already submitted → keep forms hidden and show the message bubble
     hideAllForms();
     if (alreadyBubble) alreadyBubble.style.display = "block";
-    if (formHeadingEl) formHeadingEl.style.display = "none";
+    // ❌ do NOT hide the heading
   } else {
     // They have NOT submitted → reveal whichever form block is active
     blocks.forEach(b => {
@@ -619,7 +614,7 @@ async function gateFormForPrompt(promptNum) {
         b.style.visibility = "visible";
       }
     });
-    if (formHeadingEl) formHeadingEl.style.visibility = "visible";
+    // ❌ do NOT hide the heading
   }
 }
 /* ========= Show/hide forms per prompt ========= */
