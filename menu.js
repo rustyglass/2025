@@ -231,3 +231,24 @@ function updateLoginStatusAvatar() {
     } catch (e) {}
   }
 })();
+// =========================
+// Sign-out helper
+// =========================
+window.rc25SignOut = function () {
+  try {
+    // Remove current reader
+    localStorage.removeItem("rc25_current_reader");
+
+    // Make sure the "last page" becomes the homepage
+    localStorage.setItem("rc25_last_page", "index.html");
+  } catch (e) {
+    // ignore storage errors
+  }
+
+  // Close the mobile drawer if it's open
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (mobileMenu) mobileMenu.classList.remove("active");
+
+  // Send them to the homepage so it feels like a fresh session
+  window.location.href = "index.html";
+};
