@@ -523,22 +523,18 @@
     updateProgressUI();
   }
 
-  function getCurrentReaderFromStorage() {
+function getCurrentReaderFromStorage() {
+  // Prefer the shared helper from menu.js if it exists
   if (typeof rc25GetCurrentReader === "function") {
     return rc25GetCurrentReader();
   }
-  return localStorage.getItem("current_reader") || null;
-}
 
-  // Fallback
-  const keys = ["rc25_current_reader", "rc2025_reader"];
-  for (const key of keys) {
-    try {
-      const val = localStorage.getItem(key);
-      if (val) return val;
-    } catch (e) {}
+  // Fallback: read the single unified key
+  try {
+    return localStorage.getItem("current_reader") || null;
+  } catch (e) {
+    return null;
   }
-  return null;
 }
 
   window.addEventListener("DOMContentLoaded", () => {
