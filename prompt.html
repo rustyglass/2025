@@ -234,6 +234,15 @@
 
   <!-- Default form block (hidden on #1 and #7) -->
   <div class="form-heading">Submit Book</div>
+
+  <!-- Gating bubbles (default hidden; JS will show/hide them) -->
+  <div id="alreadySubmittedBubble" class="bubble center" style="display:none;">
+    You’ve already submitted a book for this prompt.
+  </div>
+  <div id="submissionsClosedBubble" class="bubble center" style="display:none;">
+    Submissions for this prompt are no longer being accepted.
+  </div>
+
   <div id="genericFormBlock" class="bubble form-wrapper">
     <iframe id="formIframe" allowtransparency="true" title="Submit Book" loading="lazy"></iframe>
   </div>
@@ -305,6 +314,10 @@
       submissionsHeading.parentNode.insertBefore(container, submissionsHeading);
     }
   }
+      // Global submissions toggle:
+  // - true  = forms work normally
+  // - false = hide all forms, show “Submissions are closed” bubble
+  const SUBMISSIONS_OPEN = true;
 /* ========= CONFIG: sheets ========= */
 /** Existing submissions CSV (same one used on index) */
 const SUBMISSIONS_SHEET =
@@ -535,7 +548,57 @@ async function renderDefaultPrompt(container, promptNum) {
 
   safeSet(container, html);
 }
+async function gateFormForPrompt(promptNum) {
+  const formHeadingEl = document.querySelector(".form-heading");
+  const genericBlock  = document.getElementById("genericFormBlock");
+  const p7Block       = document.getElementById("p7-forms");
+  const p1Block       = document.getElementById("p1-form");
+  const alreadyBubble = document.getElementById("alreadySubmittedBubble");
+  const closedBubble  = document.getElementById("submissionsClosedBubble");
 
+  // Helper to hide every possible form block
+  function hideAllForms() {
+    if (genericBlock) genericBlock.style.display = "none";
+    if (p7Block)      p7Block.style.display = "none";
+    if (p1Block)      p1Block.style.display = "none";
+  }
+
+  // Reset bubbles to hidden each time
+  if (alreadyBubble) alreadyBubble.style.display = "none";
+  if (closedBubble)  closedBubble.style.display  = "none";
+  if (formHeadingEl) formHeadingEl.style.display = "block";
+
+  // 1) Hard stop if submissions are globally closed
+  if (!SUBMISSIONS_OPEN) {
+    hideAllForms();
+    if (closedBubble)  closedBubble.style.display = "block";
+    if (formHeadingEl) formHeadingEl.style.display = "none"; // optional: hide "Submit Book" header
+    return;
+  }
+
+  // 2) If no one is signed in, do nothing — forms stay visible
+  const current =
+    typeof rc25GetCurrentReader === "function"
+      ? rc25GetCurrentReader()
+      : (localStorage.getItem("current_reader") || null);
+
+  if (!current) {
+    return;
+  }
+
+  // 3) Check if this reader already has a submission for this prompt
+  const rows = await loadCSV(SUBMISSIONS_SHEET);
+  const alreadyHas = rows.some(r =>
+    num(get(r, "Prompt")) === promptNum &&
+    get(r, "Reader") === current
+  );
+
+  // 4) If they’ve already submitted, hide forms & show the “already submitted” bubble
+  if (alreadyHas) {
+    hideAllForms();
+    if (alreadyBubble) alreadyBubble.style.display = "block";
+  }
+}
 /* ========= Show/hide forms per prompt ========= */
 function configureFormsForPrompt(promptNum) {
   const genericIframe = $('formIframe');               // your existing generic form iframe
@@ -582,10 +645,13 @@ function configureFormsForPrompt(promptNum) {
   // Loading state
   safeSet(container, `<div class="bubble center" id="loadingMessage">Loading…</div>`);
 
-  // 4) Special form visibility
+  // 4) Special form visibility (generic vs #1 vs #7)
   configureFormsForPrompt(promptNum);
 
-  // 5) Render by kind
+  // 4a) Gate the form based on sign-in + existing submission
+  await gateFormForPrompt(promptNum);
+
+  // 5) Render submissions by kind
   try {
     if (promptNum === 7) {
       await renderPrompt7(container, promptNum);
