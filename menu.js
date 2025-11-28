@@ -220,3 +220,14 @@ function updateLoginStatusAvatar() {
     tryRenderWithRetries(4, 250);
   });
 })();
+// Track last visited page
+(function () {
+  const page = window.location.pathname.split("/").pop() || "index.html";
+
+  // Do NOT save login.html as the last page
+  if (page !== "login.html") {
+    try {
+      localStorage.setItem("rc25_last_page", page);
+    } catch (e) {}
+  }
+})();
