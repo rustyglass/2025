@@ -383,18 +383,12 @@
 
     <div class="container">
       
-    <!-- Personalized welcome bubble -->
-    <div
-      id="welcomeBubble"
-      class="bubble"
-      style="
-        display:none;
-        max-width: 700px;
-        margin: 2.5rem auto 0.2rem;
-        padding: 0.9rem 1.2rem;
-        text-align: center;
-      "
-    ></div>
+  <div
+  id="welcomeBubble"
+  class="bubble"
+  style="visibility:hidden; max-width:700px; margin: 2.5rem auto 1rem; padding: 1rem 1.3rem; text-align:center;"
+>
+</div>
 
       <!-- Goodreads Quote (full-width, above dashboard) -->
       <div id="quote" class="bubble quote-widget">
@@ -881,34 +875,35 @@
     }
 
     // ========= Personalization Renderer =========
-    function renderPersonalizedWelcome() {
-      const bubble = document.getElementById("welcomeBubble");
-      if (!bubble) return;
+   function renderPersonalizedWelcome() {
+  const bubble = document.getElementById("welcomeBubble");
+  if (!bubble) return;
 
-      const reader = getCurrentReader();
+  const reader = getCurrentReader();
 
-      // Not signed in
-      if (!reader) {
-        const msg = "Welcome to the 2025 Reading Challenge! Sign in to submit books, view progress, and more!";
-        bubble.style.display = "block";
-        bubble.innerHTML = `
-          <div style="font-size:1.2rem; font-weight:700; color:#247182;">
-            ${msg}
-          </div>
-        `;
-        return;
-      }
+  // NOT SIGNED IN
+  if (!reader) {
+    bubble.innerHTML = `
+      <div style="font-size:1.2rem; font-weight:700; color:#247182;">
+        Welcome to the 2025 Reading Challenge! Sign in to submit books, view progress, and more!
+      </div>
+    `;
+    bubble.style.visibility = "visible";
+    return;
+  }
 
-      const completed = countCompletedPrompts(reader);
-      const greeting = buildGreeting(reader, completed);
+  // SIGNED IN
+  const completed = countCompletedPrompts(reader);
+  const TOTAL = 85;
+  const greeting = buildGreeting(reader, completed);
 
-      bubble.style.display = "block";
-      bubble.innerHTML = `
-        <div style="font-size:1.25rem; font-weight:700; color:#247182;">
-          ${greeting}
-        </div>
-      `;
-    }
+  bubble.innerHTML = `
+    <div style="font-size:1.25rem; font-weight:700; color:#247182;">
+      ${greeting}
+    </div>
+  `;
+  bubble.style.visibility = "visible";
+}
   </script>
 </body>
 </html>
