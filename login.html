@@ -250,46 +250,25 @@
     </footer>
   </div>
 
-  <!-- Menu scripts -->
   <script src="menu-config.js"></script>
-  <script src="menu.js"></script>
+<script src="menu.js"></script>
 
- <script>
-  // Use both keys so old + new code stay in sync
-  const STORAGE_KEYS = ['rc2025_reader', 'rc25_current_reader'];
-
-function setReaderAndGo(nameOrNull) {
-  try {
-    STORAGE_KEYS.forEach((key) => {
-      if (nameOrNull) {
-        localStorage.setItem(key, nameOrNull);
+<script>
+  function chooseReader(name) {
+    // Set current reader using shared helper if available
+    try {
+      if (typeof window.rc25SetCurrentReader === "function") {
+        window.rc25SetCurrentReader(name);
       } else {
-        localStorage.removeItem(key);
+        // fallback, just in case
+        localStorage.setItem("rc25_current_reader", name);
+        localStorage.setItem("rc2025_reader", name);
       }
-    });
+    } catch (e) {}
 
-    if (typeof window.setLoggedInReader === 'function') {
-      window.setLoggedInReader(nameOrNull || null);
-    }
-  } catch (e) {
-    console.error('Error updating logged-in reader in storage', e);
-  }
-
-  // NEW LOGIC: Remember last page
-  if (nameOrNull) {
+    // Go back to last page (including query) or home
     const lastPage = localStorage.getItem("rc25_last_page") || "index.html";
     window.location.href = lastPage;
-  } else {
-    // Signing out: always go home
-    window.location.href = "index.html";
-  }
-}
-  function chooseReader(name) {
-    setReaderAndGo(name);
-  }
-
-  function signOutReader() {
-    setReaderAndGo(null);
   }
 </script>
 </body>
