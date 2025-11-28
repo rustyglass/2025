@@ -258,28 +258,32 @@
   // Use both keys so old + new code stay in sync
   const STORAGE_KEYS = ['rc2025_reader', 'rc25_current_reader'];
 
-  function setReaderAndGo(nameOrNull) {
-    try {
-      STORAGE_KEYS.forEach((key) => {
-        if (nameOrNull) {
-          localStorage.setItem(key, nameOrNull);
-        } else {
-          localStorage.removeItem(key);
-        }
-      });
-
-      // If menu.js exposes a helper, let it update its own UI too
-      if (typeof window.setLoggedInReader === 'function') {
-        window.setLoggedInReader(nameOrNull || null);
+function setReaderAndGo(nameOrNull) {
+  try {
+    STORAGE_KEYS.forEach((key) => {
+      if (nameOrNull) {
+        localStorage.setItem(key, nameOrNull);
+      } else {
+        localStorage.removeItem(key);
       }
-    } catch (e) {
-      console.error('Error updating logged-in reader in storage', e);
-    }
+    });
 
-    // Go back to home (or change this to another page if you prefer)
-    window.location.href = 'index.html';
+    if (typeof window.setLoggedInReader === 'function') {
+      window.setLoggedInReader(nameOrNull || null);
+    }
+  } catch (e) {
+    console.error('Error updating logged-in reader in storage', e);
   }
 
+  // NEW LOGIC: Remember last page
+  if (nameOrNull) {
+    const lastPage = localStorage.getItem("rc25_last_page") || "index.html";
+    window.location.href = lastPage;
+  } else {
+    // Signing out: always go home
+    window.location.href = "index.html";
+  }
+}
   function chooseReader(name) {
     setReaderAndGo(name);
   }
