@@ -556,47 +556,70 @@ async function gateFormForPrompt(promptNum) {
   const alreadyBubble = document.getElementById("alreadySubmittedBubble");
   const closedBubble  = document.getElementById("submissionsClosedBubble");
 
-  // Helper to hide every possible form block
   function hideAllForms() {
     if (genericBlock) genericBlock.style.display = "none";
-    if (p7Block)      p7Block.style.display = "none";
-    if (p1Block)      p1Block.style.display = "none";
+    if (p7Block)      p7Block.style.display      = "none";
+    if (p1Block)      p1Block.style.display      = "none";
   }
 
-  // Reset bubbles to hidden each time
+  // Reset bubbles + heading visibility
   if (alreadyBubble) alreadyBubble.style.display = "none";
   if (closedBubble)  closedBubble.style.display  = "none";
-  if (formHeadingEl) formHeadingEl.style.display = "block";
+  if (formHeadingEl) {
+    formHeadingEl.style.display   = "block";
+    formHeadingEl.style.visibility = "visible";
+  }
 
-  // 1) Hard stop if submissions are globally closed
+  // 🔹 1) Global submissions closed? → hide forms immediately for everyone
   if (!SUBMISSIONS_OPEN) {
     hideAllForms();
     if (closedBubble)  closedBubble.style.display = "block";
-    if (formHeadingEl) formHeadingEl.style.display = "none"; // optional: hide "Submit Book" header
+    if (formHeadingEl) formHeadingEl.style.display = "none";
     return;
   }
 
-  // 2) If no one is signed in, do nothing — forms stay visible
+  // 🔹 2) Who is signed in (if anyone)?
   const current =
     typeof rc25GetCurrentReader === "function"
       ? rc25GetCurrentReader()
       : (localStorage.getItem("current_reader") || null);
 
-  if (!current) {
+  const blocks = [genericBlock, p7Block, p1Block];
+
+  // If someone *is* signed in, hide whatever form is visible
+  // (avoid flashing it while we fetch + check CSV)
+  if (current) {
+    blocks.forEach(b => {
+      if (b && b.style.display !== "none") {
+        b.style.visibility = "hidden";
+      }
+    });
+    if (formHeadingEl) formHeadingEl.style.visibility = "hidden";
+  } else {
+    // No one signed in → no per-reader gating; show the forms as-is.
     return;
   }
 
-  // 3) Check if this reader already has a submission for this prompt
+  // 🔹 3) Check if this signed-in reader already submitted for this prompt
   const rows = await loadCSV(SUBMISSIONS_SHEET);
   const alreadyHas = rows.some(r =>
     num(get(r, "Prompt")) === promptNum &&
     get(r, "Reader") === current
   );
 
-  // 4) If they’ve already submitted, hide forms & show the “already submitted” bubble
   if (alreadyHas) {
+    // They already submitted → keep forms hidden and show the message bubble
     hideAllForms();
     if (alreadyBubble) alreadyBubble.style.display = "block";
+    if (formHeadingEl) formHeadingEl.style.display = "none";
+  } else {
+    // They have NOT submitted → reveal whichever form block is active
+    blocks.forEach(b => {
+      if (b && b.style.display !== "none") {
+        b.style.visibility = "visible";
+      }
+    });
+    if (formHeadingEl) formHeadingEl.style.visibility = "visible";
   }
 }
 /* ========= Show/hide forms per prompt ========= */
