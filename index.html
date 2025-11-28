@@ -72,8 +72,8 @@
 
     /* Strong, scale-based hover for all bubbles */
     .bubble:hover {
-       transform: scale(1.02);
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
     }
 
     h2 {
@@ -369,126 +369,138 @@
 </head>
 <body>
   <div class="page-shell">
- <header id="main-header">
-  <div class="site-name">
-    <img src="favicon.png" alt="Icon" />
-    <span class="desktop-title">2025 Reading Challenge</span>
-  </div>
-  <nav class="menu"></nav>
-  <button class="menu-toggle" id="menu-button">&#9776;</button>
-</header>
+    <header id="main-header">
+      <div class="site-name">
+        <img src="favicon.png" alt="Icon" />
+        <span class="desktop-title">2025 Reading Challenge</span>
+      </div>
+      <nav class="menu"></nav>
+      <button class="menu-toggle" id="menu-button">&#9776;</button>
+    </header>
 
-  <div class="mobile-menu" id="mobileMenu"></div>
-  <img src="site-banner.png" alt="Header Banner" class="site-header" />
+    <div class="mobile-menu" id="mobileMenu"></div>
+    <img src="site-banner.png" alt="Header Banner" class="site-header" />
 
- <div id="welcomeBubble" class="bubble" style="display:none; max-width: 900px; margin: 6rem auto 1.5rem; padding: 1.2rem 1.4rem;">
-  <!-- Filled by JS -->
- </div>
-  <div class="container">
+    <!-- Personalized welcome bubble -->
+    <div
+      id="welcomeBubble"
+      class="bubble"
+      style="
+        display:none;
+        max-width: 900px;
+        margin: 2.5rem auto 1rem;
+        padding: 0.9rem 1.2rem;
+        text-align: center;
+      "
+    ></div>
 
-    <!-- Goodreads Quote (full-width, above dashboard) -->
-    <div id="quote" class="bubble quote-widget">
-      <div id="gr_quote_body"></div>
-      <div class="quote-author"></div>
-      <script src="https://www.goodreads.com/quotes/widget/148321872-rusty?v=2"></script>
-      <script>
-        window.addEventListener("load", () => {
-          const body = document.getElementById("gr_quote_body");
-          const authorDiv = document.querySelector(".quote-author");
+    <div class="container">
 
-          if (body && authorDiv) {
-            // Remove <br> tags inserted by Goodreads
-            body.innerHTML = body.innerHTML.replace(/<br\s*\/?>/g, "");
+      <!-- Goodreads Quote (full-width, above dashboard) -->
+      <div id="quote" class="bubble quote-widget">
+        <div id="gr_quote_body"></div>
+        <div class="quote-author"></div>
+        <script src="https://www.goodreads.com/quotes/widget/148321872-rusty?v=2"></script>
+        <script>
+          window.addEventListener("load", () => {
+            const body = document.getElementById("gr_quote_body");
+            const authorDiv = document.querySelector(".quote-author");
 
-            const authorLink = body.querySelector("a:last-of-type");
-            if (authorLink) {
-              let name = authorLink.textContent.trim();
+            if (body && authorDiv) {
+              // Remove <br> tags inserted by Goodreads
+              body.innerHTML = body.innerHTML.replace(/<br\s*\/?>/g, "");
 
-              // Normalize Goodreads variants
-              if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
-                name = "Walt Disney";
-              } else {
-                name = name.replace(/\s+Company$/i, "");
+              const authorLink = body.querySelector("a:last-of-type");
+              if (authorLink) {
+                let name = authorLink.textContent.trim();
+
+                // Normalize Goodreads variants
+                if (/^The\s+Walt\s+Disney\s+Company$/i.test(name)) {
+                  name = "Walt Disney";
+                } else {
+                  name = name.replace(/\s+Company$/i, "");
+                }
+
+                authorDiv.textContent = name;
+
+                // Remove em dash + author from quote body (e.g., "— Author")
+                const html = body.innerHTML;
+                const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
+                body.innerHTML = html.replace(dashAndAuthor, "");
+
+                authorLink.remove();
               }
-
-              authorDiv.textContent = name;
-
-              // Remove em dash + author from quote body (e.g., "— Author")
-              const html = body.innerHTML;
-              const dashAndAuthor = /[\u2014\u2013\-–]\s*<a[^>]+>.*?<\/a>/;
-              body.innerHTML = html.replace(dashAndAuthor, "");
-
-              authorLink.remove();
             }
-          }
-        });
-      </script>
-    </div>
-
-    <!-- DASHBOARD GRID -->
-    <div class="dashboard-grid">
-
-      <!-- LEFT COLUMN: News + Notifications post -->
-      <section id="homeNews" class="bubble-section">
-        <div class="bubble" style="text-align:center;"><h2>News</h2></div>
-
-        <!-- Notifications styled like a news post -->
-        <div id="notificationsSection" class="bubble center" style="display:none;">
-          <h3 style="margin-top:0;">NEW: Notifications</h3>
-          <p class="notify-message">
-            Turn on notifications to get Reading Challenge updates!
-          </p>
-          <button id="enablePushButton">Enable Notifications</button>
-        </div>
-
-        <div id="newsfeed"></div>
-
-        <!-- See All News inside a bubble card -->
-        <div class="bubble see-all-bubble">
-          <div class="see-all-wrapper">
-            <a href="newsfeed.html" class="see-all-link">See All News →</a>
-          </div>
-        </div>
-      </section>
-      
-      <!-- RIGHT COLUMN: Latest Submissions -->
-      <section id="submissionsSection">
-        <div class="bubble" style="text-align: center;">
-          <h2>Latest Submissions</h2>
-        </div>
-
-        <div id="submissions"></div>
-
-        <div class="bubble see-all-bubble">
-          <div class="see-all-wrapper">
-            <a href="submissions.html" class="see-all-link">See All Submissions →</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- LEFT COLUMN, BELOW NEWS: Leaderboard -->
-      <div class="bubble" id="leaderboardBlock">
-        <h2>Prompt Progress Leaderboard</h2>
-        <div id="leaderboard"></div>
+          });
+        </script>
       </div>
 
-    </div> <!-- end .dashboard-grid -->
+      <!-- DASHBOARD GRID -->
+      <div class="dashboard-grid">
 
-  </div>
-  
-  <footer class="site-footer">
-    <div class="footer-logo-container">
-      <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+        <!-- LEFT COLUMN: News + Notifications post -->
+        <section id="homeNews" class="bubble-section">
+          <div class="bubble" style="text-align:center;"><h2>News</h2></div>
+
+          <!-- Notifications styled like a news post -->
+          <div id="notificationsSection" class="bubble center" style="display:none;">
+            <h3 style="margin-top:0;">NEW: Notifications</h3>
+            <p class="notify-message">
+              Turn on notifications to get Reading Challenge updates!
+            </p>
+            <button id="enablePushButton">Enable Notifications</button>
+          </div>
+
+          <div id="newsfeed"></div>
+
+          <!-- See All News inside a bubble card -->
+          <div class="bubble see-all-bubble">
+            <div class="see-all-wrapper">
+              <a href="newsfeed.html" class="see-all-link">See All News →</a>
+            </div>
+          </div>
+        </section>
+        
+        <!-- RIGHT COLUMN: Latest Submissions -->
+        <section id="submissionsSection">
+          <div class="bubble" style="text-align: center;">
+            <h2>Latest Submissions</h2>
+          </div>
+
+          <div id="submissions"></div>
+
+          <div class="bubble see-all-bubble">
+            <div class="see-all-wrapper">
+              <a href="submissions.html" class="see-all-link">See All Submissions →</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- LEFT COLUMN, BELOW NEWS: Leaderboard -->
+        <div class="bubble" id="leaderboardBlock">
+          <h2>Prompt Progress Leaderboard</h2>
+          <div id="leaderboard"></div>
+        </div>
+
+      </div> <!-- end .dashboard-grid -->
+
     </div>
-  </footer>
-</div>
+    
+    <footer class="site-footer">
+      <div class="footer-logo-container">
+        <img src="reading-challenge-logo.png" alt="Reading Challenge Logo" class="footer-logo" />
+      </div>
+    </footer>
+  </div>
+
   <script src="menu-config.js"></script>
   <script src="menu.js"></script>
   <script src="newsfeed.js"></script>
 
   <script>
-    // Global submissions cache for personalization + other pages
+    // global store for submissions used by personalization
     window.allRows = window.allRows || [];
+
     // ----- Home Newsfeed helpers -----
     const HOME_NEWS_LIMIT = 2; // <-- change this number anytime
 
@@ -646,277 +658,257 @@
     }
 
     /* ========= Boot ========= */
-   window.addEventListener("DOMContentLoaded", async () => {
-  startCountdown();
-  renderHomeNews();
+    window.addEventListener("DOMContentLoaded", async () => {
+      startCountdown();
+      renderHomeNews();
 
-  const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
-  try {
-    const res = await fetch(SHEET_URL);
-    const text = await res.text();
-    const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
+      const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvhJbih4ugNXcDFt7yE5JidKzzVutkd76c3UCzTKCOB0u-ZlG3SFUgd4ZekhMjgsFWBcMnY7ukYTAE/pub?output=csv';
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+        const data = parseCSV(text).filter(row => row['Prompt'] && row['Title']);
 
-    // ⬇️ make this visible to renderPersonalizedWelcome + others
-    window.allRows = data;
+        // make available to personalization
+        window.allRows = data;
 
-    // Latest 6 instead of 10
-    const latest = data.slice(-6).reverse();
-    const submissions = document.getElementById('submissions');
-    if (submissions) {
-      submissions.innerHTML = "";
-      latest.forEach(row => {
-        const card = document.createElement('div');
-        card.className = 'submission-card bubble';
-        card.innerHTML = `
-          <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
-          <div class="submission-info">
-            <div class="prompt-tag">Prompt #${row['Prompt']}</div>
-            <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
-            <div>${row['Rating']} Star${row['Rating'] === '1' ? '' : 's'}</div>
-            <div class="timestamp">${formatDate(row['Submitted at'])}</div>
-          </div>
-          <div class="reader-name">${row['Reader']}</div>
-        `;
-        submissions.appendChild(card);
-      });
-    }
+        // Latest 6 instead of 10
+        const latest = data.slice(-6).reverse();
+        const submissions = document.getElementById('submissions');
+        if (submissions) {
+          submissions.innerHTML = "";
+          latest.forEach(row => {
+            const card = document.createElement('div');
+            card.className = 'submission-card bubble';
+            card.innerHTML = `
+              <img src="${row['Cover'] || 'no-cover.png'}" alt="Cover">
+              <div class="submission-info">
+                <div class="prompt-tag">Prompt #${row['Prompt']}</div>
+                <div><strong>${row['Title']}</strong><br>by ${row['Author']}</div>
+                <div>${row['Rating']} Star${row['Rating'] === '1' ? '' : 's'}</div>
+                <div class="timestamp">${formatDate(row['Submitted at'])}</div>
+              </div>
+              <div class="reader-name">${row['Reader']}</div>
+            `;
+            submissions.appendChild(card);
+          });
+        }
 
-    // Leaderboard
-    const counts = {};
-    data.forEach(row => {
-      const reader = row['Reader'];
-      if (reader) counts[reader] = (counts[reader] || 0) + 1;
-    });
-    const leaderboard = document.getElementById('leaderboard');
-    if (leaderboard) {
-      leaderboard.innerHTML = "";
-      Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .forEach(([reader, count]) => {
-          const card = document.createElement('div');
-          card.className = 'leaderboard-card bubble';
-          card.innerHTML = `
-            <div><strong>${reader}</strong></div>
-            <div class="progress-bar-container">
-              <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
-            </div>
-            <div>${count}/85 prompts</div>
-          `;
-          leaderboard.appendChild(card);
+        // Leaderboard
+        const counts = {};
+        data.forEach(row => {
+          const reader = row['Reader'];
+          if (reader) counts[reader] = (counts[reader] || 0) + 1;
         });
-    }
+        const leaderboard = document.getElementById('leaderboard');
+        if (leaderboard) {
+          leaderboard.innerHTML = "";
+          Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .forEach(([reader, count]) => {
+              const card = document.createElement('div');
+              card.className = 'leaderboard-card bubble';
+              card.innerHTML = `
+                <div><strong>${reader}</strong></div>
+                <div class="progress-bar-container">
+                  <div class="progress-bar" style="width:${(count / 85) * 100}%"></div>
+                </div>
+                <div>${count}/85 prompts</div>
+              `;
+              leaderboard.appendChild(card);
+            });
+        }
 
-    // ✅ Now that allRows is ready, render personalized welcome
-    renderPersonalizedWelcome();
+        // Now that allRows is ready, render personalized welcome
+        renderPersonalizedWelcome();
 
-  } catch (err) {
-    console.error('Error loading sheet:', err);
-    // Still show a generic non-signed-in welcome if something breaks
-    renderPersonalizedWelcome();
-  }
-});
+      } catch (err) {
+        console.error('Error loading sheet:', err);
+        // Still show a generic / basic welcome if something breaks
+        renderPersonalizedWelcome();
+      } 
+    });
   </script>
 
- <!-- OneSignal UI logic for the "Enable Notifications" card -->
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function (OneSignal) {
-    const section = document.getElementById('notificationsSection');
-    const btn = document.getElementById('enablePushButton');
-    const msg = section ? section.querySelector('.notify-message') : null;
-    if (!section || !btn || !msg) return;
+  <!-- OneSignal UI logic for the "Enable Notifications" card -->
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+      const section = document.getElementById('notificationsSection');
+      const btn = document.getElementById('enablePushButton');
+      const msg = section ? section.querySelector('.notify-message') : null;
+      if (!section || !btn || !msg) return;
 
-    // Hide by default; we only show it when it actually makes sense
-    section.style.display = 'none';
+      // Hide by default; we only show it when it actually makes sense
+      section.style.display = 'none';
 
-    try {
-      // If the browser has no Notification API at all, we can't do web push
-      if (typeof Notification === 'undefined') {
-        return;
-      }
-
-      // Native permission from the browser: "default" | "granted" | "denied"
-      let nativePerm = Notification.permission || 'default';
-
-      // If already allowed or blocked → follow your rule: hide the card entirely
-      if (nativePerm === 'granted' || nativePerm === 'denied') {
-        // Nothing to show; user either already gets notifications or has blocked them
-        return;
-      }
-
-      // At this point, nativePerm === "default" (never asked).
-      // Check web push support through OneSignal, if available.
-      if (!OneSignal.Notifications) {
-        // No notifications module → just bail out and keep it hidden
-        return;
-      }
-
-      let supported = true;
-      if (typeof OneSignal.Notifications.isPushSupported === 'function') {
-        try {
-          supported = await OneSignal.Notifications.isPushSupported();
-        } catch (err) {
-          console.warn('isPushSupported failed:', err);
-          supported = false;
+      try {
+        // If the browser has no Notification API at all, we can't do web push
+        if (typeof Notification === 'undefined') {
+          return;
         }
-      }
 
-      if (!supported) {
-        // Browser/context doesn't support push
-        return;
-      }
+        // Native permission from the browser: "default" | "granted" | "denied"
+        let nativePerm = Notification.permission || 'default';
 
-      // If we got here: browser supports push, permission is "default" → show section
-      section.style.display = 'block';
+        // If already allowed or blocked → hide the card entirely
+        if (nativePerm === 'granted' || nativePerm === 'denied') {
+          return;
+        }
 
-      btn.addEventListener(
-        'click',
-        async () => {
-          btn.disabled = true;
-          msg.textContent = 'One moment… asking for permission.';
+        if (!OneSignal.Notifications) {
+          return;
+        }
 
-          let result = null;
-
+        let supported = true;
+        if (typeof OneSignal.Notifications.isPushSupported === 'function') {
           try {
-            if (
-              OneSignal.Notifications &&
-              typeof OneSignal.Notifications.requestPermission === 'function'
-            ) {
-              // Use OneSignal helper if available
-              result = await OneSignal.Notifications.requestPermission();
-            } else if (typeof Notification.requestPermission === 'function') {
-              // Fallback to native requestPermission
-              result = await Notification.requestPermission();
-            }
+            supported = await OneSignal.Notifications.isPushSupported();
+          } catch (err) {
+            console.warn('isPushSupported failed:', err);
+            supported = false;
+          }
+        }
 
-            // After requesting, re-check native permission as the final source of truth
-            nativePerm = Notification.permission || result || 'default';
+        if (!supported) {
+          return;
+        }
 
-            if (nativePerm === 'granted') {
-              msg.textContent = 'Notifications are enabled for this device.';
-              btn.textContent = 'Notifications Enabled';
-              setTimeout(() => {
-                section.style.display = 'none';
-              }, 2000);
-            } else if (nativePerm === 'denied') {
-              msg.textContent = 'Notifications are blocked in your browser settings.';
-              btn.textContent = 'Notifications Blocked';
-              btn.disabled = true;
-            } else {
-              // Still "default" for some reason
+        // If we got here: browser supports push, permission is "default"
+        section.style.display = 'block';
+
+        btn.addEventListener(
+          'click',
+          async () => {
+            btn.disabled = true;
+            msg.textContent = 'One moment… asking for permission.';
+
+            let result = null;
+
+            try {
+              if (
+                OneSignal.Notifications &&
+                typeof OneSignal.Notifications.requestPermission === 'function'
+              ) {
+                result = await OneSignal.Notifications.requestPermission();
+              } else if (typeof Notification.requestPermission === 'function') {
+                result = await Notification.requestPermission();
+              }
+
+              nativePerm = Notification.permission || result || 'default';
+
+              if (nativePerm === 'granted') {
+                msg.textContent = 'Notifications are enabled for this device.';
+                btn.textContent = 'Notifications Enabled';
+                setTimeout(() => {
+                  section.style.display = 'none';
+                }, 2000);
+              } else if (nativePerm === 'denied') {
+                msg.textContent = 'Notifications are blocked in your browser settings.';
+                btn.textContent = 'Notifications Blocked';
+                btn.disabled = true;
+              } else {
+                msg.textContent =
+                  'Notifications are still disabled. You can enable them later in your browser settings.';
+                btn.disabled = false;
+              }
+            } catch (e) {
+              console.error('Error requesting notification permission', e);
               msg.textContent =
-                'Notifications are still disabled. You can enable them later in your browser settings.';
+                'Something went wrong while requesting notifications.';
               btn.disabled = false;
             }
-          } catch (e) {
-            console.error('Error requesting notification permission', e);
-            msg.textContent =
-              'Something went wrong while requesting notifications.';
-            btn.disabled = false;
-          }
-        },
-        { once: true } // prevent double-binding the click handler
-      );
-    } catch (e) {
-      console.error('Error initializing notifications UI', e);
-      section.style.display = 'none';
+          },
+          { once: true }
+        );
+      } catch (e) {
+        console.error('Error initializing notifications UI', e);
+        section.style.display = 'none';
+      }
+    });
+  </script>
+
+  <!-- Personalized welcome logic -->
+  <script>
+    // ========= Name & Progress Helpers =========
+
+    function getCurrentReader() {
+      try {
+        return localStorage.getItem("current_reader") || null;
+      } catch {
+        return null;
+      }
     }
-  });
-</script>
-<script>
-// ========= Name & Progress Helpers (uses existing window.allRows) =========
 
-function getCurrentReader() {
-  try {
-    return localStorage.getItem("current_reader") || null;
-  } catch {
-    return null;
-  }
-}
+    // Count completed prompts using window.allRows
+    function countCompletedPrompts(reader) {
+      if (!reader) return 0;
 
-// Count completed prompts using the already-loaded window.allRows
-function countCompletedPrompts(reader) {
-  if (!reader) return 0;
+      const rows = Array.isArray(window.allRows) ? window.allRows : [];
+      if (!rows.length) return 0;
 
-  const rows = Array.isArray(window.allRows) ? window.allRows : [];
-  if (!rows.length) return 0;
+      const set = new Set();
 
-  const set = new Set();
+      rows.forEach(r => {
+        const who = (r.Reader || "").trim();
+        const p = parseInt(r.Prompt, 10);
 
-  rows.forEach(r => {
-    const who = (r.Reader || "").trim();
-    const p = parseInt(r.Prompt, 10);
+        if (who === reader && !isNaN(p)) {
+          set.add(p);
+        }
+      });
 
-    if (who === reader && !isNaN(p)) {
-      set.add(p);
+      return set.size;
     }
-  });
 
-  return set.size;
-}
+    // Time-of-day greeting logic
+    function buildGreeting(reader, completedCount) {
+      const TOTAL = 85;
+      const nameTag = reader;
 
-// Time-of-day greeting logic
-function buildGreeting(reader, completedCount) {
-  const TOTAL = 85;
-  const nameTag = `@${reader}`;
+      if (completedCount >= TOTAL) {
+        return `Good job, ${nameTag}! You completed the challenge! Time to sit back and relax!`;
+      }
 
-  if (completedCount >= TOTAL) {
-    return `Good job ${nameTag}! You completed the challenge! Time to sit back and relax!`;
-  }
+      const hr = new Date().getHours();
 
-  const hr = new Date().getHours();
+      if (hr >= 22 || hr < 4) {
+        return `Getting some late night reading in, ${nameTag}?`;
+      }
+      if (hr >= 4 && hr < 12) {
+        return `Good morning, ${nameTag}! Today's a good day to get some prompts complete!`;
+      }
+      return `What prompts will you complete today, ${nameTag}?`;
+    }
 
-  if (hr >= 22 || hr < 4) {
-    return `Getting some late night reading in, ${nameTag}?`;
-  }
-  if (hr >= 4 && hr < 12) {
-    return `Good Morning, ${nameTag}! Today's a good day to get some prompts complete!`;
-  }
-  return `What prompts will you complete today, ${nameTag}?`;
-}
+    // ========= Personalization Renderer =========
+    function renderPersonalizedWelcome() {
+      const bubble = document.getElementById("welcomeBubble");
+      if (!bubble) return;
 
-// ========= Personalization Renderer (call AFTER window.allRows is filled) =========
-function renderPersonalizedWelcome() {
-  const bubble = document.getElementById("welcomeBubble");
-  if (!bubble) return;
+      const reader = getCurrentReader();
 
-  const reader = getCurrentReader();
+      // Not signed in
+      if (!reader) {
+        const msg = "Welcome to the 2025 Reading Challenge! Sign in to submit books, view progress, and more!";
+        bubble.style.display = "block";
+        bubble.innerHTML = `
+          <div style="font-size:1.2rem; font-weight:700; color:#247182;">
+            ${msg}
+          </div>
+        `;
+        return;
+      }
 
-  // Not signed in
-  if (!reader) {
-    bubble.style.display = "block";
-    bubble.innerHTML = `
-      <div style="font-size:1.1rem; font-weight:700; color:#247182; margin-bottom:.3rem;">
-        Welcome to the 2025 Reading Challenge!
-      </div>
-      <div style="font-size:0.95rem; color:#555;">
-        Sign in to submit books, view progress, and more!
-      </div>
-    `;
-    return;
-  }
+      const completed = countCompletedPrompts(reader);
+      const greeting = buildGreeting(reader, completed);
 
-  const completed = countCompletedPrompts(reader);
-  const TOTAL = 85;
-  const pct = Math.round((completed / TOTAL) * 100);
-
-  const greeting = buildGreeting(reader, completed);
-
-  bubble.style.display = "block";
-  bubble.innerHTML = `
-    <div style="font-size:1.05rem; font-weight:700; color:#247182; margin-bottom:.3rem;">
-      ${greeting}
-    </div>
-    <div style="font-size:0.95rem; color:#555; margin-bottom:0.35rem;">
-      You've completed <strong>${completed}</strong> of <strong>${TOTAL}</strong> prompts (${pct}%).
-    </div>
-    <div style="font-size:0.9rem; color:#777;">
-      Visit the <a href="prompts.html" style="color:#247182; font-weight:600; text-decoration:none;">Prompts</a> page
-      to keep going, or view everyone's progress on
-      <a href="readers.html" style="color:#247182; font-weight:600; text-decoration:none;">Readers</a>.
-    </div>
-  `;
-}
-</script>
+      bubble.style.display = "block";
+      bubble.innerHTML = `
+        <div style="font-size:1.25rem; font-weight:700; color:#247182;">
+          ${greeting}
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html>
